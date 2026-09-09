@@ -1,0 +1,159 @@
+{% extends "templates/web.html" %}
+
+{% block title %}AABrick Zambia | Tiles, Tile Fix, PVC Ceiling Boards &amp; Fertilizer{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ description }}">
+<link rel="canonical" href="{{ frappe.utils.get_url('/') }}">
+<meta property="og:title" content="AABrick Zambia | Building Materials Nationwide">
+<meta property="og:description" content="{{ description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ frappe.utils.get_url('/') }}">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "AABrick Zambia Limited",
+  "url": "{{ frappe.utils.get_url('/') }}",
+  "telephone": "{{ company_phone }}",
+  "foundingDate": "2005",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "Plot No 1411G, Off Ndola-Kitwe Dual Carriage Way, Zamtan",
+    "addressLocality": "Kitwe",
+    "addressCountry": "ZM"
+  }
+}
+</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="aab-home">
+
+  <!-- hero ------------------------------------------------------------- -->
+  <section class="aab-hero">
+    <div class="aab-hero-inner">
+      <p class="aab-hero-eyebrow">Premium building &amp; finishing materials</p>
+      <h1>Building Zambia<br><span>Beautifully</span></h1>
+      <p class="aab-hero-lede">
+        Tiles, tile fix, PVC ceiling boards and fertilizer. Trusted by
+        contractors, homeowners and farmers since 2005.
+      </p>
+      <div class="aab-hero-actions">
+        <a class="aab-btn aab-btn-primary" href="/all-products">Shop online</a>
+        <a class="aab-btn aab-btn-outline" href="/branches">Find a branch</a>
+      </div>
+      <ul class="aab-hero-points">
+        <li><strong>{{ branch_count }} branches</strong><span>Nationwide</span></li>
+        <li><strong>7-day delivery</strong><span>On anything not in stock</span></li>
+        <li><strong>Since 2005</strong><span>Trusted nationwide</span></li>
+        <li><strong>Marcopolo Tiles</strong><span>Official distributor</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- categories ------------------------------------------------------- -->
+  <section class="aab-section">
+    <div class="aab-section-head">
+      <div>
+        <p class="aab-eyebrow">Shop by category</p>
+        <h2>Find what you need</h2>
+      </div>
+      <a class="aab-more" href="/all-products">View all products</a>
+    </div>
+
+    <div class="aab-cats">
+      {% for c in categories %}
+        <a class="aab-cat" href="{{ c.route }}">
+          <div class="aab-cat-img">
+            {% if c.image %}
+              <img src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
+            {% else %}
+              <div class="aab-cat-placeholder" aria-hidden="true"></div>
+            {% endif %}
+          </div>
+          <div class="aab-cat-body">
+            <strong>{{ c.title }}</strong>
+            <span>{{ c.blurb }}</span>
+            {% if c.count %}<span class="aab-cat-count">{{ c.count }} products</span>{% endif %}
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- split panels ----------------------------------------------------- -->
+  <section class="aab-panels">
+    <div class="aab-panel aab-panel-red">
+      <p class="aab-eyebrow-light">Shop online</p>
+      <h3>Your finishing needs, a click away</h3>
+      <p>Browse the full range, see prices, and order for delivery or collection at your nearest branch.</p>
+      <a class="aab-btn aab-btn-light" href="/all-products">Shop now</a>
+    </div>
+    <div class="aab-panel aab-panel-dark">
+      <p class="aab-eyebrow-light">Need a hand?</p>
+      <h3>Work out exactly how much you need</h3>
+      <p>Our tile and PVC ceiling calculators tell you how many boxes or boards to buy, before you spend anything.</p>
+      <div class="aab-panel-actions">
+        <a class="aab-btn aab-btn-light" href="/tile-calculator">Tile calculator</a>
+        <a class="aab-btn aab-btn-ghost-light" href="/pvc-ceiling-calculater">PVC calculator</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- why aabrick ------------------------------------------------------ -->
+  <section class="aab-section">
+    <p class="aab-eyebrow">Why choose AABrick</p>
+    <h2>Twenty years supplying Zambia</h2>
+    <div class="aab-why">
+      <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
+      <div><strong>{{ branch_count }} branches</strong><span>Across all ten provinces.</span></div>
+      <div><strong>Quality brands</strong><span>Marcopolo Tiles and Unites Capital Fertilizer.</span></div>
+      <div><strong>Own delivery fleet</strong><span>Maintained trucks, nationwide reach.</span></div>
+      <div><strong>Public service financing</strong><span>Through our PSMFC partnership.</span></div>
+      <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
+    </div>
+  </section>
+
+  <!-- featured products ------------------------------------------------ -->
+  {% if featured %}
+  <section class="aab-section">
+    <div class="aab-section-head">
+      <div>
+        <p class="aab-eyebrow">From the range</p>
+        <h2>Popular right now</h2>
+      </div>
+      <a class="aab-more" href="/all-products">View all products</a>
+    </div>
+    <div class="aab-products-row">
+      {% for p in featured %}
+        <a class="aab-product" href="/{{ p.route }}">
+          <div class="aab-product-img">
+            <img src="{{ p.website_image }}" alt="{{ p.item_code }}" loading="lazy">
+          </div>
+          <div class="aab-product-body">
+            <span class="aab-product-code">{{ p.item_code }}</span>
+            <strong>{{ p.group_label }}</strong>
+            <span class="aab-product-price">{{ p.price }}</span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- branches --------------------------------------------------------- -->
+  <section class="aab-branch-cta">
+    <div>
+      <p class="aab-eyebrow-light">{{ branch_count }} branches nationwide</p>
+      <h2>There is a branch near you</h2>
+      <p>Come and see the tiles in person, or call and we will tell you what is on the shelf today.</p>
+    </div>
+    <div class="aab-branch-cta-actions">
+      <a class="aab-btn aab-btn-light" href="/branches">View branches</a>
+      <a class="aab-btn aab-btn-ghost-light" href="tel:{{ company_phone|replace(' ', '') }}">Call {{ company_phone }}</a>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

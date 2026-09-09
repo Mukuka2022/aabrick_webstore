@@ -244,10 +244,38 @@ app_license = "mit"
 
 
 # include js on every website page
-web_include_js = "/assets/aabrick_webstore/js/webstore.js"
+# Bump this whenever webstore.js or webstore.css changes: these are served
+# without a content hash, so browsers keep a stale copy after bench build.
+ASSET_VERSION = "2"
+web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
 
 # inject analytics tags into the website page head
 update_website_context = ["aabrick_webstore.analytics.add_analytics_tags"]
 
 # include css on every website page
-web_include_css = "/assets/aabrick_webstore/css/webstore.css"
+web_include_css = "/assets/aabrick_webstore/css/webstore.css?v=" + ASSET_VERSION
+
+# Retired pages. /home in particular must be redirected rather than left alone:
+# once its Web Page is unpublished, a built-in www/home.html takes over and
+# renders an empty page with HTTP 200, which is a soft 404.
+website_redirects = [
+	{"source": "/home", "target": "/"},
+	{"source": "/home2", "target": "/"},
+	{"source": "/pages/myhome", "target": "/"},
+	{"source": "/pages/my-page-e297", "target": "/"},
+	{"source": "/locations", "target": "/branches"},
+	{"source": "/about-us", "target": "/"},
+	{"source": "/fertilizer", "target": "/all-products"},
+	{"source": "/fertilizers", "target": "/all-products"},
+	{"source": "/wall-tiles", "target": "/all-products"},
+	{"source": "/floor-tiles", "target": "/all-products"},
+	{"source": "/matt-tiles", "target": "/all-products"},
+	{"source": "/Shiny-tiles", "target": "/all-products"},
+	{"source": "/tile-fix", "target": "/all-products"},
+	{"source": "/building-materials", "target": "/all-products"},
+	{"source": "/live-stock-availability-list", "target": "/all-products"},
+	{"source": "/tile-visualizer", "target": "/tile-calculator"},
+	{"source": "/gifts", "target": "/"},
+	{"source": "/agritech-voucher", "target": "/"},
+	{"source": "/agritech-voucher1", "target": "/"},
+]
