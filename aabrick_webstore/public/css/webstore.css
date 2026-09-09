@@ -32,3 +32,110 @@
 	opacity: 0.75;
 	letter-spacing: 0.01em;
 }
+
+/* ------------------------------------------------------------------
+ * Branch pages
+ * Red accent taken from the brand mark and the design reference.
+ * ------------------------------------------------------------------ */
+
+.aab-branch {
+	--aab-red: #D6202A;
+	--aab-ink: #16181B;
+	--aab-muted: #6D747B;
+	--aab-line: #E2E5E8;
+	--aab-surface: #FFFFFF;
+	--aab-wash: #F6F7F8;
+	max-width: 1040px;
+	margin: 0 auto;
+	padding: 0 0 64px;
+}
+
+.aab-crumbs {
+	font-size: 13px;
+	color: var(--aab-muted);
+	padding: 18px 0 0;
+}
+.aab-crumbs a { color: var(--aab-muted); text-decoration: none; }
+.aab-crumbs a:hover { color: var(--aab-red); text-decoration: underline; }
+.aab-crumbs span { margin: 0 6px; }
+
+.aab-branch-head { padding: 22px 0 26px; border-bottom: 3px solid var(--aab-red); }
+.aab-eyebrow {
+	font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+	color: var(--aab-red); font-weight: 600; margin: 0 0 6px;
+}
+.aab-branch-head h1 {
+	font-size: clamp(28px, 5vw, 42px); line-height: 1.08; margin: 0;
+	letter-spacing: -.02em; font-weight: 700;
+}
+.aab-intro { margin: 10px 0 0; max-width: 62ch; color: var(--aab-muted); font-size: 17px; }
+
+.aab-branch-grid {
+	display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 18px; margin-top: 26px;
+}
+.aab-card {
+	border: 1px solid var(--aab-line); background: var(--aab-surface);
+	padding: 18px 20px; border-radius: 4px;
+}
+.aab-card h2 {
+	font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+	color: var(--aab-muted); margin: 0 0 12px; font-weight: 600;
+}
+.aab-card address { font-style: normal; line-height: 1.65; margin: 0; }
+.aab-muted { color: var(--aab-muted); font-size: 14px; }
+.aab-link { display: inline-block; margin-top: 10px; color: var(--aab-red); font-weight: 600; }
+
+.aab-hours { width: 100%; border-collapse: collapse; }
+.aab-hours th {
+	text-align: left; font-weight: 500; padding: 5px 0;
+	color: var(--aab-muted); font-size: 14.5px;
+}
+.aab-hours td { text-align: right; padding: 5px 0; font-variant-numeric: tabular-nums; }
+
+.aab-actions { display: flex; flex-direction: column; gap: 9px; }
+.aab-btn {
+	display: block; text-align: center; padding: 11px 16px; border-radius: 3px;
+	font-weight: 600; font-size: 15px; text-decoration: none; border: 1px solid transparent;
+}
+.aab-btn-primary { background: var(--aab-red); color: #fff; }
+.aab-btn-primary:hover { background: #B31A22; color: #fff; }
+.aab-btn-wa { background: #25D366; color: #0B2E17; }
+.aab-btn-wa:hover { background: #1FB855; color: #0B2E17; }
+.aab-btn-ghost { border-color: var(--aab-line); color: var(--aab-ink); }
+.aab-btn-ghost:hover { border-color: var(--aab-red); color: var(--aab-red); }
+
+.aab-stock { margin-top: 30px; padding: 22px 0 0; border-top: 1px solid var(--aab-line); }
+.aab-stock h2 { font-size: 20px; margin: 0 0 14px; font-weight: 700; }
+.aab-products {
+	list-style: none; padding: 0; margin: 0 0 14px;
+	display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px;
+}
+.aab-products li {
+	border-left: 3px solid var(--aab-red); padding: 4px 0 4px 12px;
+	display: flex; flex-direction: column;
+}
+.aab-products strong { font-size: 15.5px; }
+.aab-products span { font-size: 13.5px; color: var(--aab-muted); }
+
+.aab-province { margin-top: 30px; }
+.aab-province h2 {
+	font-size: 18px; margin: 0 0 12px; padding-bottom: 8px;
+	border-bottom: 1px solid var(--aab-line); font-weight: 700;
+	display: flex; align-items: center; gap: 10px;
+}
+.aab-count {
+	font-size: 12px; font-weight: 600; color: #fff; background: var(--aab-red);
+	padding: 1px 8px; border-radius: 10px;
+}
+.aab-branch-list {
+	display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px;
+}
+.aab-branch-item {
+	border: 1px solid var(--aab-line); border-radius: 4px; padding: 12px 14px;
+	display: flex; flex-direction: column; gap: 2px; text-decoration: none;
+	color: var(--aab-ink); background: var(--aab-surface);
+}
+.aab-branch-item:hover { border-color: var(--aab-red); color: var(--aab-ink); }
+.aab-branch-item strong { font-size: 15.5px; }
+.aab-branch-item span { font-size: 13px; color: var(--aab-muted); }

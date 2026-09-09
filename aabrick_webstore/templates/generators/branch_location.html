@@ -1,0 +1,81 @@
+{% extends "templates/web.html" %}
+
+{% block title %}AABrick {{ doc.branch_name }} | Tiles, Tile Fix, PVC Ceiling &amp; Fertilizer{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ doc.meta_description or doc.intro or '' }}">
+<link rel="canonical" href="{{ frappe.utils.get_url(doc.route) }}">
+<meta property="og:title" content="AABrick {{ doc.branch_name }}">
+<meta property="og:description" content="{{ doc.meta_description or doc.intro or '' }}">
+<meta property="og:type" content="business.business">
+<meta property="og:url" content="{{ frappe.utils.get_url(doc.route) }}">
+<script type="application/ld+json">{{ schema }}</script>
+{% endblock %}
+
+{% block page_content %}
+<div class="aab-branch">
+
+	<nav class="aab-crumbs" aria-label="Breadcrumb">
+		<a href="/">Home</a> <span>/</span>
+		<a href="/branches">Branches</a> <span>/</span>
+		<span aria-current="page">{{ doc.branch_name }}</span>
+	</nav>
+
+	<header class="aab-branch-head">
+		<p class="aab-eyebrow">{{ doc.province }} Province{% if doc.region %} &middot; {{ doc.region }}ern Region{% endif %}</p>
+		<h1>AABrick {{ doc.branch_name }}</h1>
+		{% if doc.intro %}<p class="aab-intro">{{ doc.intro }}</p>{% endif %}
+	</header>
+
+	<div class="aab-branch-grid">
+
+		<section class="aab-card">
+			<h2>Visit us</h2>
+			{% if doc.street_address %}
+				<address>{{ doc.street_address }}{% if doc.city %}<br>{{ doc.city }}{% endif %}<br>{{ doc.province }} Province, Zambia</address>
+			{% else %}
+				<p class="aab-muted">Address coming soon. Call us and we will direct you.</p>
+			{% endif %}
+			{% if doc.maps_url %}
+				<a class="aab-link" href="{{ doc.maps_url }}" target="_blank" rel="noopener">Open in Google Maps</a>
+			{% endif %}
+		</section>
+
+		<section class="aab-card">
+			<h2>Opening hours</h2>
+			<table class="aab-hours">
+				<tr><th>Monday &ndash; Friday</th><td>{{ doc.hours_weekday or "Call to confirm" }}</td></tr>
+				<tr><th>Saturday</th><td>{{ doc.hours_saturday or "Call to confirm" }}</td></tr>
+				<tr><th>Sunday</th><td>{{ doc.hours_sunday or "Closed" }}</td></tr>
+			</table>
+			{% if doc.hours_note %}<p class="aab-muted">{{ doc.hours_note }}</p>{% endif %}
+		</section>
+
+		<section class="aab-card aab-contact">
+			<h2>Talk to this branch</h2>
+			<div class="aab-actions">
+				{% if whatsapp_link %}
+					<a class="aab-btn aab-btn-wa" href="{{ whatsapp_link }}" target="_blank" rel="noopener">WhatsApp this branch</a>
+				{% endif %}
+				<a class="aab-btn aab-btn-primary" href="{{ tel_link }}">Call {{ doc.phone }}</a>
+				<a class="aab-btn aab-btn-ghost" href="/all-products">Browse products</a>
+			</div>
+			{% if doc.email %}<p class="aab-muted"><a href="mailto:{{ doc.email }}">{{ doc.email }}</a></p>{% endif %}
+		</section>
+	</div>
+
+	<section class="aab-stock">
+		<h2>What you will find at {{ doc.branch_name }}</h2>
+		<ul class="aab-products">
+			<li><strong>Tiles</strong><span>Wall, floor, porcelain and polished</span></li>
+			<li><strong>Tile Fix</strong><span>Adhesive and grout</span></li>
+			<li><strong>PVC Ceiling Boards</strong><span>Boards and accessories</span></li>
+			<li><strong>Fertilizer</strong><span>For farm and garden</span></li>
+		</ul>
+		<p class="aab-muted">
+			Not in stock today? We order from the manufacturer and deliver within 7 days.
+		</p>
+	</section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Our Branches Across Zambia | AABrick{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ description }}">
+<link rel="canonical" href="{{ frappe.utils.get_url('/branches') }}">
+<meta property="og:title" content="AABrick Branches Across Zambia">
+<meta property="og:description" content="{{ description }}">
+{% endblock %}
+
+{% block page_content %}
+<div class="aab-branch">
+
+	<header class="aab-branch-head">
+		<p class="aab-eyebrow">Find your nearest branch</p>
+		<h1>Branches Across Zambia</h1>
+		<p class="aab-intro">
+			Tiles, tile fix, PVC ceiling boards and fertilizer, stocked nationwide.
+			Anything not on the shelf is ordered from the manufacturer and delivered
+			within 7 days.
+		</p>
+	</header>
+
+	{% if branch_count %}
+		{% for province, list in by_province %}
+			<section class="aab-province">
+				<h2>{{ province }} Province <span class="aab-count">{{ list|length }}</span></h2>
+				<div class="aab-branch-list">
+					{% for b in list %}
+						<a class="aab-branch-item" href="/{{ b.route }}">
+							<strong>{{ b.branch_name }}</strong>
+							{% if b.street_address %}
+								<span>{{ b.street_address }}</span>
+							{% elif b.city %}
+								<span>{{ b.city }}</span>
+							{% endif %}
+							<span class="aab-muted">{{ b.phone }}</span>
+						</a>
+					{% endfor %}
+				</div>
+			</section>
+		{% endfor %}
+	{% else %}
+		<section class="aab-card">
+			<h2>Branch pages are being prepared</h2>
+			<p>
+				{{ total_branches }} branches are set up and will appear here as their
+				addresses and opening hours are confirmed.
+			</p>
+			<p>
+				In the meantime, call
+				<a href="tel:+260960787777">{{ company_phone }}</a>
+				and we will direct you to your nearest branch.
+			</p>
+		</section>
+	{% endif %}
+
+</div>
+{% endblock %}
