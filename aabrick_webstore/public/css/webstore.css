@@ -216,7 +216,7 @@
 /* ------------------------------------------------------------------
  * Homepage: sections
  * ------------------------------------------------------------------ */
-.aab-section { padding: clamp(52px, 7vw, 86px) 0; }
+.aab-section { padding: 52px 0; }
 .aab-section--wash { background: var(--aab-wash); }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
