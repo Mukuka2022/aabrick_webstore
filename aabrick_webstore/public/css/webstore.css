@@ -30,6 +30,10 @@
 	--aab-surface: #FFFFFF;
 	--aab-wash: #F6F6F4;
 	--aab-wash-deep: #ECECE8;   /* card ground, a step down from the section wash */
+	--aab-silver: #D8D8D3;
+	--aab-silver-light: #E9E9E5;
+	--aab-silver-deep: #C3C3BD;
+	--aab-ink-soft: #3A3A36;    /* body copy on silver, where --aab-muted is too pale */
 
 	--aab-r: 12px;      /* cards, panels, images */
 	--aab-r-sm: 8px;    /* buttons and chips */
@@ -143,6 +147,10 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-btn-ghost-light:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
 .aab-btn-ghost { border-color: var(--aab-line); color: var(--aab-ink); }
 .aab-btn-ghost:hover { border-color: var(--aab-red); color: var(--aab-red); }
+.aab-btn-dark { background: var(--aab-charcoal); color: #fff; }
+.aab-btn-dark:hover { background: var(--aab-ink); color: #fff; }
+.aab-btn-ghost-dark { border-color: rgba(28,27,26,.32); color: var(--aab-ink); }
+.aab-btn-ghost-dark:hover { border-color: var(--aab-ink); background: rgba(28,27,26,.06); color: var(--aab-ink); }
 .aab-btn-wa { background: #25D366; color: #08301A; }
 .aab-btn-wa:hover { background: #1DB954; color: #08301A; }
 
@@ -375,7 +383,8 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-panel {
 	padding: clamp(30px, 4vw, 48px);
 	border-radius: 18px;
-	color: #fff;
+	color: var(--aab-ink);
+	box-shadow: inset 0 0 0 1px rgba(28,27,26,.10);
 	background-size: cover;
 	background-position: center;
 	min-height: 300px;
@@ -389,16 +398,19 @@ main.container:has(.aab-branch) .aab-branch {
  * the 540px laptop photograph, survives the treatment. */
 .aab-panel-red {
 	background-image:
-		linear-gradient(140deg, rgba(185,0,0,.94) 0%, rgba(140,0,0,.90) 100%),
+		linear-gradient(140deg, rgba(233,233,229,.90) 0%, rgba(195,195,189,.86) 100%),
 		url("/assets/aabrick_webstore/images/panel-shop.jpg");
 }
 .aab-panel-dark {
 	background-image:
-		linear-gradient(140deg, rgba(51,51,47,.93) 0%, rgba(28,28,26,.90) 100%),
+		linear-gradient(140deg, rgba(216,216,211,.90) 0%, rgba(178,178,172,.88) 100%),
 		url("/assets/aabrick_webstore/images/panel-calc.jpg");
 }
-.aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: #fff; }
-.aab-panel p { margin: 0 0 24px; color: rgba(255,255,255,.82); font-size: 15px; line-height: 1.6; max-width: 44ch; }
+.aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: var(--aab-ink); }
+.aab-panel p { margin: 0 0 24px; color: var(--aab-ink-soft); font-size: 15px; line-height: 1.6; max-width: 44ch; }
+/* The eyebrow keeps the red it has in every other section: at 11.5px it is a
+ * marker, not a colour field. */
+.aab-panel .aab-eyebrow-light { color: var(--aab-red-dark); }
 .aab-panel-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* Why AABrick */
