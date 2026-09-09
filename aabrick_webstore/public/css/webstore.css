@@ -81,6 +81,26 @@
 	font-family: var(--aab-body);
 }
 
+/* 100vw counts the scrollbar, so the rules above overshoot the content area by
+ * its width and push the page 7px off centre. Where :has() is available the
+ * container is unwrapped instead and the sections just fill it, which is exact.
+ * The rules above remain the fallback. */
+main.container:has(.aab-home),
+main.container:has(.aab-branch) {
+	max-width: none;
+	width: 100%;
+	padding-left: 0;
+	padding-right: 0;
+	margin-left: 0;
+	margin-right: 0;
+}
+main.container:has(.aab-home) .aab-home,
+main.container:has(.aab-branch) .aab-branch {
+	width: 100%;
+	margin-left: 0;
+	margin-right: 0;
+}
+
 .aab-inner {
 	max-width: 1280px;
 	margin: 0 auto;
@@ -220,7 +240,7 @@
 .aab-section--wash { background: var(--aab-wash); }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
-	gap: 16px; flex-wrap: wrap; margin-bottom: 30px;
+	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
 }
 .aab-home h2 { font-size: clamp(28px, 4.2vw, 44px); margin: 0; }
 .aab-eyebrow {
@@ -243,22 +263,28 @@
 .aab-more:hover { color: var(--aab-red-dark); border-color: var(--aab-red-dark); }
 
 /* Categories: the image is the card and the label sits on it. */
-.aab-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(228px, 1fr)); gap: 16px; }
+/* Edge to edge with a 10px margin and 10px gutters, as measured on
+ * allbirds.com. The grid sits outside .aab-inner so the 1280px container
+ * does not apply to it. */
+.aab-cats {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 10px;
+	padding: 0 10px;
+}
+@media (min-width: 600px) { .aab-cats { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .aab-cats { grid-template-columns: repeat(4, 1fr); } }
 
-/* Four equal tiles is a grid, not a composition. Above 900px the first card,
- * which is Tiles and carries most of the catalogue, takes half again the
- * width and a larger title. Below that everything returns to one column,
- * where a feature card has nothing to be featured against. */
-@media (min-width: 900px) {
-	.aab-cats { grid-template-columns: 1.55fr 1fr 1fr 1fr; }
-	.aab-cats .aab-cat { aspect-ratio: auto; height: 430px; }
-	.aab-cat--feature .aab-cat-body strong { font-size: 30px; }
-	.aab-cat--feature .aab-cat-body span { font-size: 14px; }
+/* Cards get bigger as the grid widens, so the label scales with them. */
+@media (min-width: 1000px) {
+	.aab-cat-body { padding: 24px 24px 26px; }
+	.aab-cat-body strong { font-size: 26px; }
+	.aab-cat-body span { font-size: 14px; }
 }
 .aab-cat {
 	position: relative; display: block; overflow: hidden;
-	border-radius: var(--aab-r); text-decoration: none; color: #fff;
-	background: var(--aab-charcoal); aspect-ratio: 3 / 4;
+	border-radius: 18px; text-decoration: none; color: #fff;
+	background: var(--aab-charcoal); aspect-ratio: 10 / 11;
 }
 .aab-cat img {
 	position: absolute; inset: 0; width: 100%; height: 100%;
@@ -357,7 +383,14 @@
 .aab-why span { font-size: 14px; color: var(--aab-muted); line-height: 1.55; }
 
 /* Featured products */
-.aab-products-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
+.aab-products-row {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+	padding: 0 10px;
+}
+@media (min-width: 600px) { .aab-products-row { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1000px) { .aab-products-row { grid-template-columns: repeat(6, 1fr); } }
 .aab-product {
 	border: 1px solid var(--aab-line); border-radius: var(--aab-r); overflow: hidden;
 	background: var(--aab-surface); text-decoration: none; color: var(--aab-ink);

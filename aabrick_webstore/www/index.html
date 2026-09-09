@@ -62,10 +62,11 @@
         </div>
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
+    </div>
 
-      <div class="aab-cats">
+    <div class="aab-cats">
         {% for c in categories %}
-          <a class="aab-cat{% if loop.first %} aab-cat--feature{% endif %}{% if c.fit == 'contain' %} aab-cat--light{% endif %}" href="{{ c.route }}">
+        <a class="aab-cat{% if c.fit == 'contain' %} aab-cat--light{% endif %}" href="{{ c.route }}">
             {% if c.image %}
               <img class="{{ 'is-contain' if c.fit == 'contain' else 'is-cover' }}"
                    src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
@@ -79,8 +80,7 @@
               <span class="aab-cat-go">Browse {{ c.title }} &rarr;</span>
             </div>
           </a>
-        {% endfor %}
-      </div>
+      {% endfor %}
     </div>
   </section>
 
@@ -118,7 +118,9 @@
         </div>
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
-      <div class="aab-products-row">
+    </div>
+
+    <div class="aab-products-row">
         {% for p in featured %}
           <a class="aab-product" href="/{{ p.route }}">
             <div class="aab-product-img">
@@ -130,8 +132,7 @@
               <span class="aab-product-price">{{ p.price }}</span>
             </div>
           </a>
-        {% endfor %}
-      </div>
+      {% endfor %}
     </div>
   </section>
   {% endif %}
