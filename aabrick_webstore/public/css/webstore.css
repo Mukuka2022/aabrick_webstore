@@ -194,7 +194,7 @@
 	font-size: clamp(46px, 9vw, 106px);
 	line-height: .92; margin: 0; color: #fff;
 }
-.aab-hero h1 span { color: var(--aab-red-light); display: block; }
+.aab-hero h1 span { color: #B90000; display: block; }
 .aab-hero-lede {
 	margin: 26px 0 32px; font-size: clamp(15.5px, 1.5vw, 18px); line-height: 1.65;
 	color: rgba(255,255,255,.76); max-width: 52ch;
@@ -226,6 +226,10 @@
 .aab-eyebrow {
 	font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
 	color: var(--aab-red); font-weight: 700; margin: 0 0 10px;
+	display: flex; align-items: center; gap: 12px;
+}
+.aab-eyebrow::before {
+	content: ""; width: 34px; height: 3px; background: var(--aab-red); flex: none;
 }
 .aab-eyebrow-light {
 	font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
@@ -240,6 +244,17 @@
 
 /* Categories: the image is the card and the label sits on it. */
 .aab-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(228px, 1fr)); gap: 16px; }
+
+/* Four equal tiles is a grid, not a composition. Above 900px the first card,
+ * which is Tiles and carries most of the catalogue, takes half again the
+ * width and a larger title. Below that everything returns to one column,
+ * where a feature card has nothing to be featured against. */
+@media (min-width: 900px) {
+	.aab-cats { grid-template-columns: 1.55fr 1fr 1fr 1fr; }
+	.aab-cats .aab-cat { aspect-ratio: auto; height: 430px; }
+	.aab-cat--feature .aab-cat-body strong { font-size: 30px; }
+	.aab-cat--feature .aab-cat-body span { font-size: 14px; }
+}
 .aab-cat {
 	position: relative; display: block; overflow: hidden;
 	border-radius: var(--aab-r); text-decoration: none; color: #fff;
@@ -284,6 +299,29 @@
 	background: linear-gradient(180deg, rgba(28,27,26,0) 32%, rgba(28,27,26,.80) 76%, rgba(28,27,26,.94) 100%);
 }
 .aab-cat:hover img { transform: scale(1.05); }
+.aab-cat:hover { box-shadow: 0 14px 30px rgba(28,27,26,.18); }
+.aab-cat.aab-cat--light:hover {
+	box-shadow: inset 0 0 0 1px var(--aab-line), 0 14px 30px rgba(28,27,26,.14);
+}
+
+/* The card says what clicking it does, but only once you are on it. */
+.aab-cat-body span.aab-cat-go {
+	font-size: 12px; font-weight: 700; letter-spacing: .09em;
+	text-transform: uppercase; color: #fff;
+	max-height: 0; opacity: 0; overflow: hidden;
+	transform: translateY(6px);
+	transition: max-height .25s ease, opacity .25s ease, transform .25s ease;
+}
+.aab-cat:hover span.aab-cat-go,
+.aab-cat:focus-visible span.aab-cat-go {
+	max-height: 28px; opacity: 1; transform: translateY(0); margin-top: 10px;
+}
+.aab-cat.aab-cat--light .aab-cat-body span.aab-cat-go { color: var(--aab-red); }
+
+@media (prefers-reduced-motion: reduce) {
+	.aab-cat img, span.aab-cat-go { transition: none; }
+	.aab-cat:hover img { transform: none; }
+}
 .aab-cat-body {
 	position: absolute; z-index: 1; left: 0; right: 0; bottom: 0;
 	padding: 20px 20px 22px; display: flex; flex-direction: column; gap: 5px;
