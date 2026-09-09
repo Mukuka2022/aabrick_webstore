@@ -43,16 +43,12 @@
         <a class="aab-btn aab-btn-primary" href="/all-products">Shop online</a>
         <a class="aab-btn aab-btn-outline" href="/branches">Find a branch</a>
       </div>
-    </div>
-  </section>
-
-  <!-- stats ------------------------------------------------------------ -->
-  <section class="aab-stats">
-    <div class="aab-inner">
-      <div class="aab-stat"><strong>{{ branch_count }} Branches</strong><span>Nationwide</span></div>
-      <div class="aab-stat"><strong>7-Day Delivery</strong><span>On anything not in stock</span></div>
-      <div class="aab-stat"><strong>Since 2005</strong><span>Twenty years supplying Zambia</span></div>
-      <div class="aab-stat"><strong>Marcopolo Tiles</strong><span>Official distributor</span></div>
+      <ul class="aab-hero-points">
+        <li><strong>{{ branch_count }} branches</strong><span>Nationwide</span></li>
+        <li><strong>7-day delivery</strong><span>On anything not in stock</span></li>
+        <li><strong>Since 2005</strong><span>Trusted nationwide</span></li>
+        <li><strong>Marcopolo Tiles</strong><span>Official distributor</span></li>
+      </ul>
     </div>
   </section>
 
@@ -71,7 +67,8 @@
         {% for c in categories %}
           <a class="aab-cat" href="{{ c.route }}">
             {% if c.image %}
-              <img src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
+              <img class="{{ 'is-contain' if c.fit == 'contain' else 'is-cover' }}"
+                   src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
             {% else %}
               <div class="aab-cat-placeholder" aria-hidden="true"></div>
             {% endif %}

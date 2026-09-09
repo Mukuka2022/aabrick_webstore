@@ -11,31 +11,44 @@ no_cache = 1
 
 COMPANY_PHONE = "+260 960 787 777"
 
+IMG = "/assets/aabrick_webstore/images/"
+
 # The four lines being sold online for now. The rest of the catalogue stays in
 # ERPNext for branch trading until we are ready to sell it online.
+#
+# "fit" says how the card should treat the image. Photographs fill the card;
+# cut-out pack shots are letterboxed so nothing is sliced off their edges.
 CATEGORIES = [
     {
         "title": "Tiles",
         "blurb": "Wall, floor, porcelain and polished",
         "match": "Tiles",
+        "image": IMG + "cat-tiles.jpg",
+        "fit": "cover",
         "route": "/all-products?field_filters=%7B%22custom_category%22%3A%5B%22Tiles%22%5D%7D",
     },
     {
         "title": "Tile Fix",
         "blurb": "Adhesive and grout",
         "match": "Tile Fix",
+        "image": IMG + "cat-tile-fix.png",
+        "fit": "contain",
         "route": "/all-products?field_filters=%7B%22custom_category%22%3A%5B%22Tile%20Fix%22%5D%7D",
     },
     {
         "title": "PVC Ceiling Boards",
         "blurb": "Boards, skirting and accessories",
         "match": "PVC",
+        "image": IMG + "cat-pvc.png",
+        "fit": "contain",
         "route": "/all-products",
     },
     {
         "title": "Fertilizer",
         "blurb": "For farm and garden",
         "match": "Fertilizer",
+        "image": IMG + "cat-fertilizer.jpg",
+        "fit": "cover",
         "route": "/all-products?field_filters=%7B%22custom_category%22%3A%5B%22Fertilizer%22%5D%7D",
     },
 ]
@@ -60,9 +73,11 @@ def get_context(context):
 
 
 def _categories():
+    """Card images are app assets so they deploy with the code. A product photo
+    from the group is the fallback, for a category that has no artwork yet."""
     out = []
     for c in CATEGORIES:
-        image = frappe.db.get_value(
+        image = c.get("image") or frappe.db.get_value(
             "Website Item",
             {"published": 1, "item_group": ["like", "%%%s%%" % c["match"]],
              "website_image": ["not in", ["", None]]},

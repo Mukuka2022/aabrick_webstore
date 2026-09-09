@@ -30,6 +30,9 @@
 	--aab-surface: #FFFFFF;
 	--aab-wash: #F6F6F4;
 
+	--aab-r: 12px;      /* cards, panels, images */
+	--aab-r-sm: 8px;    /* buttons and chips */
+
 	--aab-display: "Anton", "Arial Narrow", "Helvetica Neue Condensed", Impact, sans-serif;
 	--aab-body: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
 		Roboto, Helvetica, Arial, sans-serif;
@@ -47,7 +50,7 @@
 	#product-filters.aab-open {
 		display: block;
 		padding: 15px;
-		border-radius: 8px;
+		border-radius: var(--aab-r);
 		margin-bottom: 20px;
 	}
 }
@@ -103,7 +106,7 @@
  * ------------------------------------------------------------------ */
 .aab-btn {
 	display: inline-block; text-align: center;
-	padding: 13px 24px; border-radius: 2px;
+	padding: 13px 24px; border-radius: var(--aab-r-sm);
 	font-family: var(--aab-body);
 	font-weight: 700; font-size: 13px; text-decoration: none;
 	text-transform: uppercase; letter-spacing: .07em;
@@ -166,24 +169,17 @@
 }
 .aab-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
-/* Stat strip: lifted out of the hero onto its own red band so the numbers
- * read as a claim about the business, not hero decoration. */
-.aab-stats { background: var(--aab-red); color: #fff; }
-.aab-stats .aab-inner {
-	padding-top: 26px; padding-bottom: 26px;
-	display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-	gap: 22px 30px;
+/* Proof points sit inside the hero, under a hairline rule, in body type.
+ * Quieter than a band of their own: they support the headline rather than
+ * competing with it. */
+.aab-hero-points {
+	list-style: none; padding: 32px 0 0; margin: 40px 0 0;
+	border-top: 1px solid rgba(255,255,255,.15);
+	display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 22px;
 }
-.aab-stat { display: flex; flex-direction: column; gap: 3px; }
-.aab-stat strong {
-	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
-	font-size: clamp(26px, 3vw, 34px); line-height: 1; letter-spacing: .01em;
-	font-variant-numeric: tabular-nums;
-}
-.aab-stat span {
-	font-size: 11.5px; letter-spacing: .12em; text-transform: uppercase;
-	color: rgba(255,255,255,.8); font-weight: 600;
-}
+.aab-hero-points li { display: flex; flex-direction: column; gap: 3px; }
+.aab-hero-points strong { font-size: 17px; color: #fff; font-weight: 600; }
+.aab-hero-points span { font-size: 13.5px; color: rgba(255,255,255,.58); }
 
 /* ------------------------------------------------------------------
  * Homepage: sections
@@ -214,12 +210,19 @@
 .aab-cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(228px, 1fr)); gap: 16px; }
 .aab-cat {
 	position: relative; display: block; overflow: hidden;
-	border-radius: 3px; text-decoration: none; color: #fff;
+	border-radius: var(--aab-r); text-decoration: none; color: #fff;
 	background: var(--aab-charcoal); aspect-ratio: 3 / 4;
 }
 .aab-cat img {
 	position: absolute; inset: 0; width: 100%; height: 100%;
 	object-fit: cover; transition: transform .4s ease;
+}
+/* Pack shots are cut out on transparency: letterbox them over the card's own
+ * charcoal so the bag and the boards are never sliced at the edge, and keep
+ * them clear of the label at the bottom. */
+.aab-cat img.is-contain {
+	object-fit: contain;
+	padding: 11% 11% 30%;
 }
 .aab-cat-placeholder {
 	position: absolute; inset: 0;
@@ -243,12 +246,12 @@
 	margin-top: 8px; align-self: flex-start;
 	font-size: 11px !important; font-weight: 700; letter-spacing: .09em;
 	text-transform: uppercase; color: #fff !important;
-	background: var(--aab-red); padding: 4px 9px; border-radius: 2px;
+	background: var(--aab-red); padding: 4px 9px; border-radius: var(--aab-r-sm);
 }
 
 /* Split panels */
 .aab-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
-.aab-panel { padding: clamp(28px, 4vw, 44px); border-radius: 3px; color: #fff; }
+.aab-panel { padding: clamp(28px, 4vw, 44px); border-radius: var(--aab-r); color: #fff; }
 .aab-panel-red { background: linear-gradient(140deg, var(--aab-red) 0%, var(--aab-red-dark) 100%); }
 .aab-panel-dark { background: linear-gradient(140deg, var(--aab-charcoal-soft) 0%, #1C1C1A 100%); }
 .aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: #fff; }
@@ -267,12 +270,15 @@
 /* Featured products */
 .aab-products-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 16px; }
 .aab-product {
-	border: 1px solid var(--aab-line); border-radius: 3px; overflow: hidden;
+	border: 1px solid var(--aab-line); border-radius: var(--aab-r); overflow: hidden;
 	background: var(--aab-surface); text-decoration: none; color: var(--aab-ink);
 	display: flex; flex-direction: column; transition: border-color .15s, transform .15s;
 }
 .aab-product:hover { border-color: var(--aab-red); color: var(--aab-ink); transform: translateY(-3px); }
-.aab-product-img { aspect-ratio: 1; background: var(--aab-wash); overflow: hidden; }
+.aab-product-img {
+	aspect-ratio: 1; background: var(--aab-wash); overflow: hidden;
+	border-radius: calc(var(--aab-r) - 1px) calc(var(--aab-r) - 1px) 0 0;
+}
 .aab-product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .aab-product-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 3px; }
 .aab-product-code {
@@ -291,6 +297,7 @@
 .aab-talk-card {
 	border: 1px solid var(--aab-line); background: var(--aab-surface);
 	border-top: 3px solid var(--aab-red);
+	border-radius: var(--aab-r);
 	padding: 24px 24px 26px; display: flex; flex-direction: column; gap: 8px;
 	text-decoration: none; color: var(--aab-ink); transition: border-top-color .15s, transform .15s;
 }
@@ -334,7 +341,7 @@
 .aab-intro { margin: 14px 0 0; max-width: 64ch; color: var(--aab-muted); font-size: 16.5px; line-height: 1.6; }
 
 .aab-branch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 18px; margin-top: 28px; }
-.aab-card { border: 1px solid var(--aab-line); background: var(--aab-surface); padding: 20px 22px; border-radius: 3px; }
+.aab-card { border: 1px solid var(--aab-line); background: var(--aab-surface); padding: 20px 22px; border-radius: var(--aab-r); }
 /* Small uppercase card labels stay in Montserrat: at 12px Anton reads as a
  * different brand rather than a quieter one. */
 .aab-card h2 {
@@ -363,10 +370,10 @@
 .aab-province h2 { font-size: 22px; margin: 0 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--aab-line); display: flex; align-items: center; gap: 12px; }
 .aab-count {
 	font-family: var(--aab-body); font-size: 11px; font-weight: 700; color: #fff;
-	background: var(--aab-red); padding: 3px 9px; border-radius: 2px; letter-spacing: .06em;
+	background: var(--aab-red); padding: 3px 9px; border-radius: var(--aab-r-sm); letter-spacing: .06em;
 }
 .aab-branch-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 11px; }
-.aab-branch-item { border: 1px solid var(--aab-line); border-radius: 3px; padding: 13px 15px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; color: var(--aab-ink); background: var(--aab-surface); }
+.aab-branch-item { border: 1px solid var(--aab-line); border-radius: var(--aab-r); padding: 13px 15px; display: flex; flex-direction: column; gap: 2px; text-decoration: none; color: var(--aab-ink); background: var(--aab-surface); }
 .aab-branch-item:hover { border-color: var(--aab-red); color: var(--aab-ink); }
 .aab-branch-item strong { font-size: 15px; }
 .aab-branch-item span { font-size: 13px; color: var(--aab-muted); }
