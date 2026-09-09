@@ -48,6 +48,35 @@
 		price.parentNode.insertBefore(note, price.nextSibling);
 	}
 
+	// ---------------------------------------------------------- mobile filters
+	// Moved out of Website Settings > head_html so it is versioned. On a phone
+	// the filter column would otherwise push the product grid below the fold.
+	function addFilterToggle() {
+		if (window.location.pathname.indexOf("/all-products") !== 0) {
+			return;
+		}
+		if (document.querySelector(".aab-filter-toggle")) {
+			return;
+		}
+		var header = document.querySelector(".page-header-wrapper");
+		var filters = document.getElementById("product-filters");
+		if (!header || !filters) {
+			return;
+		}
+		var btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "btn btn-secondary d-md-none aab-filter-toggle";
+		btn.textContent = "Show Filters";
+		btn.setAttribute("aria-expanded", "false");
+		btn.setAttribute("aria-controls", "product-filters");
+		btn.addEventListener("click", function () {
+			var open = filters.classList.toggle("aab-open");
+			btn.textContent = open ? "Hide Filters" : "Show Filters";
+			btn.setAttribute("aria-expanded", open ? "true" : "false");
+		});
+		header.insertAdjacentElement("afterend", btn);
+	}
+
 	// ---------------------------------------------------------- tracking
 	function push(payload) {
 		if (!window.aabTrackEcommerce) {
@@ -155,6 +184,7 @@
 	function sweep() {
 		document.querySelectorAll(CATEGORY).forEach(tidyCategory);
 		addLeadTime();
+		addFilterToggle();
 		trackViewItem();
 		trackListView();
 		trackCheckout();

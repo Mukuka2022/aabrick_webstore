@@ -248,3 +248,6 @@ web_include_js = "/assets/aabrick_webstore/js/webstore.js"
 
 # inject analytics tags into the website page head
 update_website_context = ["aabrick_webstore.analytics.add_analytics_tags"]
+
+# include css on every website page
+web_include_css = "/assets/aabrick_webstore/css/webstore.css"

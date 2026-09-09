@@ -1,0 +1,34 @@
+/* Storefront styles for AABrick.
+ *
+ * Replaces CSS that was pasted into Website Settings > head_html, so it lives
+ * in version control and deploys with the app.
+ */
+
+/* Mobile: filters are hidden behind a toggle so the product grid is not
+ * pushed below the fold on a phone. */
+.aab-filter-toggle {
+	width: 100%;
+	margin-bottom: 12px;
+}
+
+@media (max-width: 767.98px) {
+	#product-filters {
+		display: none;
+	}
+
+	#product-filters.aab-open {
+		display: block;
+		padding: 15px;
+		border-radius: 8px;
+		margin-bottom: 20px;
+	}
+}
+
+/* Lead-time note under the price, in place of the stock status the webshop
+ * settings deliberately hide. */
+.aab-lead-time {
+	margin-top: 0.35rem;
+	font-size: 0.85rem;
+	opacity: 0.75;
+	letter-spacing: 0.01em;
+}
