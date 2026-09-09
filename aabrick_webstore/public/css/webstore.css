@@ -236,13 +236,13 @@ main.container:has(.aab-branch) .aab-branch {
 /* ------------------------------------------------------------------
  * Homepage: sections
  * ------------------------------------------------------------------ */
-.aab-section { padding: 52px 0; }
+.aab-section { padding: 25px 0; }
 .aab-section--wash { background: var(--aab-wash); }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
 	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
 }
-.aab-home h2 { font-size: clamp(28px, 4.2vw, 44px); margin: 0; }
+.aab-home h2 { font-size: 35px; margin: 0; }
 .aab-eyebrow {
 	font-size: 11.5px; letter-spacing: .2em; text-transform: uppercase;
 	color: var(--aab-red); font-weight: 700; margin: 0 0 10px;
@@ -365,10 +365,38 @@ main.container:has(.aab-branch) .aab-branch {
 }
 
 /* Split panels */
-.aab-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
-.aab-panel { padding: clamp(28px, 4vw, 44px); border-radius: var(--aab-r); color: #fff; }
-.aab-panel-red { background: linear-gradient(140deg, var(--aab-red) 0%, var(--aab-red-dark) 100%); }
-.aab-panel-dark { background: linear-gradient(140deg, var(--aab-charcoal-soft) 0%, #1C1C1A 100%); }
+.aab-panels {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 10px;
+	padding: 0 10px;
+}
+@media (min-width: 800px) { .aab-panels { grid-template-columns: 1fr 1fr; } }
+.aab-panel {
+	padding: clamp(30px, 4vw, 48px);
+	border-radius: 18px;
+	color: #fff;
+	background-size: cover;
+	background-position: center;
+	min-height: 300px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+/* The photograph sits under a near-opaque brand gradient: the panels have to
+ * keep their red and charcoal identity, and the picture is there for context,
+ * not to be looked at in its own right. It also means a small source, like
+ * the 540px laptop photograph, survives the treatment. */
+.aab-panel-red {
+	background-image:
+		linear-gradient(140deg, rgba(185,0,0,.94) 0%, rgba(140,0,0,.90) 100%),
+		url("/assets/aabrick_webstore/images/panel-shop.jpg");
+}
+.aab-panel-dark {
+	background-image:
+		linear-gradient(140deg, rgba(51,51,47,.93) 0%, rgba(28,28,26,.90) 100%),
+		url("/assets/aabrick_webstore/images/panel-calc.jpg");
+}
 .aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: #fff; }
 .aab-panel p { margin: 0 0 24px; color: rgba(255,255,255,.82); font-size: 15px; line-height: 1.6; max-width: 44ch; }
 .aab-panel-actions { display: flex; flex-wrap: wrap; gap: 10px; }
