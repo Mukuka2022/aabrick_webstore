@@ -24,7 +24,7 @@
 	--aab-charcoal: #2A2725;
 	--aab-charcoal-soft: #33332F;
 	--aab-grey: #828282;
-	--aab-ink: #1C1C1A;
+	--aab-ink: #202020;
 	--aab-muted: #6E6E6B;
 	--aab-line: #E3E3E0;
 	--aab-surface: #FFFFFF;
@@ -33,7 +33,6 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
-	--aab-ink-soft: #3A3A36;    /* body copy on silver, where --aab-muted is too pale */
 
 	--aab-r: 12px;      /* cards, panels, images */
 	--aab-r-sm: 8px;    /* buttons and chips */
@@ -141,8 +140,8 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-btn-primary:hover { background: var(--aab-red-dark); color: #fff; }
 .aab-btn-outline { border-color: rgba(255,255,255,.42); color: #fff; }
 .aab-btn-outline:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
-.aab-btn-light { background: #fff; color: var(--aab-charcoal); }
-.aab-btn-light:hover { background: #EDEDEA; color: var(--aab-charcoal); }
+.aab-btn-light { background: #fff; color: var(--aab-ink); }
+.aab-btn-light:hover { background: #EDEDEA; color: var(--aab-ink); }
 .aab-btn-ghost-light { border-color: rgba(255,255,255,.42); color: #fff; }
 .aab-btn-ghost-light:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
 .aab-btn-ghost { border-color: var(--aab-line); color: var(--aab-ink); }
@@ -407,7 +406,7 @@ main.container:has(.aab-branch) .aab-branch {
 		url("/assets/aabrick_webstore/images/panel-calc.jpg");
 }
 .aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: var(--aab-ink); }
-.aab-panel p { margin: 0 0 24px; color: var(--aab-ink-soft); font-size: 15px; line-height: 1.6; max-width: 44ch; }
+.aab-panel p { margin: 0 0 24px; color: var(--aab-ink); font-size: 15px; line-height: 1.6; max-width: 44ch; }
 /* The eyebrow keeps the red it has in every other section: at 11.5px it is a
  * marker, not a colour field. */
 .aab-panel .aab-eyebrow-light { color: var(--aab-red-dark); }
@@ -513,6 +512,16 @@ main.container:has(.aab-branch) .aab-branch {
 }
 .aab-card address { font-style: normal; line-height: 1.65; margin: 0; }
 .aab-muted { color: var(--aab-muted); font-size: 14px; }
+
+/* Links with no class of their own, such as a phone number in body copy. */
+.aab-home a:not([class]),
+.aab-branch a:not([class]) {
+	color: var(--aab-red);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.aab-home a:not([class]):hover,
+.aab-branch a:not([class]):hover { color: var(--aab-red-dark); }
 .aab-link { display: inline-block; margin-top: 10px; color: var(--aab-red); font-weight: 600; }
 
 .aab-hours { width: 100%; border-collapse: collapse; }
