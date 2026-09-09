@@ -41,6 +41,14 @@ def _resolve(path):
     return os.path.expanduser(path)
 
 
+def _fit(im, size):
+    """The largest crop of `size`'s shape that the source can give without
+    being enlarged."""
+    ratio = size[0] / size[1]
+    w = min(size[0], im.width, im.height * ratio)
+    return (round(w), round(w / ratio))
+
+
 def _crop(im, size):
     """Scale to fill and crop the overflow, biased slightly above centre so
     faces and skylines survive rather than floors."""
@@ -54,7 +62,7 @@ def _crop(im, size):
     return im.crop((left, top, left + w, top + h))
 
 
-def set_hero(path):
+def set_hero(path, allow_small=0):
     from PIL import Image
 
     src = _resolve(path)
@@ -64,13 +72,22 @@ def set_hero(path):
     im = Image.open(src)
     print("source: %s  %sx%s  %s" % (os.path.basename(src), im.width, im.height, im.mode))
 
-    if im.width < MIN_WIDTH:
+    small = im.width < MIN_WIDTH
+    if small and not allow_small:
         print(
             "\nREFUSED: %spx wide, and the hero is rendered up to 2400px.\n"
             "Upscaling it would look soft on every screen wider than a phone.\n"
-            "Send a photograph at least %spx wide." % (im.width, MIN_WIDTH)
+            "Send a photograph at least %spx wide, or pass allow_small=1 to use\n"
+            "this one at its own resolution." % (im.width, MIN_WIDTH)
         )
         return
+
+    if small:
+        print(
+            "\nUsing it at its own resolution: the crops below are as large as\n"
+            "%spx of source allows, so nothing is invented. It will be soft on a\n"
+            "wide monitor. Replace it when a larger original turns up." % im.width
+        )
 
     if im.height > im.width:
         print("\nNote: this is a portrait photograph. The desktop crop will keep a\n"
@@ -79,7 +96,8 @@ def set_hero(path):
     im = im.convert("RGB")
     os.makedirs(IMAGES, exist_ok=True)
 
-    for size, name in ((DESKTOP, "hero.jpg"), (MOBILE, "hero-mobile.jpg")):
+    for target, name in ((DESKTOP, "hero.jpg"), (MOBILE, "hero-mobile.jpg")):
+        size = _fit(im, target) if small else target
         out = os.path.join(IMAGES, name)
         _crop(im, size).save(out, "JPEG", quality=80, optimize=True, progressive=True)
         print("  wrote %-18s %sx%-6s %6.0f KB" % (name, size[0], size[1], os.path.getsize(out) / 1024))
