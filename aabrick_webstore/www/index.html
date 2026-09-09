@@ -65,7 +65,7 @@
 
       <div class="aab-cats">
         {% for c in categories %}
-          <a class="aab-cat" href="{{ c.route }}">
+          <a class="aab-cat{% if c.fit == 'contain' %} aab-cat--light{% endif %}" href="{{ c.route }}">
             {% if c.image %}
               <img class="{{ 'is-contain' if c.fit == 'contain' else 'is-cover' }}"
                    src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
