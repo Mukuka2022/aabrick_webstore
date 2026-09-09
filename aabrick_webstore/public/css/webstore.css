@@ -145,6 +145,37 @@
 	transform: skewX(-11deg);
 	pointer-events: none;
 }
+/* With a photograph behind it the hero needs a scrim, not a tint: the
+ * headline has to stay legible over whatever the picture happens to contain
+ * on the left. The angled slab is switched off, since the photograph is
+ * already carrying the visual interest. */
+.aab-hero--photo {
+	background-image:
+		linear-gradient(100deg,
+			rgba(28,27,26,.95) 0%,
+			rgba(28,27,26,.86) 38%,
+			rgba(28,27,26,.45) 78%,
+			rgba(28,27,26,.30) 100%),
+		url("/assets/aabrick_webstore/images/hero.jpg");
+	background-size: cover;
+	background-position: center;
+}
+.aab-hero--photo::after { display: none; }
+
+/* A 2:1 crop on a phone is a letterbox slit, so a taller crop is swapped in
+ * and the scrim goes heavier: there is no room for the text to sit clear of
+ * the picture. */
+@media (max-width: 767.98px) {
+	.aab-hero--photo {
+		background-image:
+			linear-gradient(180deg,
+				rgba(28,27,26,.90) 0%,
+				rgba(28,27,26,.82) 55%,
+				rgba(28,27,26,.88) 100%),
+			url("/assets/aabrick_webstore/images/hero-mobile.jpg");
+	}
+}
+
 .aab-hero .aab-inner {
 	position: relative; z-index: 1;
 	padding-top: clamp(52px, 8vw, 104px);

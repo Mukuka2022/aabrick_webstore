@@ -5,6 +5,8 @@ with the app. Products are pulled live, so the page never shows a price that
 disagrees with the shop.
 """
 
+import os
+
 import frappe
 
 no_cache = 1
@@ -12,6 +14,12 @@ no_cache = 1
 COMPANY_PHONE = "+260 960 787 777"
 
 IMG = "/assets/aabrick_webstore/images/"
+
+# The hero photograph is optional. Without it the hero keeps its charcoal
+# gradient, which is a deliberate look rather than a hole in the page.
+HERO_FILE = os.path.join(
+    os.path.dirname(__file__), "..", "public", "images", "hero.jpg"
+)
 
 # The four lines being sold online for now. The rest of the catalogue stays in
 # ERPNext for branch trading until we are ready to sell it online.
@@ -62,6 +70,7 @@ def get_context(context):
     context.branch_count = frappe.db.count("Branch Location") or 46
     context.published_branches = frappe.db.count("Branch Location", {"published": 1})
 
+    context.has_hero = os.path.exists(HERO_FILE)
     context.categories = _categories()
     context.featured = _featured()
     context.description = (
