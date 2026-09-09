@@ -43,12 +43,16 @@
         <a class="aab-btn aab-btn-primary" href="/all-products">Shop online</a>
         <a class="aab-btn aab-btn-outline" href="/branches">Find a branch</a>
       </div>
-      <ul class="aab-hero-points">
-        <li><strong>{{ branch_count }} branches</strong><span>Nationwide</span></li>
-        <li><strong>7-day delivery</strong><span>On anything not in stock</span></li>
-        <li><strong>Since 2005</strong><span>Trusted nationwide</span></li>
-        <li><strong>Marcopolo Tiles</strong><span>Official distributor</span></li>
-      </ul>
+    </div>
+  </section>
+
+  <!-- stats ------------------------------------------------------------ -->
+  <section class="aab-stats">
+    <div class="aab-inner">
+      <div class="aab-stat"><strong>{{ branch_count }} Branches</strong><span>Nationwide</span></div>
+      <div class="aab-stat"><strong>7-Day Delivery</strong><span>On anything not in stock</span></div>
+      <div class="aab-stat"><strong>Since 2005</strong><span>Twenty years supplying Zambia</span></div>
+      <div class="aab-stat"><strong>Marcopolo Tiles</strong><span>Official distributor</span></div>
     </div>
   </section>
 
@@ -66,13 +70,11 @@
       <div class="aab-cats">
         {% for c in categories %}
           <a class="aab-cat" href="{{ c.route }}">
-            <div class="aab-cat-img">
-              {% if c.image %}
-                <img src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
-              {% else %}
-                <div class="aab-cat-placeholder" aria-hidden="true"></div>
-              {% endif %}
-            </div>
+            {% if c.image %}
+              <img src="{{ c.image }}" alt="{{ c.title }}" loading="lazy">
+            {% else %}
+              <div class="aab-cat-placeholder" aria-hidden="true"></div>
+            {% endif %}
             <div class="aab-cat-body">
               <strong>{{ c.title }}</strong>
               <span>{{ c.blurb }}</span>
@@ -85,7 +87,7 @@
   </section>
 
   <!-- split panels ----------------------------------------------------- -->
-  <section class="aab-panels-outer">
+  <section class="aab-section aab-section--wash">
     <div class="aab-inner">
       <div class="aab-panels">
         <div class="aab-panel aab-panel-red">
@@ -103,22 +105,6 @@
             <a class="aab-btn aab-btn-ghost-light" href="/pvc-ceiling-calculater">PVC calculator</a>
           </div>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- why aabrick ------------------------------------------------------ -->
-  <section class="aab-section">
-    <div class="aab-inner">
-      <p class="aab-eyebrow">Why choose AABrick</p>
-      <h2>Twenty years supplying Zambia</h2>
-      <div class="aab-why">
-        <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
-        <div><strong>{{ branch_count }} branches</strong><span>Across all ten provinces.</span></div>
-        <div><strong>Quality brands</strong><span>Marcopolo Tiles and Unites Capital Fertilizer.</span></div>
-        <div><strong>Own delivery fleet</strong><span>Maintained trucks, nationwide reach.</span></div>
-        <div><strong>Public service financing</strong><span>Through our PSMFC partnership.</span></div>
-        <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
       </div>
     </div>
   </section>
@@ -151,6 +137,47 @@
     </div>
   </section>
   {% endif %}
+
+  <!-- why aabrick ------------------------------------------------------ -->
+  <section class="aab-section aab-section--wash">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Why choose AABrick</p>
+      <h2>Twenty years supplying Zambia</h2>
+      <div class="aab-why">
+        <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
+        <div><strong>{{ branch_count }} branches</strong><span>Across all ten provinces.</span></div>
+        <div><strong>Quality brands</strong><span>Marcopolo Tiles and Unites Capital Fertilizer.</span></div>
+        <div><strong>Own delivery fleet</strong><span>Maintained trucks, nationwide reach.</span></div>
+        <div><strong>Public service financing</strong><span>Through our PSMFC partnership.</span></div>
+        <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- talk to us ------------------------------------------------------- -->
+  <section class="aab-section">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Talk to us</p>
+      <h2>However you prefer to buy</h2>
+      <div class="aab-talk">
+        <a class="aab-talk-card" href="tel:{{ company_phone|replace(' ', '') }}">
+          <strong>Call the sales line</strong>
+          <span>Speak to us about stock, prices and delivery to your site.</span>
+          <span class="aab-talk-go">{{ company_phone }}</span>
+        </a>
+        <a class="aab-talk-card" href="/contact">
+          <strong>Send an enquiry</strong>
+          <span>Tell us what you are building and we will come back with quantities and a price.</span>
+          <span class="aab-talk-go">Open the form</span>
+        </a>
+        <a class="aab-talk-card" href="/branches">
+          <strong>Visit a branch</strong>
+          <span>See the tiles in person before you commit. {{ branch_count }} branches nationwide.</span>
+          <span class="aab-talk-go">Find your branch</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- branches --------------------------------------------------------- -->
   <section class="aab-branch-cta">
