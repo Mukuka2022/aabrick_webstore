@@ -371,6 +371,33 @@ main.container:has(.aab-branch) .aab-branch {
 	background: var(--aab-red); padding: 4px 9px; border-radius: var(--aab-r-sm);
 }
 
+/* Homes gallery: the same full-bleed rhythm and card shape as the category
+ * row, so the two read as one family. Captions sit under the picture rather
+ * than over it: a room photograph has no reliably dark corner to put text on. */
+.aab-homes {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 10px;
+	padding: 0 10px;
+}
+@media (min-width: 900px) { .aab-homes { grid-template-columns: repeat(4, 1fr); } }
+
+.aab-home-shot { margin: 0; display: flex; flex-direction: column; }
+.aab-home-shot img {
+	width: 100%;
+	aspect-ratio: 10 / 11;
+	object-fit: cover;
+	display: block;
+	border-radius: 18px;
+	background: var(--aab-wash-deep);
+}
+.aab-home-shot figcaption {
+	padding: 12px 4px 0;
+	display: flex; flex-direction: column; gap: 2px;
+}
+.aab-home-shot figcaption strong { font-size: 14.5px; font-weight: 600; }
+.aab-home-shot figcaption span { font-size: 13px; color: var(--aab-muted); }
+
 /* Split panels */
 .aab-panels {
 	display: grid;

@@ -135,6 +135,35 @@
   </section>
   {% endif %}
 
+  <!-- homes ------------------------------------------------------------ -->
+  {% if showcase %}
+  <section class="aab-section">
+    <div class="aab-inner">
+      <div class="aab-section-head">
+        <div>
+          <p class="aab-eyebrow">Inspiration</p>
+          <h2>Homes built with AABrick</h2>
+        </div>
+        <a class="aab-more" href="/all-products">Shop the look</a>
+      </div>
+    </div>
+
+    <div class="aab-homes">
+      {% for s in showcase %}
+        <figure class="aab-home-shot">
+          <img src="{{ s.src }}" alt="{{ s.caption or 'A home finished with AABrick materials' }}" loading="lazy">
+          {% if s.caption %}
+            <figcaption>
+              <strong>{{ s.caption }}</strong>
+              {% if s.detail %}<span>{{ s.detail }}</span>{% endif %}
+            </figcaption>
+          {% endif %}
+        </figure>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <!-- why aabrick ------------------------------------------------------ -->
   <section class="aab-section">
     <div class="aab-inner">

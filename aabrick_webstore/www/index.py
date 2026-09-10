@@ -9,6 +9,8 @@ import os
 
 import frappe
 
+from aabrick_webstore import showcase
+
 no_cache = 1
 
 COMPANY_PHONE = "+260 960 787 777"
@@ -71,6 +73,7 @@ def get_context(context):
     context.published_branches = frappe.db.count("Branch Location", {"published": 1})
 
     context.has_hero = os.path.exists(HERO_FILE)
+    context.showcase = showcase.context()
     context.categories = _categories()
     context.featured = _featured()
     context.description = (

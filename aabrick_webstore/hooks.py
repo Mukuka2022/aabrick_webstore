@@ -246,7 +246,7 @@ app_license = "mit"
 # include js on every website page
 # Bump this whenever webstore.js or webstore.css changes: these are served
 # without a content hash, so browsers keep a stale copy after bench build.
-ASSET_VERSION = "27"
+ASSET_VERSION = "28"
 web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
 
 # inject analytics tags into the website page head
