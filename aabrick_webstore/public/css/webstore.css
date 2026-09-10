@@ -33,6 +33,7 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
+	--aab-blush: #F7E5E2;       /* the brand red at a tenth strength, for product panels */
 
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
@@ -387,8 +388,10 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-rail-shot {
 	position: relative;
 	margin: 0;
-	flex: 0 0 clamp(230px, 24vw, 348px);
-	aspect-ratio: 39 / 50;
+	/* Grow, so the row reaches the edge instead of stopping a few pixels
+	 * short of it once the fixed widths are added up. */
+	flex: 1 0 clamp(230px, 24vw, 348px);
+	aspect-ratio: 39 / 60;
 	scroll-snap-align: start;
 	overflow: hidden;
 	background: var(--aab-wash-deep);
@@ -514,9 +517,10 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-product:hover { color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
 	aspect-ratio: 303 / 275;   /* the all-products image area */
-	/* A step darker than the section, so the picture sits in a panel rather
-	 * than floating on the page now that the card has no border. */
-	background: var(--aab-wash-deep);
+	/* Warm, not another grey. A neutral one step off the section read as
+	 * nothing at all, and the catalogue is mostly cold grey and white tile,
+	 * which sits better on a warm ground than on a cool one. */
+	background: var(--aab-blush);
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }
