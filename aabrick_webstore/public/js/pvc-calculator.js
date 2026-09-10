@@ -120,6 +120,19 @@
 		// Whole boards times the price of a board. The old page charged the raw
 		// area instead, which quoted less than the boards it asked you to buy.
 		$("cost").textContent = price > 0 && count > 0 ? money(count * price) : "\u2014";
+
+		var ask = $("askQuote");
+		if (ask) {
+			var q = [];
+			if (count > 0) {
+				q.push("qty=" + encodeURIComponent(count + (count === 1 ? " board" : " boards")
+					+ " of " + bw + "mm x " + bl + "m"));
+			}
+			if (area > 0) {
+				q.push("area=" + encodeURIComponent(num(area, 2) + " m\u00B2"));
+			}
+			ask.setAttribute("href", "/contact" + (q.length ? "?" + q.join("&") : ""));
+		}
 	}
 
 	/* --------------------------------------------------------- board sizes */

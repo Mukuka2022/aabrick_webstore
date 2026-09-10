@@ -1181,3 +1181,34 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 .aab-calc-small { margin: 16px 0 0; font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.6); }
 
 .aab-calc-foot { background: var(--aab-wash); }
+
+/* Enquiry page: the calculator's frame, with a form in it. */
+.aab-grid-2 { grid-template-columns: repeat(2, 1fr) !important; }
+@media (max-width: 619.98px) { .aab-grid-2 { grid-template-columns: 1fr !important; } }
+
+.aab-field em { color: var(--aab-red); font-style: normal; margin-left: 2px; }
+.aab-field small { color: var(--aab-muted); font-weight: 500; }
+.aab-field textarea {
+	font-family: var(--aab-body); font-size: 15px; color: var(--aab-ink);
+	padding: 10px 12px; border: 1px solid var(--aab-line);
+	background: var(--aab-surface); width: 100%; resize: vertical;
+}
+.aab-field textarea:focus { outline: 2px solid var(--aab-red); outline-offset: -2px; border-color: var(--aab-red); }
+
+.aab-enquiry-about { background: var(--aab-wash-deep); }
+.aab-enquiry-item { margin: 4px 0 6px; font-size: 17px; font-weight: 600; }
+.aab-enquiry-item a { color: var(--aab-ink); text-decoration: none; }
+.aab-enquiry-item a:hover { color: var(--aab-red); }
+
+.aab-enquiry-send { display: flex; flex-direction: column; gap: 10px; }
+.aab-enquiry-send .aab-btn { align-self: flex-start; }
+.aab-enquiry-msg { margin: 0; font-size: 14px; color: var(--aab-muted); min-height: 1.2em; }
+.aab-enquiry-msg.is-bad { color: var(--aab-red); font-weight: 600; }
+.aab-enquiry-msg.is-good { color: var(--aab-ink); font-weight: 600; }
+
+.aab-enquiry-phone {
+	font-family: var(--aab-display); font-weight: 400; font-size: 30px;
+	letter-spacing: .01em; margin: 4px 0 8px; color: #fff;
+	font-variant-numeric: tabular-nums;
+}
+.aab-enquiry-facts { margin-top: 22px; }

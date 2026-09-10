@@ -66,7 +66,7 @@
             Add to cart
           </button>
         {% endif %}
-        <a class="aab-btn aab-btn-ghost" href="/contact">Ask about this tile</a>
+        <a class="aab-btn aab-btn-ghost" href="/contact?item={{ aab_code | urlencode }}">Ask about this tile</a>
       </div>
 
       {% if aab_grade_note %}<p class="aab-item-grade-note">{{ aab_grade_note }}</p>{% endif %}

@@ -124,6 +124,21 @@
 		$("tiles").textContent = boxes * pcs;
 		$("cost").textContent = price > 0 && boxes > 0 ? money(boxes * price) : "\u2014";
 
+		var ask = $("askQuote");
+		if (ask) {
+			var q = [];
+			if (picked) {
+				q.push("item=" + encodeURIComponent(picked.code));
+			}
+			if (boxes > 0) {
+				q.push("qty=" + encodeURIComponent(boxes + (boxes === 1 ? " box" : " boxes")));
+			}
+			if (area > 0) {
+				q.push("area=" + encodeURIComponent(num(area, 2) + " m\u00B2"));
+			}
+			ask.setAttribute("href", "/contact" + (q.length ? "?" + q.join("&") : ""));
+		}
+
 		var btn = $("addCart");
 		btn.disabled = !(picked && boxes > 0);
 		btn.textContent = picked && boxes > 0

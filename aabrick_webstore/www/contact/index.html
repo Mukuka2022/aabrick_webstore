@@ -1,0 +1,129 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="Contact AABrick Zambia">
+<meta property="og:description" content="{{ aab_description }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-calc aab-enquiry">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">Contact</span>
+    </nav>
+  </div>
+
+  <header class="aab-calc-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Talk to us</p>
+      <h1>Send us an enquiry</h1>
+      <p class="aab-calc-lede">
+        Tell us what you are building and we will come back with quantities and
+        a price. If it is urgent, the sales line is quicker.
+      </p>
+    </div>
+  </header>
+
+  <div class="aab-inner aab-calc-main">
+
+    <form class="aab-calc-form" id="aab-enquiry" novalidate>
+
+      {% if aab_item %}
+        <div class="aab-calc-block aab-enquiry-about">
+          <p class="aab-eyebrow">You are asking about</p>
+          <p class="aab-enquiry-item">
+            <a href="{{ aab_item.route }}">{{ aab_item.code }} {{ aab_item.label }}</a>
+          </p>
+          {% if aab_qty %}<p class="aab-muted">Quantity worked out: {{ aab_qty }}</p>{% endif %}
+          {% if aab_area %}<p class="aab-muted">Area: {{ aab_area }}</p>{% endif %}
+        </div>
+      {% endif %}
+
+      <fieldset class="aab-calc-block">
+        <legend>Who you are</legend>
+        <div class="aab-calc-grid aab-grid-2">
+          <label class="aab-field">
+            <span>Your name<em>*</em></span>
+            <input type="text" id="fName" name="name" autocomplete="name" required maxlength="140">
+          </label>
+          <label class="aab-field">
+            <span>Phone<em>*</em></span>
+            <input type="tel" id="fPhone" name="phone" autocomplete="tel" required maxlength="40"
+                   placeholder="09xx xxx xxx">
+          </label>
+          <label class="aab-field">
+            <span>Email <small>optional</small></span>
+            <input type="email" id="fEmail" name="email" autocomplete="email" maxlength="140">
+          </label>
+          <label class="aab-field">
+            <span>Nearest branch <small>optional</small></span>
+            <select id="fBranch" name="branch">
+              <option value="">Not sure yet</option>
+              {% for b in aab_branches %}
+                <option value="{{ b.branch_name }}">{{ b.branch_name }}{% if b.province %} &middot; {{ b.province }}{% endif %}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="aab-calc-block">
+        <legend>What you need</legend>
+        <label class="aab-field">
+          <span>Your message</span>
+          <textarea id="fMessage" name="message" rows="5" maxlength="2000"
+                    placeholder="The room size, the tile you are after, when you need it."></textarea>
+        </label>
+        <p class="aab-calc-note">
+          The more you tell us, the closer the first answer will be. Room
+          dimensions and a tile code are usually enough.
+        </p>
+      </fieldset>
+
+      <div class="aab-enquiry-send">
+        <button type="submit" class="aab-btn aab-btn-primary" id="fSend">Send enquiry</button>
+        <p class="aab-enquiry-msg" id="fMsg" role="status" aria-live="polite"></p>
+      </div>
+
+      <input type="hidden" id="fItem" value="{{ aab_item.code if aab_item else '' }}">
+      <input type="hidden" id="fQty" value="{{ aab_qty }}">
+      <input type="hidden" id="fArea" value="{{ aab_area }}">
+    </form>
+
+    <aside class="aab-calc-result aab-enquiry-side">
+      <p class="aab-eyebrow-light">Faster than a form</p>
+      <p class="aab-enquiry-phone">{{ aab_phone }}</p>
+      <p class="aab-calc-small">
+        Our sales line, for stock, prices and delivery.
+      </p>
+
+      <div class="aab-calc-actions">
+        <a class="aab-btn aab-btn-light" href="tel:{{ aab_phone_link }}">Call the sales line</a>
+        <a class="aab-btn aab-btn-ghost-light" href="/branches">Find your branch</a>
+      </div>
+
+      <table class="aab-calc-table aab-enquiry-facts">
+        <tr><th>Branches</th><td>{{ aab_branch_count }}</td></tr>
+        <tr><th>Delivery</th><td>7 days</td></tr>
+        <tr><th>Since</th><td>2005</td></tr>
+      </table>
+
+      <p class="aab-calc-small">
+        Anything not on the shelf is ordered from the manufacturer and delivered
+        within 7 days.
+      </p>
+    </aside>
+  </div>
+
+</div>
+
+<script src="/assets/aabrick_webstore/js/enquiry.js?v={{ aab_version }}"></script>
+{% endblock %}
