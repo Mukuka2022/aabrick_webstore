@@ -430,21 +430,23 @@ main.container:has(.aab-branch) .aab-branch {
 }
 @media (min-width: 600px) { .aab-products-row { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1000px) { .aab-products-row { grid-template-columns: repeat(5, 1fr); } }
-/* No border, no card background, no radius on the card itself: the image
- * and the words under it are the card, as on burrow.com. */
 .aab-product {
-	text-decoration: none; color: var(--aab-ink);
-	display: flex; flex-direction: column;
+	border: 1px solid var(--aab-line); border-radius: var(--aab-r); overflow: hidden;
+	background: var(--aab-surface); text-decoration: none; color: var(--aab-ink);
+	display: flex; flex-direction: column; transition: border-color .15s, transform .15s;
 }
+.aab-product:hover { border-color: var(--aab-red); color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
 	aspect-ratio: 4 / 3;
 	background: var(--aab-wash);
-	border-radius: var(--aab-r);
+	border-radius: calc(var(--aab-r) - 1px) calc(var(--aab-r) - 1px) 0 0;
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }
-/* Contained, not cropped. The catalogue photographs run from 2:1 strips to
- * portrait cut-outs, and a product grid has to show the whole product. */
+/* Contained, never cropped. The catalogue photographs run from 2:1 strips
+ * to portrait cut-outs because the products themselves are different
+ * shapes. Cropping them to a common square would look tidier and would
+ * show a customer a shape they are not buying. */
 .aab-product-img img {
 	width: 100%; height: 100%;
 	object-fit: contain;
@@ -453,10 +455,11 @@ main.container:has(.aab-branch) .aab-branch {
 	transition: transform .3s ease;
 }
 .aab-product:hover .aab-product-img img { transform: scale(1.04); }
-.aab-product-body { padding: 12px 2px 0; display: flex; flex-direction: column; gap: 3px; }
+.aab-product-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
-	.aab-product-img img { transition: none; }
+	.aab-product, .aab-product-img img { transition: none; }
+	.aab-product:hover { transform: none; }
 	.aab-product:hover .aab-product-img img { transform: none; }
 }
 .aab-product-code {
