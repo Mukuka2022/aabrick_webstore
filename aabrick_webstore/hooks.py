@@ -57,7 +57,11 @@ app_license = "mit"
 # ----------
 
 # application home page (will override Website Settings)
-# home_page = "login"
+# Frappe resolves the home page from Website Settings first, then this hook,
+# and only then falls back to the login page for a guest. Website Settings is
+# data and does not travel with a deploy, so the app names its own; an
+# explicit setting in the UI still takes precedence.
+home_page = "index"
 
 # website user home page (by Role)
 # role_home_page = {
