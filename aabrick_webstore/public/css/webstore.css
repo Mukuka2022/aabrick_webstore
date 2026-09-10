@@ -248,6 +248,10 @@ main.container:has(.aab-branch) .aab-branch {
  * Homepage: sections
  * ------------------------------------------------------------------ */
 .aab-section { padding: 25px 0; background: var(--aab-wash); }
+/* A band that steps up to white, for a heading that wants separating from the
+ * row it introduces. */
+.aab-section--white { background: var(--aab-surface); }
+.aab-section--white .aab-section-head { margin-bottom: 0; }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
 	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;

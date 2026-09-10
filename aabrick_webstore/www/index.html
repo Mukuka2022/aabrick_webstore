@@ -138,7 +138,7 @@
 
   <!-- featured products ------------------------------------------------ -->
   {% if featured %}
-  <section class="aab-section">
+  <section class="aab-section aab-section--white">
     <div class="aab-inner">
       <div class="aab-section-head">
         <div>
@@ -148,7 +148,9 @@
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
     </div>
+  </section>
 
+  <section class="aab-section">
     <div class="aab-products-row">
         {% for p in featured %}
           <a class="aab-product" href="/{{ p.route }}">
