@@ -77,6 +77,12 @@ home_page = "index"
 # Jinja
 # ----------
 
+# The navbar and the footer are built from the catalogue rather than from a
+# list somebody types out, so the templates need a way to read it.
+# A plain dotted path: the alias form, name:path, is parsed as an app name
+# here and fails to import. The method takes the function's own name.
+jinja = {"methods": ["aabrick_webstore.jinja_helpers.nav_data"]}
+
 # add methods and filters to jinja environment
 # jinja = {
 # 	"methods": "aabrick_webstore.utils.jinja_methods",
@@ -258,8 +264,11 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "77"
-web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
+ASSET_VERSION = "79"
+web_include_js = [
+	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
+	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
+]
 
 # inject analytics tags into the website page head
 update_website_context = ["aabrick_webstore.analytics.add_analytics_tags"]

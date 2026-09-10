@@ -1,0 +1,92 @@
+{%- set nav = nav_data() -%}
+<header class="aab-nav" id="aab-nav">
+
+  <div class="aab-nav-strip">
+    <div class="aab-nav-inner">
+      <span>{{ nav.branch_count }} branches nationwide &middot; delivery within 7 days</span>
+      <a href="tel:{{ nav.phone_link }}">{{ nav.phone }}</a>
+    </div>
+  </div>
+
+  <div class="aab-nav-main">
+    <div class="aab-nav-inner">
+
+      <a class="aab-nav-brand" href="/">
+        {%- if banner_image -%}
+          <img src="{{ banner_image }}" alt="AABrick Zambia Limited">
+        {%- else -%}
+          <span>AABrick</span>
+        {%- endif -%}
+      </a>
+
+      <button class="aab-nav-toggle" type="button" id="aab-nav-toggle"
+              aria-expanded="false" aria-controls="aab-nav-menu" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="aab-nav-menu" id="aab-nav-menu" aria-label="Main">
+        <ul class="aab-nav-list">
+
+          <li class="aab-nav-has-panel">
+            <button type="button" class="aab-nav-link" aria-expanded="false">Shop</button>
+            <div class="aab-nav-panel">
+              <div class="aab-nav-panel-inner">
+                <div class="aab-nav-col aab-nav-col-wide">
+                  <p class="aab-nav-col-head">Tile ranges</p>
+                  <ul class="aab-nav-ranges">
+                    {% for r in nav.ranges %}
+                      <li>
+                        <a href="{{ r.route }}">
+                          <strong>{{ r.label }}</strong>
+                          <em>{{ r.count }}</em>
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="aab-nav-col">
+                  <p class="aab-nav-col-head">Browse</p>
+                  <a class="aab-nav-feature" href="/all-products">
+                    <strong>Everything</strong>
+                    <span>The whole range, with filters for size, type and grade.</span>
+                  </a>
+                  <a class="aab-nav-feature" href="/tile-calculator">
+                    <strong>Tile calculator</strong>
+                    <span>Work out the boxes before you buy.</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li class="aab-nav-has-panel">
+            <button type="button" class="aab-nav-link" aria-expanded="false">Guides</button>
+            <div class="aab-nav-panel aab-nav-panel-narrow">
+              <div class="aab-nav-panel-inner">
+                <div class="aab-nav-col">
+                  <p class="aab-nav-col-head">Before you buy</p>
+                  {% for g in nav.guides %}
+                    <a class="aab-nav-feature" href="/guides/{{ g.slug }}">
+                      <strong>{{ g.title }}</strong>
+                      <span>{{ g.summary }}</span>
+                    </a>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li><a class="aab-nav-link" href="/tile-calculator">Calculators</a></li>
+          <li><a class="aab-nav-link" href="/branches">Branches</a></li>
+          <li><a class="aab-nav-link" href="/contact">Contact</a></li>
+        </ul>
+
+        <div class="aab-nav-actions">
+          <a class="aab-nav-cart" href="/cart" aria-label="Cart">Cart</a>
+          <a class="aab-btn aab-btn-primary aab-nav-cta" href="tel:{{ nav.phone_link }}">Call us</a>
+        </div>
+      </nav>
+
+    </div>
+  </div>
+</header>

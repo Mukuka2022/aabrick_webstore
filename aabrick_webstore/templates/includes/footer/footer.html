@@ -1,0 +1,63 @@
+{%- set nav = nav_data() -%}
+<footer class="aab-foot">
+
+  <div class="aab-foot-main">
+    <div class="aab-nav-inner">
+      <div class="aab-foot-grid">
+
+        <div class="aab-foot-brand">
+          <p class="aab-foot-name">AABrick Zambia Limited</p>
+          <p>
+            Tiles, tile fix, PVC ceiling boards and fertilizer, supplied across
+            Zambia since 2005. Anything not on the shelf is ordered from the
+            manufacturer and delivered within 7 days.
+          </p>
+          <a class="aab-btn aab-btn-primary" href="tel:{{ nav.phone_link }}">{{ nav.phone }}</a>
+        </div>
+
+        <div class="aab-foot-col">
+          <p class="aab-foot-head">Shop</p>
+          <ul>
+            <li><a href="/all-products">All products</a></li>
+            {% for r in nav.ranges[:6] %}
+              <li><a href="{{ r.route }}">{{ r.label }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <div class="aab-foot-col">
+          <p class="aab-foot-head">Before you buy</p>
+          <ul>
+            {% for g in nav.guides %}
+              <li><a href="/guides/{{ g.slug }}">{{ g.title }}</a></li>
+            {% endfor %}
+            <li><a href="/tile-calculator">Tile calculator</a></li>
+            <li><a href="/pvc-ceiling-calculater">PVC ceiling calculator</a></li>
+          </ul>
+        </div>
+
+        <div class="aab-foot-col">
+          <p class="aab-foot-head">AABrick</p>
+          <ul>
+            <li><a href="/branches">{{ nav.branch_count }} branches</a></li>
+            <li><a href="/contact">Contact us</a></li>
+            <li><a href="/jobs">Careers</a></li>
+            <li><a href="/cart">Your cart</a></li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="aab-foot-bar">
+    <div class="aab-nav-inner">
+      <span>&copy; {{ nav.year }} AABrick Zambia Limited</span>
+      <span class="aab-foot-note">
+        Prices in Zambian Kwacha and include VAT where it applies. Colours on
+        screen are a guide; ask your branch to see the tile.
+      </span>
+    </div>
+  </div>
+
+</footer>
