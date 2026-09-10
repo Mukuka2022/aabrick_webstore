@@ -258,7 +258,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "65"
+ASSET_VERSION = "66"
 web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
 
 # inject analytics tags into the website page head

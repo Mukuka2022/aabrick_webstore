@@ -33,12 +33,12 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
-	/* Behind product photographs: the grey the brand guideline names, which
-	 * is also near the 18% mid grey used as a backdrop in product photography,
-	 * for the reason that matters here. It holds a white subject and a black
-	 * one at once, and this catalogue runs from white marble to a plain black
-	 * tile. */
-	--aab-shot-ground: #828282;
+	/* Behind product photographs. The catalogue runs from white marble to a
+	 * plain black tile, so no single value separates all of it: a mid grey
+	 * matched the grey tiles and an off white would match the pale ones. The
+	 * brand charcoal clears everything except the black tile, and the edge
+	 * drawn round the photograph itself takes care of that one. */
+	--aab-shot-ground: #2A2725;
 	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
 	--aab-oxblood-lit: #47191B;
 	--aab-oxblood-deep: #2E1012;
@@ -749,6 +749,8 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 	object-fit: contain;
 	padding: 26px 46px;
 	display: block;
+	filter: drop-shadow(0 0 1px rgba(255,255,255,.5))
+	        drop-shadow(0 6px 16px rgba(0,0,0,.4));
 }
 /* Square photographs are limited by whichever side is smaller, so they fill a
  * roomy box and come out larger than the strips and the bags. Same three
@@ -980,6 +982,12 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	object-fit: contain;
 	padding: 6%;
 	display: block;
+	/* Drawn round the photograph, not the box it sits in: a border would trace
+	 * the square container, drop-shadow traces what is actually rendered, so it
+	 * hugs a 2:1 strip and a cut-out silhouette alike. The pale edge is what
+	 * separates the black tile from the charcoal. */
+	filter: drop-shadow(0 0 1px rgba(255,255,255,.5))
+	        drop-shadow(0 4px 10px rgba(0,0,0,.35));
 	transition: transform .3s ease;
 }
 .aab-tile-shot.is-square img { padding: 11%; }
