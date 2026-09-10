@@ -457,7 +457,6 @@ main.container:has(.aab-branch) .aab-branch {
 	padding: clamp(30px, 4vw, 48px);
 	border-radius: 0;
 	color: var(--aab-ink);
-	box-shadow: inset 0 0 0 1px rgba(28,27,26,.10);
 	background-size: cover;
 	background-position: center;
 	min-height: 300px;
@@ -509,21 +508,19 @@ main.container:has(.aab-branch) .aab-branch {
 @media (min-width: 1000px) {
 	.aab-products-row { grid-template-columns: repeat(5, 1fr); }
 }
-/* No outline. The sections are #F6F6F4 and the card is white, so it reads as
- * an object on its own. Hover moves the price to red instead of the border. */
+/* The card paints nothing of its own: the picture sits on the section colour
+ * and the oxblood block under it is what gives the row its shape. */
 .aab-product {
 	overflow: hidden;
-	background: var(--aab-surface); text-decoration: none; color: var(--aab-ink);
+	background: transparent; text-decoration: none; color: var(--aab-ink);
 	display: flex; flex-direction: column; transition: transform .15s;
 }
 .aab-product:hover { color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
 	aspect-ratio: 303 / 275;   /* the all-products image area */
-	/* Dark, because the catalogue is pale. Grey tile on a grey panel had no
-	 * contrast to read the surface by; every showroom puts pale stone against
-	 * something dark. Graded rather than flat: a flat dark rectangle reads as
-	 * a hole, a graded one as a lit surface. */
-	background: linear-gradient(160deg, var(--aab-oxblood-lit) 0%, var(--aab-oxblood-deep) 100%);
+	/* The section colour exactly, so the photograph reads as sitting on the
+	 * page rather than inside a panel. */
+	background: var(--aab-wash);
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }
@@ -539,7 +536,14 @@ main.container:has(.aab-branch) .aab-branch {
 	transition: transform .3s ease;
 }
 .aab-product:hover .aab-product-img img { transform: scale(1.04); }
-.aab-product-body { padding: 35px 16px; display: flex; flex-direction: column; gap: 3px; }
+/* Graded rather than flat: a flat dark rectangle reads as a hole in the page,
+ * a graded one as a lit surface. */
+.aab-product-body {
+	padding: 35px 18px;
+	display: flex; flex-direction: column; gap: 3px;
+	background: linear-gradient(160deg, var(--aab-oxblood-lit) 0%, var(--aab-oxblood-deep) 100%);
+	color: #fff;
+}
 
 @media (prefers-reduced-motion: reduce) {
 	.aab-product, .aab-product-img img { transition: none; }
@@ -547,12 +551,12 @@ main.container:has(.aab-branch) .aab-branch {
 	.aab-product:hover .aab-product-img img { transform: none; }
 }
 .aab-product-code {
-	font-size: 11px; color: var(--aab-muted); letter-spacing: .1em; font-weight: 700;
+	font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .1em; font-weight: 700;
 	font-variant-numeric: tabular-nums;
 }
-.aab-product-body strong { font-size: 14px; font-weight: 500; line-height: 1.4; color: var(--aab-ink); }
+.aab-product-body strong { font-size: 14px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.82); }
 .aab-product-price {
-	margin-top: 5px; color: var(--aab-red);
+	margin-top: 5px; color: #fff;
 	font-family: var(--aab-display); font-weight: 400; font-size: 21px;
 	letter-spacing: .01em; font-variant-numeric: tabular-nums;
 }
