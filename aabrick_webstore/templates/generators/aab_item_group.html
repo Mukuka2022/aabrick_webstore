@@ -1,0 +1,90 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="{{ aab_heading }}">
+<meta property="og:description" content="{{ aab_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ aab_canonical }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-cat-page">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <a href="/all-products">Products</a> <span>/</span>
+      <span aria-current="page">{{ aab_heading }}</span>
+    </nav>
+  </div>
+
+  <header class="aab-cat-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">{{ aab_count }} designs</p>
+      <h1>{{ aab_heading }}</h1>
+      <ul class="aab-cat-facts">
+        {% if aab_size %}<li><span>Size</span><strong>{{ aab_size }}</strong></li>{% endif %}
+        {% if aab_finish %}<li><span>Type</span><strong>{{ aab_finish }}</strong></li>{% endif %}
+        {% if aab_grade %}<li><span>Grade</span><strong>{{ aab_grade }} Grade</strong></li>{% endif %}
+        {% if aab_price_from %}
+          <li><span>From</span><strong>{{ frappe.utils.fmt_money(aab_price_from, currency="ZMW") }}</strong></li>
+        {% endif %}
+      </ul>
+
+      {% if aab_twin %}
+        <a class="aab-twin" href="{{ aab_twin.route }}">
+          Also available in {{ aab_twin.grade }} grade
+          <span>{{ aab_twin.count }} designs</span>
+        </a>
+      {% endif %}
+    </div>
+  </header>
+
+  {% if aab_products %}
+    <section class="aab-section">
+      <div class="aab-products-row">
+        {% for p in aab_products %}
+          <a class="aab-product" href="/{{ p.route }}">
+            <div class="aab-product-img is-{{ p.shape }}">
+              {% if p.website_image %}
+                <img src="{{ p.website_image }}" alt="{{ p.item_code }} {{ aab_heading }}" loading="lazy">
+              {% endif %}
+            </div>
+            <div class="aab-product-body">
+              <span class="aab-product-code">{{ p.item_code }}</span>
+              <strong>{{ aab_label }}</strong>
+              {% if p.price %}<span class="aab-product-price">{{ p.price }}</span>{% endif %}
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <section class="aab-section">
+      <div class="aab-inner">
+        <p class="aab-muted">Nothing is listed in this range yet. Call us and we will tell you what is on the shelf.</p>
+      </div>
+    </section>
+  {% endif %}
+
+  <section class="aab-section aab-cat-foot">
+    <div class="aab-inner">
+      <p class="aab-muted">
+        Not on the shelf today? We order from the manufacturer and deliver within
+        {{ aab_lead_time }} days. <a href="/branches">{{ aab_branch_count }} branches nationwide</a>.
+      </p>
+      <div class="aab-item-actions">
+        <a class="aab-btn aab-btn-primary" href="/all-products">Browse everything</a>
+        <a class="aab-btn aab-btn-ghost" href="/contact">Ask about this range</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

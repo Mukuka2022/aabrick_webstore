@@ -792,3 +792,61 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 	font-size: 14px; line-height: 1.55; color: var(--aab-ink);
 	max-width: 46ch;
 }
+
+/* ------------------------------------------------------------------
+ * Category page
+ * The product grid is the homepage's, unchanged, so a tile looks the same
+ * wherever it appears. The head above it carries the range.
+ * ------------------------------------------------------------------ */
+.aab-cat-page {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	max-width: none;
+	color: var(--aab-ink);
+	background: var(--aab-wash);
+	font-family: var(--aab-body);
+}
+main.container:has(.aab-cat-page) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-cat-page) .aab-cat-page { width: 100%; margin-left: 0; margin-right: 0; }
+
+.aab-cat-page h1, .aab-cat-page h2 {
+	font-family: var(--aab-display);
+	font-weight: 400; text-transform: uppercase;
+	letter-spacing: .01em; line-height: 1;
+	text-wrap: balance; color: var(--aab-ink);
+}
+
+.aab-cat-head { background: var(--aab-surface); padding: 30px 0 34px; }
+.aab-cat-head h1 { font-size: clamp(30px, 4.4vw, 46px); margin: 0; }
+
+.aab-cat-facts {
+	list-style: none; padding: 0; margin: 22px 0 0;
+	display: flex; flex-wrap: wrap; gap: 0;
+}
+.aab-cat-facts li {
+	display: flex; flex-direction: column; gap: 3px;
+	padding: 0 26px 0 0; margin-right: 26px;
+	border-right: 1px solid var(--aab-line);
+}
+.aab-cat-facts li:last-child { border-right: 0; margin-right: 0; padding-right: 0; }
+.aab-cat-facts span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--aab-muted); font-weight: 600; }
+.aab-cat-facts strong { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.aab-twin {
+	display: inline-flex; align-items: baseline; gap: 10px;
+	margin-top: 22px; padding: 10px 14px;
+	background: var(--aab-wash-deep);
+	color: var(--aab-ink); text-decoration: none;
+	font-size: 14px; font-weight: 600;
+}
+.aab-twin span { font-size: 12.5px; font-weight: 500; color: var(--aab-muted); }
+.aab-twin:hover { color: var(--aab-red); }
+
+.aab-cat-foot .aab-inner { display: flex; flex-direction: column; gap: 16px; }
+.aab-cat-foot .aab-item-actions { margin-top: 0; }
+.aab-cat-page .aab-section { background: var(--aab-wash); }

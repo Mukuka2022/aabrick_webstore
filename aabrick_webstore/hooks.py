@@ -254,9 +254,11 @@ home_page = "index"
 # cart, pricing and breadcrumb work still runs and only the template changes.
 override_doctype_class = {
 	"Website Item": "aabrick_webstore.overrides.website_item.AABrickWebsiteItem",
+	# Subclasses webshop's own override, so its filter engine still runs.
+	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "53"
+ASSET_VERSION = "54"
 web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
 
 # inject analytics tags into the website page head
@@ -268,6 +270,8 @@ web_include_css = "/assets/aabrick_webstore/css/webstore.css?v=" + ASSET_VERSION
 # Retired pages. /home in particular must be redirected rather than left alone:
 # once its Web Page is unpublished, a built-in www/home.html takes over and
 # renders an empty page with HTTP 200, which is a soft 404.
+# /tile-fix and /fertilizer are deliberately absent: those routes belong to
+# Item Groups with real category pages, and a redirect here would shadow them.
 website_redirects = [
 	{"source": "/home", "target": "/"},
 	{"source": "/home2", "target": "/"},
@@ -275,13 +279,11 @@ website_redirects = [
 	{"source": "/pages/my-page-e297", "target": "/"},
 	{"source": "/locations", "target": "/branches"},
 	{"source": "/about-us", "target": "/"},
-	{"source": "/fertilizer", "target": "/all-products"},
 	{"source": "/fertilizers", "target": "/all-products"},
 	{"source": "/wall-tiles", "target": "/all-products"},
 	{"source": "/floor-tiles", "target": "/all-products"},
 	{"source": "/matt-tiles", "target": "/all-products"},
 	{"source": "/Shiny-tiles", "target": "/all-products"},
-	{"source": "/tile-fix", "target": "/all-products"},
 	{"source": "/building-materials", "target": "/all-products"},
 	{"source": "/live-stock-availability-list", "target": "/all-products"},
 	{"source": "/tile-visualizer", "target": "/tile-calculator"},
