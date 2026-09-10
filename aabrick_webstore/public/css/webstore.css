@@ -942,6 +942,12 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 @media (min-width: 620px)  { .aab-tiles { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 1000px) { .aab-tiles { grid-template-columns: repeat(4, 1fr); } }
 
+/* Three in the shop: the filter column leaves 946, where a fourth card would
+ * come out at 229 and the square photograph is what this card is for. */
+@media (min-width: 1000px) {
+	.aab-shop .aab-tiles { grid-template-columns: repeat(3, 1fr); }
+}
+
 .aab-tile {
 	background: var(--aab-surface);
 	display: flex; flex-direction: column;
@@ -1010,9 +1016,9 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-tile:hover .aab-tile-shot img { transform: none; }
 }
 
-/* The listing leaves the 1280px container so four cards have room to be
- * large; the filter column keeps its width and the grid takes the rest. */
-.aab-shop-main { padding: 28px 10px 10px; }
+/* The listing sits in the 1280px container, which supplies the side padding.
+ * The filter column takes 220 of the 1200 and the grid takes the rest. */
+.aab-shop-main { padding: 28px 0 10px; }
 @media (min-width: 900px) {
 	.aab-shop-main { grid-template-columns: 220px 1fr; }
 }

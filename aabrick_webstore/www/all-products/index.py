@@ -23,7 +23,7 @@ from aabrick_webstore.overrides.website_item import (
 sitemap = 1
 no_cache = 1
 
-PER_PAGE = 48   # whole rows of four
+PER_PAGE = 48   # whole rows of three, and of four on a narrower screen
 LEAD_TIME_DAYS = 7
 
 
