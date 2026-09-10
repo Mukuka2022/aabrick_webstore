@@ -956,10 +956,10 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-shop .aab-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Four on the homepage, which is full width and has no filter column, so
- * eight products make two whole rows. */
+/* One row on the homepage. Five fit across the full width at 265 each, which
+ * still leaves room for the two buttons side by side. */
 @media (min-width: 1000px) {
-	.aab-home .aab-tiles { grid-template-columns: repeat(4, 1fr); }
+	.aab-home .aab-tiles { grid-template-columns: repeat(5, 1fr); }
 }
 .aab-home .aab-tiles { padding: 0 10px; }
 
@@ -1036,7 +1036,13 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
 }
 .aab-tile-actions .aab-btn {
-	padding: 11px 8px; font-size: 11.5px; letter-spacing: .06em;
+	padding: 11px 6px; font-size: 11.5px; letter-spacing: .05em;
+	white-space: nowrap;
+}
+
+/* Two buttons cannot hold their labels on a phone, where the card is 178. */
+@media (max-width: 619.98px) {
+	.aab-tile-actions { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
