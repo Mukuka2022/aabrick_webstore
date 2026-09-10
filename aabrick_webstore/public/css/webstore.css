@@ -1318,6 +1318,12 @@ main.container:has(.aab-guide) .aab-guide { width: 100%; margin-left: 0; margin-
 }
 .aab-nav.is-stuck { box-shadow: 0 2px 14px rgba(28,27,26,.12); }
 
+/* Frappe wraps every page in main.container.my-4, whose top margin collapses
+ * out through the wrapper and leaves a strip of white under the header. Our
+ * sections carry their own padding and the footer is meant to butt up against
+ * the last one, so the container contributes no vertical space of its own. */
+main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
+
 .aab-nav-inner {
 	max-width: 1280px; margin: 0 auto;
 	padding: 0 clamp(14px, 4vw, 40px);
