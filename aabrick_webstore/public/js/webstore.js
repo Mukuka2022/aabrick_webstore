@@ -256,11 +256,67 @@
 		}
 	}
 
+	var frameId = null;
+
+	function reducedMotion() {
+		return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+	}
+
+	function glide(to) {
+		var from = rail.scrollLeft;
+		if (Math.abs(to - from) < 1) {
+			return;
+		}
+		if (frameId) {
+			cancelAnimationFrame(frameId);
+			frameId = null;
+		}
+		if (reducedMotion() || !window.requestAnimationFrame) {
+			rail.scrollLeft = to;
+			sync();
+			return;
+		}
+
+		var started = null;
+		var ticked = false;
+
+		function frame(now) {
+			ticked = true;
+			if (started === null) {
+				started = now;
+			}
+			var t = Math.min((now - started) / 320, 1);
+			var eased = 1 - Math.pow(1 - t, 3);
+			rail.scrollLeft = from + (to - from) * eased;
+			if (t < 1) {
+				frameId = requestAnimationFrame(frame);
+			} else {
+				frameId = null;
+				sync();
+			}
+		}
+
+		frameId = requestAnimationFrame(frame);
+
+		// A hidden or background tab throttles rAF to nothing, and an arrow
+		// that appears dead is worse than one that jumps. If no frame has run
+		// by now, land it.
+		setTimeout(function () {
+			if (!ticked) {
+				if (frameId) {
+					cancelAnimationFrame(frameId);
+					frameId = null;
+				}
+				rail.scrollLeft = to;
+				sync();
+			}
+		}, 120);
+	}
+
 	function go(direction) {
 		var end = rail.scrollWidth - rail.clientWidth;
 		var target = rail.scrollLeft + direction * step();
-		rail.scrollLeft = Math.max(0, Math.min(target, end));
-		sync();
+		glide(Math.max(0, Math.min(target, end)));
 	}
 
 	if (prev) {
