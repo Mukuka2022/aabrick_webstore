@@ -1,0 +1,112 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="{{ aab_heading }}">
+<meta property="og:description" content="{{ aab_description }}">
+<meta property="og:type" content="website">
+{% if aab_page > 1 or aab_active %}<meta name="robots" content="noindex,follow">{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-shop">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">{{ aab_heading }}</span>
+    </nav>
+  </div>
+
+  <header class="aab-shop-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">{{ aab_total }} products</p>
+      <h1>{{ aab_heading }}</h1>
+    </div>
+  </header>
+
+  <div class="aab-inner aab-shop-main">
+
+    <!-- filters: plain links, so they work without javascript ---------- -->
+    <aside class="aab-filters">
+      <div class="aab-filters-head">
+        <h2>Filter</h2>
+        {% if aab_active %}<a class="aab-clear" href="/all-products">Clear</a>{% endif %}
+      </div>
+
+      {% for key, title in [("size", "Size"), ("type", "Type"), ("grade", "Grade")] %}
+        <section class="aab-filter-group">
+          <h3>{{ title }}</h3>
+          <ul>
+            {% for f in aab_facets[key] %}
+              {% if f.count or aab_selected[key] == f.value %}
+                <li>
+                  <a href="{{ aab_query(aab_selected, key, f.value) }}"
+                     class="{{ 'is-on' if aab_selected[key] == f.value else '' }}">
+                    <span>{{ f.label }}</span>
+                    <em>{{ f.count }}</em>
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+    </aside>
+
+    <!-- the grid ------------------------------------------------------- -->
+    <div class="aab-shop-grid">
+      {% if aab_products %}
+        <div class="aab-products-row">
+          {% for p in aab_products %}
+            <a class="aab-product" href="/{{ p.route }}">
+              <div class="aab-product-img is-{{ p.shape }}">
+                {% if p.website_image %}
+                  <img src="{{ p.website_image }}" alt="{{ p.item_code }} {{ p.label }}" loading="lazy">
+                {% endif %}
+              </div>
+              <div class="aab-product-body">
+                <span class="aab-product-code">{{ p.item_code }}{% if p.grade %} &middot; {{ p.grade }} Grade{% endif %}</span>
+                <strong>{{ p.label }}</strong>
+                {% if p.price %}<span class="aab-product-price">{{ p.price }}</span>{% endif %}
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+
+        {% if aab_pages > 1 %}
+          <nav class="aab-pager" aria-label="Pagination">
+            {% if aab_page > 1 %}
+              <a class="aab-btn aab-btn-ghost" href="{{ aab_query(aab_selected, page=aab_page - 1) }}">Previous</a>
+            {% endif %}
+            <span>Page {{ aab_page }} of {{ aab_pages }}</span>
+            {% if aab_page < aab_pages %}
+              <a class="aab-btn aab-btn-ghost" href="{{ aab_query(aab_selected, page=aab_page + 1) }}">Next</a>
+            {% endif %}
+          </nav>
+        {% endif %}
+      {% else %}
+        <p class="aab-muted">
+          Nothing matches that combination. <a href="/all-products">Start again</a>,
+          or call us and we will tell you what is on the shelf.
+        </p>
+      {% endif %}
+    </div>
+  </div>
+
+  <section class="aab-section aab-shop-foot">
+    <div class="aab-inner">
+      <p class="aab-muted">
+        Not on the shelf today? We order from the manufacturer and deliver within
+        {{ aab_lead_time }} days. <a href="/branches">{{ aab_branch_count }} branches nationwide</a>.
+      </p>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

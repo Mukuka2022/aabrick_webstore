@@ -12,6 +12,7 @@ import frappe
 from aabrick_webstore import showcase
 
 no_cache = 1
+sitemap = 1
 
 COMPANY_PHONE = "+260 960 787 777"
 

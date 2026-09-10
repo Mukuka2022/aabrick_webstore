@@ -850,3 +850,81 @@ main.container:has(.aab-cat-page) .aab-cat-page { width: 100%; margin-left: 0; m
 .aab-cat-foot .aab-inner { display: flex; flex-direction: column; gap: 16px; }
 .aab-cat-foot .aab-item-actions { margin-top: 0; }
 .aab-cat-page .aab-section { background: var(--aab-wash); }
+
+/* ------------------------------------------------------------------
+ * Shop listing
+ * Filters are links, not script, so they are styled as a list rather than
+ * as form controls.
+ * ------------------------------------------------------------------ */
+.aab-shop {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	max-width: none;
+	color: var(--aab-ink);
+	background: var(--aab-wash);
+	font-family: var(--aab-body);
+}
+main.container:has(.aab-shop) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-right: 0; }
+
+.aab-shop h1, .aab-shop h2, .aab-shop h3 {
+	font-family: var(--aab-display);
+	font-weight: 400; text-transform: uppercase;
+	letter-spacing: .01em; line-height: 1;
+	color: var(--aab-ink);
+}
+
+.aab-shop-head { background: var(--aab-surface); padding: 30px 0 34px; }
+.aab-shop-head h1 { font-size: clamp(30px, 4.4vw, 46px); margin: 0; }
+
+.aab-shop-main {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 28px;
+	padding-top: 28px;
+	padding-bottom: 10px;
+}
+@media (min-width: 900px) {
+	.aab-shop-main { grid-template-columns: 220px 1fr; gap: 34px; align-items: start; }
+}
+
+.aab-filters-head { display: flex; align-items: baseline; justify-content: space-between; }
+.aab-filters h2 { font-size: 19px; margin: 0 0 4px; }
+.aab-clear { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--aab-red); }
+.aab-filter-group { margin-top: 22px; }
+.aab-filter-group h3 {
+	font-family: var(--aab-body); font-weight: 700;
+	font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+	color: var(--aab-muted); margin: 0 0 8px;
+}
+.aab-filter-group ul { list-style: none; padding: 0; margin: 0; }
+.aab-filter-group li { border-bottom: 1px solid var(--aab-line); }
+.aab-filter-group a {
+	display: flex; justify-content: space-between; align-items: baseline; gap: 10px;
+	padding: 8px 0; text-decoration: none; color: var(--aab-ink); font-size: 14px;
+}
+.aab-filter-group a:hover { color: var(--aab-red); }
+.aab-filter-group a em { font-style: normal; font-size: 12px; color: var(--aab-muted); font-variant-numeric: tabular-nums; }
+.aab-filter-group a.is-on { font-weight: 700; color: var(--aab-red); }
+.aab-filter-group a.is-on::before { content: "\00d7"; margin-right: 6px; }
+
+/* The grid sits inside a column here rather than running the page width, so
+ * it drops its own full-bleed padding. */
+.aab-shop-grid .aab-products-row {
+	padding: 0;
+	grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+}
+
+.aab-pager {
+	display: flex; align-items: center; gap: 14px;
+	padding: 30px 0 10px;
+}
+.aab-pager span { font-size: 14px; color: var(--aab-muted); }
+
+.aab-shop-foot { padding-top: 10px; }
+.aab-shop .aab-section { background: var(--aab-wash); }
