@@ -68,20 +68,33 @@ def _resolve(path):
     return os.path.expanduser(path)
 
 
-def _crop(im, size):
-    """Fill and crop, biased above centre so ceilings and walls survive rather
-    than floor."""
+def _fit(im, size):
+    """The largest crop of this shape the source can give without enlarging."""
+    ratio = size[0] / size[1]
+    w = min(size[0], im.width, im.height * ratio)
+    return (round(w), round(w / ratio))
+
+
+def _crop(im, size, focus=0.35, pan=0.5):
+    """Fill and crop.
+
+    focus is where the window sits vertically and pan horizontally, each from
+    0 to 1. Only one of them ever has room to move: whichever way the source
+    is proportionally larger than the card. A landscape photograph in a
+    portrait card has spare width and no spare height, so pan is the knob that
+    does anything, and the reverse for a tall source.
+    """
     from PIL import Image
 
     w, h = size
     scale = max(w / im.width, h / im.height)
     im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
-    left = (im.width - w) // 2
-    top = int((im.height - h) * 0.35)
+    left = int((im.width - w) * min(max(pan, 0.0), 1.0))
+    top = int((im.height - h) * min(max(focus, 0.0), 1.0))
     return im.crop((left, top, left + w, top + h))
 
 
-def set_slot(slot=None, path=None, caption="", detail=""):
+def set_slot(slot=None, path=None, caption="", detail="", focus=0.35, pan=0.5, allow_small=0):
     from PIL import Image
 
     slot = int(slot or 0)
@@ -96,20 +109,31 @@ def set_slot(slot=None, path=None, caption="", detail=""):
     im = Image.open(src)
     print("source: %s  %sx%s" % (os.path.basename(src), im.width, im.height))
 
-    if im.width < MIN_WIDTH:
+    small = im.width < MIN_WIDTH
+    if small and not allow_small:
         print(
             "\nREFUSED: %spx wide. These render about 350px across, so a %spx\n"
-            "source is the minimum that still looks sharp on a good screen."
+            "source is the minimum that still looks sharp on a good screen.\n"
+            "Pass allow_small=1 to use it at its own resolution anyway."
             % (im.width, MIN_WIDTH)
         )
         return
 
+    size = _fit(im, SIZE) if small else SIZE
+    if small:
+        print("  small source: cropping to %sx%s rather than enlarging" % size)
+
+    scale = max(size[0] / im.width, size[1] / im.height)
+    travel_x = round(im.width * scale) - size[0]
+    travel_y = round(im.height * scale) - size[1]
+    print("  crop travel: %dpx across, %dpx down" % (travel_x, travel_y))
+
     os.makedirs(IMAGES, exist_ok=True)
     out = _path(slot)
-    _crop(im.convert("RGB"), SIZE).save(
+    _crop(im.convert("RGB"), size, float(focus), float(pan)).save(
         out, "JPEG", quality=82, optimize=True, progressive=True
     )
-    print("  wrote %-16s %sx%-5s %6.0f KB" % (_name(slot), SIZE[0], SIZE[1], os.path.getsize(out) / 1024))
+    print("  wrote %-16s %sx%-5s %6.0f KB" % (_name(slot), size[0], size[1], os.path.getsize(out) / 1024))
 
     data = _captions()
     data[str(slot)] = {"caption": caption or "", "detail": detail or ""}
@@ -154,8 +178,11 @@ def context():
     out = []
     for slot in SLOTS:
         meta = data.get(str(slot), {})
+        # The path never changes, so without this a replaced photograph stays
+        # invisible to anyone who has already loaded the page.
+        stamp = int(os.path.getmtime(_path(slot)))
         out.append({
-            "src": "/assets/aabrick_webstore/images/" + _name(slot),
+            "src": "/assets/aabrick_webstore/images/%s?v=%d" % (_name(slot), stamp),
             "caption": meta.get("caption") or "",
             "detail": meta.get("detail") or "",
         })

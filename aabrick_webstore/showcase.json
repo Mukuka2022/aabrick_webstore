@@ -1,1 +1,18 @@
-{}
+{
+  "1": {
+    "caption": "Sitting room",
+    "detail": "Polished grey porcelain floor"
+  },
+  "2": {
+    "caption": "Bathroom",
+    "detail": "Marble-effect wall and floor"
+  },
+  "3": {
+    "caption": "Living space",
+    "detail": "Gloss finish, large format"
+  },
+  "4": {
+    "caption": "Bathroom detail",
+    "detail": "Wall and floor in one finish"
+  }
+}
