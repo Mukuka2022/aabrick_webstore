@@ -1061,3 +1061,121 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
  * the column past the viewport on a phone. */
 .aab-shop-main > * { min-width: 0; }
 .aab-tiles > * { min-width: 0; }
+
+/* ------------------------------------------------------------------
+ * Calculators
+ * ------------------------------------------------------------------ */
+.aab-calc {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	max-width: none;
+	color: var(--aab-ink);
+	background: var(--aab-wash);
+	font-family: var(--aab-body);
+}
+main.container:has(.aab-calc) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-right: 0; }
+
+.aab-calc h1, .aab-calc h2, .aab-calc h3 {
+	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
+	letter-spacing: .01em; line-height: 1; color: var(--aab-ink);
+}
+.aab-calc-head { background: var(--aab-surface); padding: 30px 0 34px; }
+.aab-calc-head h1 { font-size: clamp(30px, 4.4vw, 46px); margin: 0; }
+.aab-calc-lede { margin: 14px 0 0; max-width: 60ch; color: var(--aab-muted); font-size: 16px; line-height: 1.6; }
+
+.aab-calc-main {
+	display: grid; grid-template-columns: 1fr; gap: 26px;
+	padding-top: 28px; padding-bottom: 20px;
+}
+@media (min-width: 900px) {
+	.aab-calc-main { grid-template-columns: 1fr 340px; gap: 34px; align-items: start; }
+	.aab-calc-result { position: sticky; top: 20px; }
+}
+
+.aab-calc-block {
+	border: 0; margin: 0 0 22px; padding: 22px 24px;
+	background: var(--aab-surface);
+}
+.aab-calc-block legend {
+	font-family: var(--aab-body); font-weight: 700; font-size: 11.5px;
+	letter-spacing: .14em; text-transform: uppercase; color: var(--aab-muted);
+	padding: 0; margin-bottom: 14px;
+	/* Not floated: a floated legend crushes every plain block beside it,
+	 * which took the room rows and the tile picker down to nothing while
+	 * the grids, which make their own formatting context, survived. */
+	display: block; width: 100%;
+}
+.aab-calc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (min-width: 620px) { .aab-calc-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.aab-field { display: flex; flex-direction: column; gap: 5px; }
+.aab-field span { font-size: 12.5px; color: var(--aab-muted); font-weight: 600; }
+.aab-field input, .aab-field select {
+	font-family: var(--aab-body); font-size: 15px; color: var(--aab-ink);
+	padding: 10px 12px; border: 1px solid var(--aab-line);
+	background: var(--aab-surface); width: 100%;
+}
+.aab-field input:focus, .aab-field select:focus {
+	outline: 2px solid var(--aab-red); outline-offset: -2px; border-color: var(--aab-red);
+}
+.aab-field-wide { margin-bottom: 16px; }
+
+.aab-room {
+	display: grid; grid-template-columns: 1fr 1fr 34px; gap: 12px;
+	align-items: end; margin-bottom: 12px;
+}
+.aab-room-drop {
+	height: 40px; border: 1px solid var(--aab-line); background: var(--aab-surface);
+	color: var(--aab-muted); font-size: 18px; line-height: 1; cursor: pointer;
+}
+.aab-room-drop:hover { border-color: var(--aab-red); color: var(--aab-red); }
+
+.aab-linkbtn {
+	border: 0; background: none; padding: 0; cursor: pointer;
+	font-family: var(--aab-body); font-size: 13px; font-weight: 700;
+	letter-spacing: .06em; text-transform: uppercase; color: var(--aab-red);
+}
+
+.aab-chiprow { display: flex; flex-wrap: wrap; gap: 8px; }
+.aab-chiprow .aab-chip {
+	border: 1px solid var(--aab-line); background: var(--aab-surface);
+	padding: 9px 16px; cursor: pointer;
+	font-family: var(--aab-body); font-size: 13px; font-weight: 600; color: var(--aab-ink);
+}
+.aab-chiprow .aab-chip.is-on { background: var(--aab-charcoal); border-color: var(--aab-charcoal); color: #fff; }
+.aab-calc-note { margin: 12px 0 0; font-size: 13.5px; color: var(--aab-muted); line-height: 1.55; max-width: 56ch; }
+
+.aab-calc-result {
+	background: var(--aab-charcoal);
+	background-image: linear-gradient(160deg, #33332F 0%, #1C1C1A 100%);
+	color: #fff; padding: 26px 26px 24px;
+}
+.aab-calc-boxes { margin: 4px 0 20px; display: flex; align-items: baseline; gap: 10px; }
+.aab-calc-boxes strong {
+	font-family: var(--aab-display); font-weight: 400; font-size: 64px; line-height: 1;
+	color: #fff; font-variant-numeric: tabular-nums;
+}
+.aab-calc-boxes span { font-size: 15px; color: rgba(255,255,255,.7); }
+
+.aab-calc-table { width: 100%; border-collapse: collapse; }
+.aab-calc-table th, .aab-calc-table td {
+	text-align: left; padding: 9px 0; font-size: 14px;
+	border-bottom: 1px solid rgba(255,255,255,.14);
+}
+.aab-calc-table th { font-weight: 500; color: rgba(255,255,255,.66); }
+.aab-calc-table td { text-align: right; font-variant-numeric: tabular-nums; color: #fff; }
+.aab-calc-total th, .aab-calc-total td { border-bottom: 0; padding-top: 14px; }
+.aab-calc-total td { font-family: var(--aab-display); font-size: 24px; color: #fff; }
+
+.aab-calc-actions { display: flex; flex-direction: column; gap: 9px; margin-top: 20px; }
+.aab-calc-actions .aab-btn { width: 100%; }
+.aab-calc-actions .aab-btn[disabled] { opacity: .45; cursor: default; }
+.aab-calc-small { margin: 16px 0 0; font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,.6); }
+
+.aab-calc-foot { background: var(--aab-wash); }

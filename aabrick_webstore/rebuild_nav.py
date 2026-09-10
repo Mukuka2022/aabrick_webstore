@@ -18,8 +18,10 @@ import frappe
 from aabrick_webstore.overrides.item_group import _plural
 from aabrick_webstore.overrides.website_item import describe_group
 
-# Pages the client asked to keep. Everything else stays unpublished.
-KEEP_PAGES = {"tile-calculator", "pvc-ceiling-calculater"}
+# Both calculators are app pages now, at those same routes, and a Web Page
+# record wins the route over an app template. So no Web Page stays
+# published: the two the client asked to keep are the app's versions.
+KEEP_PAGES = set()
 
 
 def _tile_groups():

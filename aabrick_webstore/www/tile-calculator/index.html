@@ -1,0 +1,140 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="Tile Calculator | AABrick Zambia">
+<meta property="og:description" content="{{ aab_description }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-calc">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">Tile Calculator</span>
+    </nav>
+  </div>
+
+  <header class="aab-calc-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Work out what you need</p>
+      <h1>Tile Calculator</h1>
+      <p class="aab-calc-lede">
+        Measure the floor or wall, choose your tile, and this works out the
+        boxes. Pick from our range and the size, pieces per box and price fill
+        themselves in.
+      </p>
+    </div>
+  </header>
+
+  <div class="aab-inner aab-calc-main">
+
+    <form class="aab-calc-form" id="aab-calc" novalidate>
+
+      <fieldset class="aab-calc-block">
+        <legend>The area</legend>
+        <div class="aab-calc-rooms" id="rooms"></div>
+        <button type="button" class="aab-linkbtn" id="addRoom">+ Add another area</button>
+      </fieldset>
+
+      <fieldset class="aab-calc-block">
+        <legend>The tile</legend>
+
+        <label class="aab-field aab-field-wide">
+          <span>Choose from our range</span>
+          <select id="tilePick">
+            <option value="">Enter my own measurements</option>
+            {% set ns = namespace(current='') %}
+            {% for t in aab_tiles %}
+              {% if t.group != ns.current %}
+                {% if ns.current %}</optgroup>{% endif %}
+                <optgroup label="{{ t.group }}">
+                {% set ns.current = t.group %}
+              {% endif %}
+              <option value="{{ t.code }}">{{ t.code }} &middot; {{ t.w }}x{{ t.h }}mm{% if t.price %} &middot; {{ frappe.utils.fmt_money(t.price, currency="ZMW") }}{% endif %}</option>
+            {% endfor %}
+            {% if ns.current %}</optgroup>{% endif %}
+          </select>
+        </label>
+
+        <div class="aab-calc-grid">
+          <label class="aab-field">
+            <span>Tile width (mm)</span>
+            <input type="number" id="tileW" value="600" min="1" step="1" inputmode="numeric">
+          </label>
+          <label class="aab-field">
+            <span>Tile length (mm)</span>
+            <input type="number" id="tileH" value="600" min="1" step="1" inputmode="numeric">
+          </label>
+          <label class="aab-field">
+            <span>Pieces per box</span>
+            <input type="number" id="pcs" value="4" min="1" step="1" inputmode="numeric">
+          </label>
+          <label class="aab-field">
+            <span>Price per box (ZMW)</span>
+            <input type="number" id="price" value="0" min="0" step="0.01" inputmode="decimal">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="aab-calc-block">
+        <legend>Wastage</legend>
+        <div class="aab-chiprow" role="group" aria-label="Wastage">
+          <button type="button" class="aab-chip" data-waste="5">5%</button>
+          <button type="button" class="aab-chip is-on" data-waste="10">10%</button>
+          <button type="button" class="aab-chip" data-waste="15">15%</button>
+        </div>
+        <p class="aab-calc-note">
+          Cuts, breakages and spares. 10% suits a square room; allow 15% for
+          diagonal laying or a room with many corners.
+        </p>
+      </fieldset>
+    </form>
+
+    <aside class="aab-calc-result" id="result" aria-live="polite">
+      <p class="aab-eyebrow-light">You will need</p>
+      <p class="aab-calc-boxes"><strong id="boxes">0</strong> <span>boxes</span></p>
+
+      <table class="aab-calc-table">
+        <tr><th>Area to cover</th><td id="area">0 m&sup2;</td></tr>
+        <tr><th>With wastage</th><td id="areaPlus">0 m&sup2;</td></tr>
+        <tr><th>Each box covers</th><td id="boxCover">0 m&sup2;</td></tr>
+        <tr><th>Tiles in total</th><td id="tiles">0</td></tr>
+        <tr class="aab-calc-total"><th>Estimated cost</th><td id="cost">&mdash;</td></tr>
+      </table>
+
+      <div class="aab-calc-actions">
+        <button type="button" class="aab-btn aab-btn-primary" id="addCart" disabled>Add boxes to cart</button>
+        <a class="aab-btn aab-btn-ghost-light" id="viewTile" href="/all-products">Browse tiles</a>
+      </div>
+
+      <p class="aab-calc-small" id="disclaimer">
+        An estimate. Confirm quantities with your branch before ordering, and
+        buy the whole job in one go so the shade matches.
+      </p>
+    </aside>
+  </div>
+
+  <section class="aab-section aab-calc-foot">
+    <div class="aab-inner">
+      <p class="aab-muted">
+        Not sure? Any of our {{ aab_branch_count }} branches will check the
+        measurements with you. <a href="/branches">Find your branch</a> or
+        <a href="/contact">send us the room dimensions</a>.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+var AAB_TILES = {{ aab_tiles_json }};
+</script>
+<script src="/assets/aabrick_webstore/js/tile-calculator.js?v={{ aab_version }}"></script>
+{% endblock %}
