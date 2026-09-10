@@ -1130,6 +1130,8 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 	display: grid; grid-template-columns: 1fr 1fr 34px; gap: 12px;
 	align-items: end; margin-bottom: 12px;
 }
+.aab-room.is-area { grid-template-columns: 1fr 34px; }
+.aab-modes { margin-bottom: 16px; }
 .aab-room-drop {
 	height: 40px; border: 1px solid var(--aab-line); background: var(--aab-surface);
 	color: var(--aab-muted); font-size: 18px; line-height: 1; cursor: pointer;

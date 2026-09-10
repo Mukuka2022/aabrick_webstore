@@ -14,6 +14,7 @@
 	var tiles = {};
 	var picked = null;
 	var waste = 10;
+	var mode = "lw";
 
 	function $(id) {
 		return document.getElementById(id);
@@ -34,15 +35,24 @@
 	}
 
 	/* ---------------------------------------------------------------- rooms */
-	function roomRow(len, wid, removable) {
+	function roomRow(a, b, removable) {
 		var row = document.createElement("div");
-		row.className = "aab-room";
-		row.innerHTML =
-			'<label class="aab-field"><span>Length (m)</span>' +
-			'<input type="number" class="room-l" min="0" step="0.01" inputmode="decimal" value="' + len + '"></label>' +
-			'<label class="aab-field"><span>Width (m)</span>' +
-			'<input type="number" class="room-w" min="0" step="0.01" inputmode="decimal" value="' + wid + '"></label>' +
-			'<button type="button" class="aab-room-drop" aria-label="Remove this area">&times;</button>';
+		row.className = mode === "m2" ? "aab-room is-area" : "aab-room";
+
+		if (mode === "m2") {
+			row.innerHTML =
+				'<label class="aab-field"><span>Area (m\u00B2)</span>' +
+				'<input type="number" class="room-m2" min="0" step="0.01" inputmode="decimal" value="' + a + '"></label>' +
+				'<button type="button" class="aab-room-drop" aria-label="Remove this area">&times;</button>';
+		} else {
+			row.innerHTML =
+				'<label class="aab-field"><span>Length (m)</span>' +
+				'<input type="number" class="room-l" min="0" step="0.01" inputmode="decimal" value="' + a + '"></label>' +
+				'<label class="aab-field"><span>Width (m)</span>' +
+				'<input type="number" class="room-w" min="0" step="0.01" inputmode="decimal" value="' + b + '"></label>' +
+				'<button type="button" class="aab-room-drop" aria-label="Remove this area">&times;</button>';
+		}
+
 		if (!removable) {
 			row.querySelector(".aab-room-drop").style.visibility = "hidden";
 		}
@@ -55,10 +65,38 @@
 		calculate();
 	}
 
+	function setMode(next) {
+		if (next === mode) {
+			return;
+		}
+		// Carry the total across rather than throwing it away: someone who has
+		// measured a room and then switches should see the number they had.
+		var carried = totalArea();
+		mode = next;
+
+		var rooms = $("rooms");
+		rooms.innerHTML = "";
+		if (mode === "m2") {
+			rooms.appendChild(roomRow(carried ? round2(carried) : "", "", false));
+		} else {
+			rooms.appendChild(roomRow(5, 4, false));
+		}
+		calculate();
+	}
+
+	function round2(n) {
+		return Math.round(n * 100) / 100;
+	}
+
 	function totalArea() {
 		var total = 0;
 		var rows = document.querySelectorAll("#rooms .aab-room");
 		for (var i = 0; i < rows.length; i++) {
+			var direct = rows[i].querySelector(".room-m2");
+			if (direct) {
+				total += parseFloat(direct.value) || 0;
+				continue;
+			}
 			var l = parseFloat(rows[i].querySelector(".room-l").value) || 0;
 			var w = parseFloat(rows[i].querySelector(".room-w").value) || 0;
 			total += l * w;
@@ -190,7 +228,18 @@
 			$(manual[j]).addEventListener("input", calculate);
 		}
 
-		var chips = document.querySelectorAll(".aab-chiprow .aab-chip");
+		var modes = document.querySelectorAll(".aab-modes .aab-chip");
+		for (var m = 0; m < modes.length; m++) {
+			modes[m].addEventListener("click", function (e) {
+				for (var n = 0; n < modes.length; n++) {
+					modes[n].classList.remove("is-on");
+				}
+				e.target.classList.add("is-on");
+				setMode(e.target.getAttribute("data-mode"));
+			});
+		}
+
+		var chips = document.querySelectorAll(".aab-chiprow:not(.aab-modes) .aab-chip");
 		for (var k = 0; k < chips.length; k++) {
 			chips[k].addEventListener("click", function (e) {
 				for (var n = 0; n < chips.length; n++) {
