@@ -102,7 +102,7 @@ def _categories():
 
 def _featured():
     """Published items with an image and a price, one per item group so the row
-    shows range rather than six near-identical tiles."""
+    shows range rather than five near-identical tiles."""
     rows = frappe.db.sql(
         """
         SELECT wi.item_code, wi.web_item_name, wi.website_image, wi.route,
@@ -114,7 +114,7 @@ def _featured():
           AND IFNULL(wi.website_image, '') <> ''
         GROUP BY wi.item_group
         ORDER BY ip.price_list_rate DESC
-        LIMIT 6
+        LIMIT 5
         """,
         as_dict=True,
     )
