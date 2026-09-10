@@ -237,16 +237,27 @@ class AABrickWebsiteItem(WebsiteItem):
         """Four more from the same group, so a visitor can compare finishes."""
         rows = frappe.db.sql(
             """
-            SELECT item_code, route, website_image
-            FROM `tabWebsite Item`
-            WHERE published = 1 AND item_group = %s AND name != %s
-              AND IFNULL(website_image, '') <> ''
-            ORDER BY item_code
+            SELECT wi.item_code, wi.route, wi.website_image, wi.item_group,
+                   ip.price_list_rate
+            FROM `tabWebsite Item` wi
+            LEFT JOIN `tabItem Price` ip
+              ON ip.item_code = wi.item_code AND ip.price_list = 'Web Price List'
+            WHERE wi.published = 1 AND wi.item_group = %s AND wi.name != %s
+              AND IFNULL(wi.website_image, '') <> ''
+            ORDER BY wi.item_code
             LIMIT 4
             """,
             (self.item_group, self.name),
             as_dict=True,
         )
+        label, _size, _finish, grade = describe_group(self.item_group)
         for r in rows:
             r["shape"] = image_shape(r.website_image)
+            r["label"] = label
+            r["grade"] = grade
+            r["uom"] = unit_label(r.item_code)
+            r["price"] = (
+                frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
+                if r.price_list_rate else None
+            )
         return rows

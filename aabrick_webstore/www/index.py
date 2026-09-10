@@ -159,8 +159,16 @@ def _featured():
         """,
         as_dict=True,
     )
+    from aabrick_webstore.overrides.website_item import describe_group, unit_label
+
     for r in rows:
         r["price"] = frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
         r["group_label"] = (r.item_group or "").split(" - ")[0]
         r["shape"] = _shape(r.website_image)
+        # The homepage shows the same card as the shop, so it needs the same
+        # fields: what to call it, which grade it is, and what the price buys.
+        label, _size, _finish, grade = describe_group(r.item_group)
+        r["label"] = label
+        r["grade"] = grade
+        r["uom"] = unit_label(r.item_code)
     return rows

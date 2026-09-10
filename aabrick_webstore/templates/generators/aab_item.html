@@ -101,19 +101,11 @@
   </section>
 
   <section class="aab-section">
-    <div class="aab-products-row">
-      {% for r in aab_related %}
-        <a class="aab-product" href="/{{ r.route }}">
-          <div class="aab-product-img is-{{ r.shape }}">
-            <img src="{{ r.website_image }}" alt="{{ r.item_code }}" loading="lazy">
-          </div>
-          <div class="aab-product-body">
-            <span class="aab-product-code">{{ r.item_code }}</span>
-            <strong>{{ aab_label }}</strong>
-          </div>
-        </a>
-      {% endfor %}
-    </div>
+      <div class="aab-tiles">
+        {% for p in aab_related %}
+          {% include "templates/includes/product_card.html" %}
+        {% endfor %}
+      </div>
   </section>
   {% endif %}
 

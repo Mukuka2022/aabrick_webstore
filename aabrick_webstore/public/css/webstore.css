@@ -33,6 +33,9 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
+	/* Behind product photographs. A white tile needs something to sit
+	 * against, the same way the grey ones did. */
+	--aab-shot-ground: #555556;
 	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
 	--aab-oxblood-lit: #47191B;
 	--aab-oxblood-deep: #2E1012;
@@ -733,7 +736,7 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 }
 
 .aab-item-shot {
-	background: var(--aab-surface);
+	background: var(--aab-shot-ground);
 	aspect-ratio: 1 / 1;
 	display: flex; align-items: center; justify-content: center;
 	overflow: hidden;
@@ -948,6 +951,12 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-shop .aab-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* Five on the homepage, which is full width and has no filter column. */
+@media (min-width: 1000px) {
+	.aab-home .aab-tiles { grid-template-columns: repeat(5, 1fr); }
+}
+.aab-home .aab-tiles { padding: 0 10px; }
+
 .aab-tile {
 	background: var(--aab-surface);
 	display: flex; flex-direction: column;
@@ -959,7 +968,7 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	position: relative;
 	display: flex; align-items: center; justify-content: center;
 	aspect-ratio: 1 / 1;
-	background: var(--aab-surface);
+	background: var(--aab-shot-ground);
 	overflow: hidden;
 }
 .aab-tile-shot img {
@@ -974,7 +983,7 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 
 .aab-tile-grade {
 	position: absolute; top: 0; left: 0;
-	background: var(--aab-charcoal); color: #fff;
+	background: var(--aab-red); color: #fff;
 	font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
 	padding: 5px 9px;
 }
