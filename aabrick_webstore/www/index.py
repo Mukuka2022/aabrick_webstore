@@ -103,6 +103,43 @@ def _categories():
     return out
 
 
+def _image_path(url):
+    """A website image URL as a path on disk, or None."""
+    rel = (url or "").lstrip("/")
+    if not rel:
+        return None
+    if rel.startswith("files/"):
+        return frappe.get_site_path("public", rel)
+    if rel.startswith("private/files/"):
+        return frappe.get_site_path(rel)
+    return None
+
+
+def _shape(url):
+    """wide, tall or square.
+
+    The card gives each shape a different amount of room, because one box
+    cannot shrink the square tiles without shrinking the upright bags with
+    them: both are limited by the height. Reading the header is cheap, and
+    Pillow does not decode the pixels to answer this.
+    """
+    path = _image_path(url)
+    if not path or not os.path.exists(path):
+        return "square"
+    try:
+        from PIL import Image
+
+        with Image.open(path) as im:
+            ratio = im.width / float(im.height or 1)
+    except Exception:
+        return "square"
+    if ratio >= 1.4:
+        return "wide"
+    if ratio <= 0.8:
+        return "tall"
+    return "square"
+
+
 def _featured():
     """Published items with an image and a price, one per item group so the row
     shows range rather than five near-identical tiles."""
@@ -124,4 +161,5 @@ def _featured():
     for r in rows:
         r["price"] = frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
         r["group_label"] = (r.item_group or "").split(" - ")[0]
+        r["shape"] = _shape(r.website_image)
     return rows

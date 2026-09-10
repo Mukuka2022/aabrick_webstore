@@ -563,6 +563,12 @@ main.container:has(.aab-branch) .aab-branch {
 	transition: transform .3s ease;
 }
 .aab-product:hover .aab-product-img img { transform: scale(1.04); }
+
+/* A square photograph is limited by whichever side is smaller, so it fills the
+ * roomy box above and comes out larger than either the strips or the bags.
+ * It gets its own, tighter box. The shape is decided server side, from the
+ * file, in www/index.py. */
+.aab-product-img.is-square img { padding: 29px 41px; }
 /* Graded rather than flat: a flat dark rectangle reads as a hole in the page,
  * a graded one as a lit surface. */
 .aab-product-body {

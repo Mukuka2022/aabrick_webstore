@@ -154,7 +154,7 @@
     <div class="aab-products-row">
         {% for p in featured %}
           <a class="aab-product" href="/{{ p.route }}">
-            <div class="aab-product-img">
+            <div class="aab-product-img is-{{ p.shape }}">
               <img src="{{ p.website_image }}" alt="{{ p.item_code }}" loading="lazy">
             </div>
             <div class="aab-product-body">
