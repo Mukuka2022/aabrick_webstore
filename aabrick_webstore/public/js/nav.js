@@ -84,9 +84,89 @@
 		onScroll();
 	}
 
-	document.addEventListener("DOMContentLoaded", start);
-	window.addEventListener("load", start);
-	if (document.readyState !== "loading") {
+	// The shop filters.
+	//
+	// They are plain links and they work with no javascript at all, which is
+	// why they are not collapsed in the markup: without this file a customer
+	// still sees every filter. What this adds is the collapse on a phone,
+	// where the filters stack above the grid and would otherwise put six
+	// hundred pixels of links between the customer and the first tile.
+	function startFilters() {
+		var box = document.querySelector(".aab-filters");
+		if (!box || box.getAttribute("data-aab-ready")) {
+			return;
+		}
+		box.setAttribute("data-aab-ready", "1");
+
+		var head = box.querySelector(".aab-filters-head");
+		var body = box.querySelector(".aab-filters-body");
+		var clear = box.querySelector(".aab-clear");
+		if (!head || !body) {
+			return;
+		}
+
+		var chosen = box.querySelectorAll(".aab-filter-group a.is-on").length;
+		var btn = document.createElement("button");
+		btn.type = "button";
+		btn.className = "aab-filters-toggle";
+		btn.setAttribute("aria-controls", "aab-filters-body");
+		if (clear) {
+			head.insertBefore(btn, clear);
+		} else {
+			head.appendChild(btn);
+		}
+
+		function label(open) {
+			btn.textContent = open ? "Hide" : "Show";
+			if (chosen) {
+				var tag = document.createElement("span");
+				tag.className = "aab-filters-count";
+				tag.textContent = String(chosen);
+				btn.appendChild(document.createTextNode(" "));
+				btn.appendChild(tag);
+			}
+		}
+
+		function setOpen(open) {
+			body.hidden = !open;
+			btn.setAttribute("aria-expanded", open ? "true" : "false");
+			label(open);
+		}
+
+		var narrow = window.matchMedia("(max-width: 899.98px)");
+
+		function sync() {
+			if (narrow.matches) {
+				btn.hidden = false;
+				// Anything already filtered stays in view, so the customer can
+				// see what is narrowing the list and take it off again.
+				setOpen(chosen > 0);
+			} else {
+				btn.hidden = true;
+				body.hidden = false;
+			}
+		}
+
+		btn.addEventListener("click", function () {
+			setOpen(body.hidden);
+		});
+
+		if (narrow.addEventListener) {
+			narrow.addEventListener("change", sync);
+		} else if (narrow.addListener) {
+			narrow.addListener(sync);
+		}
+		sync();
+	}
+
+	function boot() {
 		start();
+		startFilters();
+	}
+
+	document.addEventListener("DOMContentLoaded", boot);
+	window.addEventListener("load", boot);
+	if (document.readyState !== "loading") {
+		boot();
 	}
 })();

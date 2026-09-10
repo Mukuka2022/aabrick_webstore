@@ -39,6 +39,7 @@
         {% if aab_active %}<a class="aab-clear" href="/all-products">Clear</a>{% endif %}
       </div>
 
+      <div class="aab-filters-body" id="aab-filters-body">
       {% for key, title in [("size", "Size"), ("type", "Type"), ("grade", "Grade")] %}
         <section class="aab-filter-group">
           <h3>{{ title }}</h3>
@@ -57,6 +58,7 @@
           </ul>
         </section>
       {% endfor %}
+      </div>
     </aside>
 
     <!-- the grid ------------------------------------------------------- -->

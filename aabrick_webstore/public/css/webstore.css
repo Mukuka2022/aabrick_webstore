@@ -901,7 +901,23 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-shop-main { grid-template-columns: 220px 1fr; gap: 34px; align-items: start; }
 }
 
-.aab-filters-head { display: flex; align-items: baseline; justify-content: space-between; }
+/* Below 900px the filters stack above the grid, and left open they put 639px
+ * of links between the customer and the first tile. The toggle is written by
+ * nav.js and stays hidden without javascript, so the filters simply show. */
+.aab-filters-head { display: flex; align-items: baseline; gap: 12px; }
+.aab-filters-head h2 { margin-right: auto; }
+.aab-filters-toggle {
+	background: none; border: 1px solid var(--aab-line); cursor: pointer;
+	font-family: var(--aab-body); font-size: 12px; font-weight: 700;
+	letter-spacing: .08em; text-transform: uppercase; color: var(--aab-ink);
+	padding: 7px 12px;
+}
+.aab-filters-toggle:hover { border-color: var(--aab-ink); }
+.aab-filters-count { color: var(--aab-red); }
+@media (max-width: 899.98px) {
+	.aab-filters { border-bottom: 1px solid var(--aab-line); padding-bottom: 18px; }
+	.aab-filters-body[hidden] { display: none; }
+}
 .aab-filters h2 { font-size: 19px; margin: 0 0 4px; }
 .aab-clear { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--aab-red); }
 .aab-filter-group { margin-top: 22px; }
@@ -1051,8 +1067,10 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 }
 
 /* The listing sits in the 1280px container, which supplies the side padding.
- * The filter column takes 220 of the 1200 and the grid takes the rest. */
-.aab-shop-main { padding: 28px 0 10px; }
+ * The filter column takes 220 of the 1200 and the grid takes the rest.
+ * Top and bottom only: the shorthand would wipe out that side padding and
+ * push the whole listing flush against the edges of the screen. */
+.aab-shop-main { padding-top: 28px; padding-bottom: 10px; }
 @media (min-width: 900px) {
 	.aab-shop-main { grid-template-columns: 220px 1fr; }
 }
@@ -1124,6 +1142,7 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 .aab-field input:focus, .aab-field select:focus {
 	outline: 2px solid var(--aab-red); outline-offset: -2px; border-color: var(--aab-red);
 }
+
 .aab-field-wide { margin-bottom: 16px; }
 
 .aab-room {
@@ -1468,6 +1487,12 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 .aab-foot-col ul { list-style: none; margin: 0; padding: 0; }
 .aab-foot-col li { margin-bottom: 9px; }
 .aab-foot-col a { color: rgba(255,255,255,.7); text-decoration: none; font-size: 14px; }
+/* A thumb cannot pick one line out of a 26px pitch, so the rows open up on
+ * the small screens where the pointer is a thumb. */
+@media (max-width: 699.98px) {
+	.aab-foot-col li { margin-bottom: 0; }
+	.aab-foot-col a { display: block; padding: 9px 0; }
+}
 .aab-foot-col a:hover { color: #fff; text-decoration: underline; }
 
 .aab-foot-bar { border-top: 1px solid rgba(255,255,255,.14); padding: 16px 0; }
@@ -1477,3 +1502,8 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	font-size: 12.5px; color: rgba(255,255,255,.55);
 }
 .aab-foot-note { max-width: 62ch; }
+/* Safari zooms the page in on any field it focuses that is set under 16px,
+ * and leaves the customer typing into a form wider than the screen. */
+@media (max-width: 899.98px) {
+	.aab-field input, .aab-field select, .aab-field textarea { font-size: 16px; }
+}
