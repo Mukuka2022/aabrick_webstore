@@ -33,9 +33,12 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
-	/* Behind product photographs. A white tile needs something to sit
-	 * against, the same way the grey ones did. */
-	--aab-shot-ground: #555556;
+	/* Behind product photographs: the grey the brand guideline names, which
+	 * is also near the 18% mid grey used as a backdrop in product photography,
+	 * for the reason that matters here. It holds a white subject and a black
+	 * one at once, and this catalogue runs from white marble to a plain black
+	 * tile. */
+	--aab-shot-ground: #828282;
 	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
 	--aab-oxblood-lit: #47191B;
 	--aab-oxblood-deep: #2E1012;
@@ -951,9 +954,10 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-shop .aab-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* Five on the homepage, which is full width and has no filter column. */
+/* Four on the homepage, which is full width and has no filter column, so
+ * eight products make two whole rows. */
 @media (min-width: 1000px) {
-	.aab-home .aab-tiles { grid-template-columns: repeat(5, 1fr); }
+	.aab-home .aab-tiles { grid-template-columns: repeat(4, 1fr); }
 }
 .aab-home .aab-tiles { padding: 0 10px; }
 

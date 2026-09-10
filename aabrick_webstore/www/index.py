@@ -142,8 +142,8 @@ def _shape(url):
 
 
 def _featured():
-    """Published items with an image and a price, one per item group so the row
-    shows range rather than five near-identical tiles."""
+    """Published items with an image and a price, one per item group so the two
+    rows show range rather than eight near-identical tiles."""
     rows = frappe.db.sql(
         """
         SELECT wi.item_code, wi.web_item_name, wi.website_image, wi.route,
@@ -153,9 +153,10 @@ def _featured():
           ON ip.item_code = wi.item_code AND ip.price_list = 'Web Price List'
         WHERE wi.published = 1
           AND IFNULL(wi.website_image, '') <> ''
+          AND wi.item_group NOT LIKE '%% D (%%'
         GROUP BY wi.item_group
         ORDER BY ip.price_list_rate DESC
-        LIMIT 5
+        LIMIT 8
         """,
         as_dict=True,
     )
