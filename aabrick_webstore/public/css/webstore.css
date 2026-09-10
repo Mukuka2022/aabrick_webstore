@@ -252,6 +252,14 @@ main.container:has(.aab-branch) .aab-branch {
  * row it introduces. */
 .aab-section--white { background: var(--aab-surface); }
 .aab-section--white .aab-section-head { margin-bottom: 0; }
+
+/* The reasons: more air than the other bands, and a centred heading. The
+ * eyebrow drops its red bar here, which looked stranded once the rules over
+ * the points had gone. */
+.aab-section--reasons { padding: 50px 0; }
+.aab-section--reasons .aab-inner { text-align: center; }
+.aab-section--reasons .aab-eyebrow { justify-content: center; }
+.aab-section--reasons .aab-eyebrow::before { display: none; }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
 	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
@@ -501,7 +509,8 @@ main.container:has(.aab-branch) .aab-branch {
 }
 @media (min-width: 700px) { .aab-why { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1100px) { .aab-why { grid-template-columns: repeat(3, 1fr); } }
-.aab-why div { border-top: 3px solid var(--aab-red); padding: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
+/* No rule over each point: a name and a line of text, nothing else. */
+.aab-why div { display: flex; flex-direction: column; gap: 6px; }
 .aab-why strong {
 	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
 	font-size: 19px; letter-spacing: .01em; line-height: 1.08;
