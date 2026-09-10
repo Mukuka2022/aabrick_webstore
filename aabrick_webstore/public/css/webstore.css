@@ -564,7 +564,7 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-product-body {
 	padding: 35px 18px;
 	display: flex; flex-direction: column; gap: 3px;
-	background: linear-gradient(160deg, #B90000 0%, #470303 100%);
+	background: linear-gradient(160deg, #131129 0%, #070615 100%);
 	color: #fff;
 }
 
