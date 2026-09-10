@@ -34,26 +34,40 @@ def _split_group(item_group):
 
 
 def describe_group(item_group):
-    """Return (label, size, finish) for an item group.
+    """Return (label, size, finish, grade) for an item group.
 
     label   what to call one of these, e.g. "Glazed Porcelain Tile 600x1200"
     size    "600 x 1200 mm", or None
     finish  "Glazed Porcelain", or None
+    grade   "B" for the D groups, otherwise None
+
+    D is the internal name for the second grade and the staff use it, so the
+    groups keep it. A customer has no idea what D means, so the page says
+    B Grade instead and the label drops the letter.
     """
     base = _split_group(item_group)
     if not base:
-        return ("Product", None, None)
+        return ("Product", None, None, None)
 
     m = GROUP_RE.match(base)
     if not m:
         # Tile Fix, Fertilizer, PVC ceiling boards: no size in the name.
-        return (base.rstrip("s") if base.endswith("s") else base, None, None)
+        name = base.rstrip("s") if base.endswith("s") else base
+        name, grade = _degrade(name)
+        return (name, None, None, grade)
 
     name = m.group("name").strip()
+    name, grade = _degrade(name)
     size = "%s x %s mm" % (m.group("w"), m.group("h"))
     singular = re.sub(r"\bTiles\b", "Tile", name)
     finish = re.sub(r"\s*Tiles?\s*$", "", name).strip() or None
-    return ("%s %sx%s" % (singular, m.group("w"), m.group("h")), size, finish)
+    return ("%s %sx%s" % (singular, m.group("w"), m.group("h")), size, finish, grade)
+
+
+def _degrade(name):
+    """Strip a trailing D and report the grade it stood for."""
+    stripped = re.sub(r"\s+D$", "", name)
+    return (stripped, "B") if stripped != name else (name, None)
 
 
 def _image_path(url):
@@ -96,12 +110,17 @@ class AABrickWebsiteItem(WebsiteItem):
     def get_context(self, context):
         context = super().get_context(context)
 
-        label, size, finish = describe_group(self.item_group)
+        label, size, finish, grade = describe_group(self.item_group)
         code = self.item_code or self.name
 
         context.aab_label = label
         context.aab_size = size
         context.aab_finish = finish
+        context.aab_grade = grade
+        context.aab_grade_note = (
+            "B grade stock: the same tile at a lower price than A grade."
+            if grade == "B" else None
+        )
         context.aab_code = code
         context.aab_group = _split_group(self.item_group)
         context.aab_group_route = self._group_route()
@@ -114,7 +133,8 @@ class AABrickWebsiteItem(WebsiteItem):
         price = self._price(context)
         context.aab_price = price
 
-        context.aab_heading = "%s %s" % (code, label) if label != "Product" else code
+        suffix = " (%s Grade)" % grade if grade else ""
+        context.aab_heading = ("%s %s%s" % (code, label, suffix)) if label != "Product" else code
         context.title = "%s | AABrick Zambia" % context.aab_heading
         context.aab_description = self._meta_description(label, size, price)
         context.aab_canonical = frappe.utils.get_url(self.route or "")

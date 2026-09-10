@@ -779,3 +779,16 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 
 .aab-item .aab-section { background: var(--aab-wash); }
 .aab-item .aab-section--white { background: var(--aab-surface); }
+
+.aab-grade-tag {
+	display: inline-block;
+	font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+	color: #fff; background: var(--aab-charcoal);
+	padding: 4px 9px; margin: 0 0 12px;
+}
+.aab-item-grade-note {
+	margin: 18px 0 0; padding: 12px 14px;
+	background: var(--aab-wash-deep);
+	font-size: 14px; line-height: 1.55; color: var(--aab-ink);
+	max-width: 46ch;
+}

@@ -41,6 +41,7 @@
     <!-- the buying column --------------------------------------------- -->
     <div class="aab-item-buy">
       <p class="aab-eyebrow">{{ aab_group }}</p>
+      {% if aab_grade %}<p class="aab-grade-tag">{{ aab_grade }} Grade</p>{% endif %}
       <h1>{{ aab_heading }}</h1>
 
       {% if aab_price %}
@@ -53,6 +54,7 @@
       <ul class="aab-item-facts">
         <li><span>Code</span><strong>{{ aab_code }}</strong></li>
         {% if aab_size %}<li><span>Size</span><strong>{{ aab_size }}</strong></li>{% endif %}
+        {% if aab_grade %}<li><span>Grade</span><strong>{{ aab_grade }} Grade</strong></li>{% endif %}
         {% if aab_finish %}<li><span>Type</span><strong>{{ aab_finish }}</strong></li>{% endif %}
         {% if aab_price and aab_price.uom %}<li><span>Sold by</span><strong>{{ aab_price.uom }}</strong></li>{% endif %}
       </ul>
@@ -66,6 +68,8 @@
         {% endif %}
         <a class="aab-btn aab-btn-ghost" href="/contact">Ask about this tile</a>
       </div>
+
+      {% if aab_grade_note %}<p class="aab-item-grade-note">{{ aab_grade_note }}</p>{% endif %}
 
       <p class="aab-item-lead">
         Not on the shelf today? We order it from the manufacturer and deliver
