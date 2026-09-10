@@ -173,13 +173,29 @@
     <div class="aab-inner">
       <p class="aab-eyebrow">Why choose AABrick</p>
       <h2>Twenty years supplying Zambia</h2>
-      <div class="aab-why">
+    </div>
+
+    <div class="aab-why">
         <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
         <div><strong>{{ branch_count }} branches</strong><span>Across all ten provinces.</span></div>
         <div><strong>Quality brands</strong><span>Marcopolo Tiles and Unites Capital Fertilizer.</span></div>
         <div><strong>Own delivery fleet</strong><span>Maintained trucks, nationwide reach.</span></div>
         <div><strong>Public service financing</strong><span>Through our PSMFC partnership.</span></div>
-        <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
+      <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
+    </div>
+  </section>
+
+  <!-- branches --------------------------------------------------------- -->
+  <section class="aab-branch-cta">
+    <div class="aab-inner">
+      <div>
+        <p class="aab-eyebrow-light">{{ branch_count }} branches nationwide</p>
+        <h2>There is a branch near you</h2>
+        <p>Come and see the tiles in person, or call and we will tell you what is on the shelf today.</p>
+      </div>
+      <div class="aab-branch-cta-actions">
+        <a class="aab-btn aab-btn-light" href="/branches">View branches</a>
+        <a class="aab-btn aab-btn-ghost-light" href="tel:{{ company_phone|replace(' ', '') }}">Call {{ company_phone }}</a>
       </div>
     </div>
   </section>
@@ -205,21 +221,6 @@
           <span>See the tiles in person before you commit. {{ branch_count }} branches nationwide.</span>
           <span class="aab-talk-go">Find your branch</span>
         </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- branches --------------------------------------------------------- -->
-  <section class="aab-branch-cta">
-    <div class="aab-inner">
-      <div>
-        <p class="aab-eyebrow-light">{{ branch_count }} branches nationwide</p>
-        <h2>There is a branch near you</h2>
-        <p>Come and see the tiles in person, or call and we will tell you what is on the shelf today.</p>
-      </div>
-      <div class="aab-branch-cta-actions">
-        <a class="aab-btn aab-btn-light" href="/branches">View branches</a>
-        <a class="aab-btn aab-btn-ghost-light" href="tel:{{ company_phone|replace(' ', '') }}">Call {{ company_phone }}</a>
       </div>
     </div>
   </section>

@@ -490,7 +490,17 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-panel-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* Why AABrick */
-.aab-why { display: grid; grid-template-columns: repeat(auto-fit, minmax(255px, 1fr)); gap: 26px 30px; margin-top: 30px; }
+/* Full width, like the other rows. Explicit column counts rather than
+ * auto-fit: there are six reasons, and auto-fit lands on four or five at this
+ * width, which leaves one or two stranded on a second row. */
+.aab-why {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 26px 30px;
+	padding: 30px 10px 0;
+}
+@media (min-width: 700px) { .aab-why { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .aab-why { grid-template-columns: repeat(3, 1fr); } }
 .aab-why div { border-top: 3px solid var(--aab-red); padding: 14px 0 0; display: flex; flex-direction: column; gap: 6px; }
 .aab-why strong {
 	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
@@ -545,7 +555,7 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-product-body {
 	padding: 35px 18px;
 	display: flex; flex-direction: column; gap: 3px;
-	background: linear-gradient(160deg, var(--aab-oxblood-lit) 0%, var(--aab-oxblood-deep) 100%);
+	background: linear-gradient(160deg, #B90000 0%, #470303 100%);
 	color: #fff;
 }
 
@@ -555,10 +565,10 @@ main.container:has(.aab-branch) .aab-branch {
 	.aab-product:hover .aab-product-img img { transform: none; }
 }
 .aab-product-code {
-	font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .1em; font-weight: 700;
+	font-size: 11px; color: rgba(255,255,255,.85); letter-spacing: .1em; font-weight: 700;
 	font-variant-numeric: tabular-nums;
 }
-.aab-product-body strong { font-size: 14px; font-weight: 500; line-height: 1.4; color: rgba(255,255,255,.82); }
+.aab-product-body strong { font-size: 14px; font-weight: 500; line-height: 1.4; color: #fff; }
 .aab-product-price {
 	margin-top: 5px; color: #fff;
 	font-family: var(--aab-display); font-weight: 400; font-size: 21px;
