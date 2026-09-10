@@ -81,6 +81,7 @@
 	margin-right: calc(50% - 50vw);
 	max-width: none;
 	color: var(--aab-ink);
+	background: var(--aab-wash);
 	font-family: var(--aab-body);
 }
 
@@ -243,8 +244,7 @@ main.container:has(.aab-branch) .aab-branch {
 /* ------------------------------------------------------------------
  * Homepage: sections
  * ------------------------------------------------------------------ */
-.aab-section { padding: 25px 0; }
-.aab-section--wash { background: var(--aab-wash); }
+.aab-section { padding: 25px 0; background: var(--aab-wash); }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
 	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
