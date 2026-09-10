@@ -33,7 +33,9 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
-	--aab-blush: #F7E5E2;       /* the brand red at a tenth strength, for product panels */
+	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
+	--aab-oxblood-lit: #47191B;
+	--aab-oxblood-deep: #2E1012;
 
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
@@ -517,10 +519,11 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-product:hover { color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
 	aspect-ratio: 303 / 275;   /* the all-products image area */
-	/* Warm, not another grey. A neutral one step off the section read as
-	 * nothing at all, and the catalogue is mostly cold grey and white tile,
-	 * which sits better on a warm ground than on a cool one. */
-	background: var(--aab-blush);
+	/* Dark, because the catalogue is pale. Grey tile on a grey panel had no
+	 * contrast to read the surface by; every showroom puts pale stone against
+	 * something dark. Graded rather than flat: a flat dark rectangle reads as
+	 * a hole, a graded one as a lit surface. */
+	background: linear-gradient(160deg, var(--aab-oxblood-lit) 0%, var(--aab-oxblood-deep) 100%);
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }
