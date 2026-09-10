@@ -1,0 +1,139 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="PVC Ceiling Calculator | AABrick Zambia">
+<meta property="og:description" content="{{ aab_description }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-calc">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">PVC Ceiling Calculator</span>
+    </nav>
+  </div>
+
+  <header class="aab-calc-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Work out what you need</p>
+      <h1>PVC Ceiling Calculator</h1>
+      <p class="aab-calc-lede">
+        Measure the ceiling, choose a board, and this counts the boards and
+        estimates what they cost.
+      </p>
+    </div>
+  </header>
+
+  <div class="aab-inner aab-calc-main">
+
+    <form class="aab-calc-form" id="aab-calc" novalidate>
+
+      <fieldset class="aab-calc-block">
+        <legend>The ceiling</legend>
+
+        <div class="aab-chiprow aab-modes" role="group" aria-label="How to enter the area">
+          <button type="button" class="aab-chip is-on" data-mode="lw">Length and width</button>
+          <button type="button" class="aab-chip" data-mode="m2">I know the square metres</button>
+        </div>
+
+        <div class="aab-calc-rooms" id="rooms"></div>
+        <button type="button" class="aab-linkbtn" id="addRoom">+ Add another area</button>
+      </fieldset>
+
+      <fieldset class="aab-calc-block">
+        <legend>The board</legend>
+
+        <label class="aab-field aab-field-wide">
+          <span>Board size</span>
+          <select id="boardPick">
+            {% for b in aab_boards %}
+              <option value="{{ loop.index0 }}"{% if b.w == 250 and b.l == 6.0 %} selected{% endif %}>
+                {{ b.label }} &middot; {{ "%.2f"|format(b.area) }} m&sup2; &middot; {{ frappe.utils.fmt_money(b.price, currency="ZMW") }}
+              </option>
+            {% endfor %}
+            <option value="custom">Another size</option>
+          </select>
+        </label>
+
+        <div class="aab-calc-grid">
+          <label class="aab-field">
+            <span>Board width (mm)</span>
+            <input type="number" id="boardW" value="250" min="1" step="1" inputmode="numeric">
+          </label>
+          <label class="aab-field">
+            <span>Board length (m)</span>
+            <input type="number" id="boardL" value="6" min="0.1" step="0.1" inputmode="decimal">
+          </label>
+          <label class="aab-field">
+            <span>Price per board (ZMW)</span>
+            <input type="number" id="price" value="150" min="0" step="0.01" inputmode="decimal">
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="aab-calc-block">
+        <legend>Wastage</legend>
+        <div class="aab-chiprow" role="group" aria-label="Wastage">
+          <button type="button" class="aab-chip" data-waste="5">5%</button>
+          <button type="button" class="aab-chip is-on" data-waste="10">10%</button>
+          <button type="button" class="aab-chip" data-waste="15">15%</button>
+        </div>
+        <p class="aab-calc-note">
+          Offcuts at the ends of runs. 10% suits a straight ceiling; allow 15%
+          where there are bulkheads or the room is an awkward shape.
+        </p>
+      </fieldset>
+    </form>
+
+    <aside class="aab-calc-result" id="result" aria-live="polite">
+      <p class="aab-eyebrow-light">You will need</p>
+      <p class="aab-calc-boxes"><strong id="boards">0</strong> <span>boards</span></p>
+
+      <table class="aab-calc-table">
+        <tr><th>Ceiling area</th><td id="area">0 m&sup2;</td></tr>
+        <tr><th>With wastage</th><td id="areaPlus">0 m&sup2;</td></tr>
+        <tr><th>Each board covers</th><td id="boardCover">0 m&sup2;</td></tr>
+        <tr><th>Boards cover</th><td id="totalCover">0 m&sup2;</td></tr>
+        <tr class="aab-calc-total"><th>Estimated cost</th><td id="cost">&mdash;</td></tr>
+      </table>
+
+      <div class="aab-calc-actions">
+        <a class="aab-btn aab-btn-primary" href="/contact">Ask for a quotation</a>
+        <a class="aab-btn aab-btn-ghost-light" href="/branches">Find your branch</a>
+      </div>
+
+      <p class="aab-calc-small">
+        An estimate. PVC ceiling boards are not on the website yet, so the price
+        follows our shelf rate of {{ frappe.utils.fmt_money(aab_rate, currency="ZMW") }}
+        per square metre. Confirm with your branch before ordering.
+      </p>
+    </aside>
+  </div>
+
+  <section class="aab-section aab-calc-foot">
+    <div class="aab-inner">
+      <p class="aab-muted">
+        Boards come in {{ aab_boards|length }} sizes, from
+        {{ aab_boards[0].label }} to {{ aab_boards[-1].label }}. Any of our
+        {{ aab_branch_count }} branches will confirm what is on the shelf.
+        <a href="/branches">Find your branch</a> or
+        <a href="/contact">send us the ceiling dimensions</a>.
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+var AAB_BOARDS = {{ aab_boards_json }};
+</script>
+<script src="/assets/aabrick_webstore/js/pvc-calculator.js?v={{ aab_version }}"></script>
+{% endblock %}
