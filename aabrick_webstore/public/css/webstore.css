@@ -552,13 +552,14 @@ main.container:has(.aab-branch) .aab-branch {
  * shapes. Cropping them to a common square would look tidier and would
  * show a customer a shape they are not buying. */
 .aab-product-img img {
-	width: 80%; height: 100%;
+	width: 100%; height: 100%;
 	object-fit: contain;
 	padding: 6%;
 	display: block;
+	transform: scale(.9);
 	transition: transform .3s ease;
 }
-.aab-product:hover .aab-product-img img { transform: scale(1.04); }
+.aab-product:hover .aab-product-img img { transform: scale(.936); }
 /* Graded rather than flat: a flat dark rectangle reads as a hole in the page,
  * a graded one as a lit surface. */
 .aab-product-body {
@@ -571,7 +572,9 @@ main.container:has(.aab-branch) .aab-branch {
 @media (prefers-reduced-motion: reduce) {
 	.aab-product, .aab-product-img img { transition: none; }
 	.aab-product:hover { transform: none; }
-	.aab-product:hover .aab-product-img img { transform: none; }
+	/* Hold the base scale: clearing the transform would put the image back to
+	 * full size on hover. */
+	.aab-product:hover .aab-product-img img { transform: scale(.9); }
 }
 .aab-product-code {
 	font-size: 11px; color: rgba(255,255,255,.85); letter-spacing: .1em; font-weight: 700;
