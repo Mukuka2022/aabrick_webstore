@@ -1,0 +1,138 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="{{ aab_heading }}">
+<meta property="og:description" content="{{ aab_description }}">
+<meta property="og:type" content="product">
+<meta property="og:url" content="{{ aab_canonical }}">
+{% if doc.website_image %}<meta property="og:image" content="{{ frappe.utils.get_url(doc.website_image) }}">{% endif %}
+<script type="application/ld+json">{{ aab_schema }}</script>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-item">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <a href="/all-products">Products</a> <span>/</span>
+      <a href="{{ aab_group_route }}">{{ aab_group }}</a> <span>/</span>
+      <span aria-current="page">{{ aab_code }}</span>
+    </nav>
+  </div>
+
+  <div class="aab-inner aab-item-main">
+
+    <!-- picture ------------------------------------------------------- -->
+    <div class="aab-item-shot is-{{ aab_shape }}">
+      {% if doc.website_image %}
+        <img src="{{ doc.website_image }}" alt="{{ aab_heading }}">
+      {% else %}
+        <div class="aab-item-noshot" aria-hidden="true"></div>
+      {% endif %}
+    </div>
+
+    <!-- the buying column --------------------------------------------- -->
+    <div class="aab-item-buy">
+      <p class="aab-eyebrow">{{ aab_group }}</p>
+      <h1>{{ aab_heading }}</h1>
+
+      {% if aab_price %}
+        <p class="aab-item-price">{{ aab_price.formatted }}</p>
+        {% if aab_price.uom %}<p class="aab-muted">per {{ aab_price.uom }}</p>{% endif %}
+      {% else %}
+        <p class="aab-item-price aab-item-price--none">Price on request</p>
+      {% endif %}
+
+      <ul class="aab-item-facts">
+        <li><span>Code</span><strong>{{ aab_code }}</strong></li>
+        {% if aab_size %}<li><span>Size</span><strong>{{ aab_size }}</strong></li>{% endif %}
+        {% if aab_finish %}<li><span>Type</span><strong>{{ aab_finish }}</strong></li>{% endif %}
+        {% if aab_price and aab_price.uom %}<li><span>Sold by</span><strong>{{ aab_price.uom }}</strong></li>{% endif %}
+      </ul>
+
+      <div class="aab-item-actions">
+        {% if aab_price %}
+          <a href="/cart" class="aab-btn aab-btn-ghost btn-view-in-cart hidden">View in cart</a>
+          <button type="button" class="aab-btn aab-btn-primary btn-add-to-cart" data-item-code="{{ aab_code }}">
+            Add to cart
+          </button>
+        {% endif %}
+        <a class="aab-btn aab-btn-ghost" href="/contact">Ask about this tile</a>
+      </div>
+
+      <p class="aab-item-lead">
+        Not on the shelf today? We order it from the manufacturer and deliver
+        within {{ aab_lead_time }} days.
+        <a href="/branches">{{ aab_branch_count }} branches nationwide</a>.
+      </p>
+
+      {% if aab_spec %}
+        <div class="aab-item-spec">
+          <h2>Specification</h2>
+          <p>{{ aab_spec }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- more from the group --------------------------------------------- -->
+  {% if aab_related %}
+  <section class="aab-section aab-section--white">
+    <div class="aab-inner">
+      <div class="aab-section-head">
+        <div>
+          <p class="aab-eyebrow">More from this range</p>
+          <h2>{{ aab_group }}</h2>
+        </div>
+        <a class="aab-more" href="{{ aab_group_route }}">See the range</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="aab-section">
+    <div class="aab-products-row">
+      {% for r in aab_related %}
+        <a class="aab-product" href="/{{ r.route }}">
+          <div class="aab-product-img is-{{ r.shape }}">
+            <img src="{{ r.website_image }}" alt="{{ r.item_code }}" loading="lazy">
+          </div>
+          <div class="aab-product-body">
+            <span class="aab-product-code">{{ r.item_code }}</span>
+            <strong>{{ aab_label }}</strong>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+
+<script>
+	frappe.ready(() => {
+		// Same call webshop's own template makes, kept because the cart, the
+		// quantity and the checkout all live in webshop.
+		$('.page_content').on('click', '.btn-add-to-cart', (e) => {
+			const $btn = $(e.currentTarget);
+			$btn.prop('disabled', true);
+			webshop.webshop.shopping_cart.update_cart({
+				item_code: $btn.data('item-code'),
+				qty: 1,
+				callback(r) {
+					$btn.prop('disabled', false);
+					if (r.message) {
+						$('.btn-add-to-cart, .btn-view-in-cart').toggleClass('hidden');
+					}
+				}
+			});
+		});
+	});
+</script>
+{% endblock %}

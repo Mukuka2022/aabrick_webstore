@@ -246,7 +246,13 @@ app_license = "mit"
 # include js on every website page
 # Bump this whenever webstore.js or webstore.css changes: these are served
 # without a content hash, so browsers keep a stale copy after bench build.
-ASSET_VERSION = "51"
+# Webshop's Website Item controller is subclassed rather than patched, so its
+# cart, pricing and breadcrumb work still runs and only the template changes.
+override_doctype_class = {
+	"Website Item": "aabrick_webstore.overrides.website_item.AABrickWebsiteItem",
+}
+
+ASSET_VERSION = "52"
 web_include_js = "/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION
 
 # inject analytics tags into the website page head

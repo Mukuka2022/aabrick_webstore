@@ -690,3 +690,92 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-branch-item:hover { color: var(--aab-ink); border-left-color: var(--aab-red); }
 .aab-branch-item strong { font-size: 15px; }
 .aab-branch-item span { font-size: 13px; color: var(--aab-muted); }
+
+/* ------------------------------------------------------------------
+ * Product page
+ * Same grammar as the homepage: full bleed with an inner wrapper, sharp
+ * corners, Anton headings, the picture on the section colour and the money
+ * on a dark block.
+ * ------------------------------------------------------------------ */
+.aab-item {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	max-width: none;
+	color: var(--aab-ink);
+	background: var(--aab-wash);
+	font-family: var(--aab-body);
+	padding-bottom: 50px;
+}
+main.container:has(.aab-item) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-right: 0; }
+
+.aab-item h1, .aab-item h2, .aab-item h3 {
+	font-family: var(--aab-display);
+	font-weight: 400; text-transform: uppercase;
+	letter-spacing: .01em; line-height: 1;
+	text-wrap: balance; color: var(--aab-ink);
+}
+
+.aab-item-main {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 30px;
+	padding-top: 20px;
+	padding-bottom: 40px;
+}
+@media (min-width: 900px) {
+	.aab-item-main { grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: start; }
+}
+
+.aab-item-shot {
+	background: var(--aab-surface);
+	aspect-ratio: 1 / 1;
+	display: flex; align-items: center; justify-content: center;
+	overflow: hidden;
+}
+.aab-item-shot img {
+	width: 100%; height: 100%;
+	object-fit: contain;
+	padding: 26px 46px;
+	display: block;
+}
+/* Square photographs are limited by whichever side is smaller, so they fill a
+ * roomy box and come out larger than the strips and the bags. Same three
+ * buckets as the homepage row. */
+.aab-item-shot.is-square img { padding: 62px 62px; }
+.aab-item-noshot {
+	width: 100%; height: 100%;
+	background: repeating-linear-gradient(45deg, #EDEDEA 0 14px, #E4E4E0 14px 28px);
+}
+
+.aab-item-buy { display: flex; flex-direction: column; }
+.aab-item-buy h1 { font-size: clamp(28px, 3.6vw, 44px); margin: 0 0 18px; }
+.aab-item-price {
+	font-family: var(--aab-display); font-weight: 400;
+	font-size: clamp(30px, 3.4vw, 40px); line-height: 1;
+	color: var(--aab-red); margin: 0;
+	font-variant-numeric: tabular-nums;
+}
+.aab-item-price--none { color: var(--aab-muted); font-size: 24px; }
+.aab-item-buy .aab-muted { margin: 6px 0 0; }
+
+.aab-item-facts { list-style: none; padding: 22px 0 0; margin: 22px 0 0; border-top: 1px solid var(--aab-line); }
+.aab-item-facts li { display: flex; justify-content: space-between; gap: 20px; padding: 9px 0; border-bottom: 1px solid var(--aab-line); }
+.aab-item-facts span { color: var(--aab-muted); font-size: 14px; }
+.aab-item-facts strong { font-size: 14.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.aab-item-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.aab-item-actions .hidden { display: none; }
+.aab-item-lead { margin: 20px 0 0; font-size: 14px; color: var(--aab-muted); line-height: 1.6; max-width: 46ch; }
+
+.aab-item-spec { margin-top: 30px; padding-top: 22px; border-top: 1px solid var(--aab-line); }
+.aab-item-spec h2 { font-size: 20px; margin: 0 0 10px; }
+.aab-item-spec p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--aab-muted); }
+
+.aab-item .aab-section { background: var(--aab-wash); }
+.aab-item .aab-section--white { background: var(--aab-surface); }
