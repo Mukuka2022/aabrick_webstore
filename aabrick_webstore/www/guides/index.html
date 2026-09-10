@@ -1,0 +1,62 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="Guides | AABrick Zambia">
+<meta property="og:description" content="{{ aab_description }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-guide">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">Guides</span>
+    </nav>
+  </div>
+
+  <header class="aab-guide-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Before you buy</p>
+      <h1>Guides</h1>
+      <p class="aab-guide-stand">
+        What we would tell you across the counter, written down. Which tile
+        belongs in which room, what the sizes mean, how much to order, and how
+        it goes down.
+      </p>
+    </div>
+  </header>
+
+  <section class="aab-section">
+    <div class="aab-inner">
+      <div class="aab-guide-list">
+        {% for g in aab_guides %}
+          <a class="aab-guide-card" href="/guides/{{ g.slug }}">
+            <strong>{{ g.title }}</strong>
+            <span>{{ g.summary }}</span>
+            <em>{{ g.minutes }} min</em>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="aab-section aab-guide-more">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Work it out</p>
+      <div class="aab-item-actions">
+        <a class="aab-btn aab-btn-primary" href="/tile-calculator">Tile calculator</a>
+        <a class="aab-btn aab-btn-ghost" href="/pvc-ceiling-calculater">PVC ceiling calculator</a>
+        <a class="aab-btn aab-btn-ghost" href="/branches">{{ aab_branch_count }} branches</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

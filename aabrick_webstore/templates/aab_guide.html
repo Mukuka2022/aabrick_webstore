@@ -1,0 +1,67 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="{{ aab_heading }}">
+<meta property="og:description" content="{{ aab_description }}">
+<meta property="og:type" content="article">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-guide">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <a href="/guides">Guides</a> <span>/</span>
+      <span aria-current="page">{{ aab_heading }}</span>
+    </nav>
+  </div>
+
+  <header class="aab-guide-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Guide &middot; {{ aab_minutes }} minute read</p>
+      <h1>{{ aab_heading }}</h1>
+      {% if aab_standfirst %}<p class="aab-guide-stand">{{ aab_standfirst }}</p>{% endif %}
+    </div>
+  </header>
+
+  <div class="aab-inner aab-guide-body">
+    {% block guide_body %}{% endblock %}
+
+    <div class="aab-guide-end">
+      <p>
+        Anything here you would rather ask a person about, any of our
+        {{ aab_branch_count }} branches will talk it through.
+      </p>
+      <div class="aab-item-actions">
+        <a class="aab-btn aab-btn-primary" href="/all-products">Browse the range</a>
+        <a class="aab-btn aab-btn-ghost" href="/contact">Ask a question</a>
+      </div>
+    </div>
+  </div>
+
+  {% if aab_others %}
+  <section class="aab-section aab-guide-more">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">Keep reading</p>
+      <div class="aab-guide-list">
+        {% for g in aab_others %}
+          <a class="aab-guide-card" href="/guides/{{ g.slug }}">
+            <strong>{{ g.title }}</strong>
+            <span>{{ g.summary }}</span>
+            <em>{{ g.minutes }} min</em>
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

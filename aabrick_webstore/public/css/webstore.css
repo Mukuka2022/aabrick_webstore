@@ -1212,3 +1212,95 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 	font-variant-numeric: tabular-nums;
 }
 .aab-enquiry-facts { margin-top: 22px; }
+
+/* ------------------------------------------------------------------
+ * Guides
+ * A reading page. Body text is held near 68 characters, which is where a
+ * line stops being hard to track back from.
+ * ------------------------------------------------------------------ */
+.aab-guide {
+	width: 100vw;
+	margin-left: calc(50% - 50vw);
+	margin-right: calc(50% - 50vw);
+	max-width: none;
+	color: var(--aab-ink);
+	background: var(--aab-wash);
+	font-family: var(--aab-body);
+}
+main.container:has(.aab-guide) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-guide) .aab-guide { width: 100%; margin-left: 0; margin-right: 0; }
+
+.aab-guide h1, .aab-guide h2, .aab-guide h3 {
+	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
+	letter-spacing: .01em; line-height: 1.02; color: var(--aab-ink);
+	text-wrap: balance;
+}
+.aab-guide-head { background: var(--aab-surface); padding: 30px 0 34px; }
+.aab-guide-head h1 { font-size: clamp(30px, 4.4vw, 46px); margin: 0; }
+.aab-guide-stand {
+	margin: 16px 0 0; max-width: 62ch;
+	font-size: 17px; line-height: 1.6; color: var(--aab-muted);
+}
+
+.aab-guide-body { padding: 34px 0 20px; max-width: 780px; }
+.aab-guide-body p { font-size: 16px; line-height: 1.7; margin: 0 0 18px; max-width: 68ch; }
+.aab-guide-body p.aab-lead { font-size: 18.5px; line-height: 1.6; color: var(--aab-ink); }
+.aab-guide-body h2 { font-size: 26px; margin: 34px 0 14px; }
+.aab-guide-body a { color: var(--aab-red); text-decoration: underline; text-underline-offset: 2px; }
+.aab-guide-body a:hover { color: var(--aab-red-dark); }
+
+.aab-deflist { margin: 0 0 18px; }
+.aab-deflist dt {
+	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
+	font-size: 18px; letter-spacing: .01em; margin-top: 18px;
+}
+.aab-deflist dd { margin: 6px 0 0; font-size: 16px; line-height: 1.7; max-width: 68ch; }
+
+.aab-guide-table { width: 100%; border-collapse: collapse; margin: 8px 0 22px; }
+.aab-guide-table th, .aab-guide-table td {
+	text-align: left; padding: 11px 14px 11px 0; font-size: 15px; line-height: 1.5;
+	border-bottom: 1px solid var(--aab-line); vertical-align: top;
+}
+.aab-guide-table thead th {
+	font-family: var(--aab-body); font-weight: 700; font-size: 11.5px;
+	letter-spacing: .12em; text-transform: uppercase; color: var(--aab-muted);
+}
+
+.aab-guide-facts { list-style: none; padding: 0; margin: 0 0 20px; }
+.aab-guide-facts li {
+	display: flex; gap: 16px; align-items: baseline;
+	padding: 10px 0; border-bottom: 1px solid var(--aab-line);
+}
+.aab-guide-facts strong { flex: 0 0 150px; font-size: 15px; }
+.aab-guide-facts span { font-size: 15px; color: var(--aab-muted); line-height: 1.5; }
+
+.aab-guide-end {
+	margin-top: 34px; padding: 22px 24px;
+	background: var(--aab-surface);
+}
+.aab-guide-end p { margin: 0 0 16px; }
+
+.aab-guide-more { background: var(--aab-wash); }
+.aab-guide-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 700px) { .aab-guide-list { grid-template-columns: repeat(2, 1fr); } }
+.aab-guide-card {
+	background: var(--aab-surface); padding: 22px 24px;
+	display: flex; flex-direction: column; gap: 7px;
+	text-decoration: none; color: var(--aab-ink);
+	border-top: 3px solid var(--aab-red);
+	transition: transform .15s;
+}
+.aab-guide-card:hover { color: var(--aab-ink); transform: translateY(-3px); }
+.aab-guide-card strong {
+	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
+	font-size: 20px; letter-spacing: .01em; line-height: 1.05;
+}
+.aab-guide-card span { font-size: 14.5px; color: var(--aab-muted); line-height: 1.55; }
+.aab-guide-card em {
+	font-style: normal; font-size: 11.5px; font-weight: 700; letter-spacing: .09em;
+	text-transform: uppercase; color: var(--aab-red); margin-top: 4px;
+}

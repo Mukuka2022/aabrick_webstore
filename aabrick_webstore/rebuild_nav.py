@@ -24,6 +24,12 @@ from aabrick_webstore.overrides.website_item import describe_group
 KEEP_PAGES = set()
 
 
+def _guides():
+    from aabrick_webstore.www.guides.index import guides
+
+    return guides()
+
+
 def _tile_groups():
     """Published A grade tile ranges, biggest first. The B grade pages are
     reachable from their A grade twin rather than from the menu, which would
@@ -125,6 +131,13 @@ def _rebuild_top_bar():
     add("Tile Calculator", "/tile-calculator", "Calculators")
     add("PVC Ceiling Calculator", "/pvc-ceiling-calculater", "Calculators")
 
+    # Built from the same list the guide pages use, so a fifth guide appears
+    # here on the next run rather than waiting for somebody to remember.
+    add("Guides")
+    add("All guides", "/guides", "Guides")
+    for g in _guides():
+        add(g.nav, "/guides/%s" % g.slug, "Guides")
+
     add("Branches", "/branches")
 
     add("Support")
@@ -150,6 +163,7 @@ def _rebuild_footer():
     ws.set("footer_items", [])
     for label, url in (
         ("All Products", "/all-products"),
+        ("Guides", "/guides"),
         ("Branches", "/branches"),
         ("Tile Calculator", "/tile-calculator"),
         ("PVC Ceiling Calculator", "/pvc-ceiling-calculater"),
