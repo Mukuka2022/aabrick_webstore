@@ -1,0 +1,32 @@
+{#
+	One product card, shared by the shop listing and the category pages so a
+	tile is presented the same way in both. The homepage keeps its own smaller
+	card, which is a teaser rather than something you buy from.
+
+	Expects: p (item_code, route, website_image, shape, label, grade, price)
+#}
+<article class="aab-tile">
+	<a class="aab-tile-shot is-{{ p.shape }}" href="/{{ p.route }}">
+		{% if p.website_image %}
+			<img src="{{ p.website_image }}" alt="{{ p.item_code }} {{ p.label }}" loading="lazy">
+		{% endif %}
+		{% if p.grade %}<span class="aab-tile-grade">{{ p.grade }} Grade</span>{% endif %}
+	</a>
+
+	<div class="aab-tile-body">
+		<a class="aab-tile-name" href="/{{ p.route }}">{{ p.item_code }} {{ p.label }}</a>
+		{% if p.price %}
+			<p class="aab-tile-price">{{ p.price }}{% if p.uom %}<span> / {{ p.uom }}</span>{% endif %}</p>
+		{% else %}
+			<p class="aab-tile-price aab-tile-price--none">Price on request</p>
+		{% endif %}
+
+		<div class="aab-tile-actions">
+			<a class="aab-btn aab-btn-ghost" href="/{{ p.route }}">View product</a>
+			{% if p.price %}
+				<button type="button" class="aab-btn aab-btn-primary btn-add-to-cart"
+				        data-item-code="{{ p.item_code }}">Add to cart</button>
+			{% endif %}
+		</div>
+	</div>
+</article>

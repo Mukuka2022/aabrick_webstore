@@ -13,7 +13,11 @@ with no pagination and no second request.
 import frappe
 from webshop.webshop.doctype.override_doctype.item_group import WebshopItemGroup
 
-from aabrick_webstore.overrides.website_item import describe_group, image_shape
+from aabrick_webstore.overrides.website_item import (
+	describe_group,
+	image_shape,
+	unit_label,
+)
 
 LEAD_TIME_DAYS = 7
 
@@ -84,6 +88,10 @@ class AABrickItemGroup(WebshopItemGroup):
 				frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
 				if r.price_list_rate else None
 			)
+			r["uom"] = unit_label(r.item_code)
+			label, _s, _f, grade = describe_group(r.item_group)
+			r["label"] = label
+			r["grade"] = grade
 		return rows
 
 	def _twin(self):

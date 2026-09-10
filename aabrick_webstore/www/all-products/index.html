@@ -30,7 +30,7 @@
     </div>
   </header>
 
-  <div class="aab-inner aab-shop-main">
+  <div class="aab-shop-main">
 
     <!-- filters: plain links, so they work without javascript ---------- -->
     <aside class="aab-filters">
@@ -62,20 +62,9 @@
     <!-- the grid ------------------------------------------------------- -->
     <div class="aab-shop-grid">
       {% if aab_products %}
-        <div class="aab-products-row">
+        <div class="aab-tiles">
           {% for p in aab_products %}
-            <a class="aab-product" href="/{{ p.route }}">
-              <div class="aab-product-img is-{{ p.shape }}">
-                {% if p.website_image %}
-                  <img src="{{ p.website_image }}" alt="{{ p.item_code }} {{ p.label }}" loading="lazy">
-                {% endif %}
-              </div>
-              <div class="aab-product-body">
-                <span class="aab-product-code">{{ p.item_code }}{% if p.grade %} &middot; {{ p.grade }} Grade{% endif %}</span>
-                <strong>{{ p.label }}</strong>
-                {% if p.price %}<span class="aab-product-price">{{ p.price }}</span>{% endif %}
-              </div>
-            </a>
+            {% include "templates/includes/product_card.html" %}
           {% endfor %}
         </div>
 
@@ -109,4 +98,25 @@
   </section>
 
 </div>
+
+<script>
+	frappe.ready(() => {
+		// The same call webshop's own templates make. Quantity, pricing and
+		// checkout all stay in webshop; this is only the button.
+		$('.page_content').on('click', '.btn-add-to-cart', (e) => {
+			const $btn = $(e.currentTarget);
+			$btn.prop('disabled', true);
+			webshop.webshop.shopping_cart.update_cart({
+				item_code: $btn.data('item-code'),
+				qty: 1,
+				callback(r) {
+					$btn.prop('disabled', false);
+					if (r.message) {
+						$btn.text('In cart');
+					}
+				}
+			});
+		});
+	});
+</script>
 {% endblock %}

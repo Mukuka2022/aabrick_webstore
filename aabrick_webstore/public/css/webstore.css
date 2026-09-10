@@ -928,3 +928,96 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 
 .aab-shop-foot { padding-top: 10px; }
 .aab-shop .aab-section { background: var(--aab-wash); }
+
+/* ------------------------------------------------------------------
+ * Browsing card
+ * Shared by the shop listing and the category pages. The homepage keeps its
+ * own smaller card: that row is a teaser, this one is bought from.
+ * ------------------------------------------------------------------ */
+.aab-tiles {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 20px;
+}
+@media (min-width: 620px)  { .aab-tiles { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1000px) { .aab-tiles { grid-template-columns: repeat(4, 1fr); } }
+
+.aab-tile {
+	background: var(--aab-surface);
+	display: flex; flex-direction: column;
+}
+
+/* A square photograph on white, contained rather than cropped, so a 2:1 tile
+ * strip and an upright bag can share a row without either being cut. */
+.aab-tile-shot {
+	position: relative;
+	display: flex; align-items: center; justify-content: center;
+	aspect-ratio: 1 / 1;
+	background: var(--aab-surface);
+	overflow: hidden;
+}
+.aab-tile-shot img {
+	width: 100%; height: 100%;
+	object-fit: contain;
+	padding: 6%;
+	display: block;
+	transition: transform .3s ease;
+}
+.aab-tile-shot.is-square img { padding: 11%; }
+.aab-tile:hover .aab-tile-shot img { transform: scale(1.03); }
+
+.aab-tile-grade {
+	position: absolute; top: 0; left: 0;
+	background: var(--aab-charcoal); color: #fff;
+	font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+	padding: 5px 9px;
+}
+
+.aab-tile-body {
+	padding: 16px 16px 18px;
+	display: flex; flex-direction: column; gap: 8px;
+	flex: 1;
+}
+.aab-tile-name {
+	font-size: 14px; font-weight: 600; line-height: 1.4;
+	color: var(--aab-ink); text-decoration: none;
+}
+.aab-tile-name:hover { color: var(--aab-red); }
+
+.aab-tile-price {
+	margin: 0 0 2px;
+	font-family: var(--aab-display); font-weight: 400;
+	font-size: 22px; line-height: 1; letter-spacing: .01em;
+	color: var(--aab-red);
+	font-variant-numeric: tabular-nums;
+}
+.aab-tile-price span {
+	font-family: var(--aab-body); font-size: 12.5px; font-weight: 500;
+	color: var(--aab-muted); letter-spacing: 0;
+}
+.aab-tile-price--none { color: var(--aab-muted); font-size: 16px; }
+
+.aab-tile-actions {
+	margin-top: auto; padding-top: 4px;
+	display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+}
+.aab-tile-actions .aab-btn {
+	padding: 11px 8px; font-size: 11.5px; letter-spacing: .06em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.aab-tile-shot img { transition: none; }
+	.aab-tile:hover .aab-tile-shot img { transform: none; }
+}
+
+/* The listing leaves the 1280px container so four cards have room to be
+ * large; the filter column keeps its width and the grid takes the rest. */
+.aab-shop-main { padding: 28px 10px 10px; }
+@media (min-width: 900px) {
+	.aab-shop-main { grid-template-columns: 220px 1fr; }
+}
+
+/* Grid children default to min-width:auto, so a long filter label could push
+ * the column past the viewport on a phone. */
+.aab-shop-main > * { min-width: 0; }
+.aab-tiles > * { min-width: 0; }

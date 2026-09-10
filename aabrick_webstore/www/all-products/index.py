@@ -14,12 +14,16 @@ from a list kept by hand.
 import frappe
 
 from aabrick_webstore.overrides.item_group import _plural
-from aabrick_webstore.overrides.website_item import describe_group, image_shape
+from aabrick_webstore.overrides.website_item import (
+    describe_group,
+    image_shape,
+    unit_label,
+)
 
 sitemap = 1
 no_cache = 1
 
-PER_PAGE = 60
+PER_PAGE = 48   # whole rows of four
 LEAD_TIME_DAYS = 7
 
 
@@ -152,6 +156,7 @@ def _products(names, page):
             frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
             if r.price_list_rate else None
         )
+        r["uom"] = unit_label(r.item_code)
     return rows
 
 

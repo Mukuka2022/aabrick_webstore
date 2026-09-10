@@ -48,20 +48,9 @@
 
   {% if aab_products %}
     <section class="aab-section">
-      <div class="aab-products-row">
+      <div class="aab-tiles">
         {% for p in aab_products %}
-          <a class="aab-product" href="/{{ p.route }}">
-            <div class="aab-product-img is-{{ p.shape }}">
-              {% if p.website_image %}
-                <img src="{{ p.website_image }}" alt="{{ p.item_code }} {{ aab_heading }}" loading="lazy">
-              {% endif %}
-            </div>
-            <div class="aab-product-body">
-              <span class="aab-product-code">{{ p.item_code }}</span>
-              <strong>{{ aab_label }}</strong>
-              {% if p.price %}<span class="aab-product-price">{{ p.price }}</span>{% endif %}
-            </div>
-          </a>
+          {% include "templates/includes/product_card.html" %}
         {% endfor %}
       </div>
     </section>
@@ -87,4 +76,23 @@
   </section>
 
 </div>
+
+<script>
+	frappe.ready(() => {
+		$('.page_content').on('click', '.btn-add-to-cart', (e) => {
+			const $btn = $(e.currentTarget);
+			$btn.prop('disabled', true);
+			webshop.webshop.shopping_cart.update_cart({
+				item_code: $btn.data('item-code'),
+				qty: 1,
+				callback(r) {
+					$btn.prop('disabled', false);
+					if (r.message) {
+						$btn.text('In cart');
+					}
+				}
+			});
+		});
+	});
+</script>
 {% endblock %}

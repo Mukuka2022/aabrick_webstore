@@ -81,6 +81,25 @@ def _image_path(url):
     return None
 
 
+UNITS = {"box": "box", "nos": "each", "unit": "unit", "pcs": "piece",
+         "piece": "piece", "sqm": "m2", "square meter": "m2"}
+
+
+def unit_label(item_code):
+    """What one price buys, in words a customer uses.
+
+    sales_uom is unset across the catalogue, so this falls back to stock_uom,
+    which is Box on 423 of the 436 published items. "Nos" is ERP shorthand for
+    a count and is shown as "each".
+    """
+    uom = (
+        frappe.db.get_value("Item", item_code, "sales_uom")
+        or frappe.db.get_value("Item", item_code, "stock_uom")
+        or ""
+    )
+    return UNITS.get(uom.strip().lower(), uom.strip().lower() or None)
+
+
 def image_shape(url):
     """wide, tall or square. The card and the page give each different room."""
     path = _image_path(url)
@@ -166,7 +185,7 @@ class AABrickWebsiteItem(WebsiteItem):
             "formatted": price.get("formatted_price_sales_uom") or price.get("formatted_price"),
             "value": price.get("price_list_rate"),
             "currency": price.get("currency") or "ZMW",
-            "uom": info.get("uom"),
+            "uom": unit_label(self.item_code) or info.get("uom"),
             "in_stock": info.get("in_stock"),
         })
 
