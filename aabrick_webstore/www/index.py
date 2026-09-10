@@ -117,7 +117,7 @@ def _featured():
           AND IFNULL(wi.website_image, '') <> ''
         GROUP BY wi.item_group
         ORDER BY ip.price_list_rate DESC
-        LIMIT 5
+        LIMIT 4
         """,
         as_dict=True,
     )

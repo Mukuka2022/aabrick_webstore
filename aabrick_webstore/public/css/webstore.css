@@ -34,8 +34,8 @@
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
 
-	--aab-r: 12px;      /* cards, panels, images */
-	--aab-r-sm: 8px;    /* buttons and chips */
+	--aab-r: 0;         /* cards, panels, images */
+	--aab-r-sm: 0;      /* buttons and chips */
 
 	--aab-display: "Anton", "Arial Narrow", "Helvetica Neue Condensed", Impact, sans-serif;
 	--aab-body: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI",
@@ -290,7 +290,7 @@ main.container:has(.aab-branch) .aab-branch {
 }
 .aab-cat {
 	position: relative; display: block; overflow: hidden;
-	border-radius: 18px; text-decoration: none; color: #fff;
+	border-radius: 0; text-decoration: none; color: #fff;
 	background: var(--aab-charcoal); aspect-ratio: 10 / 11;
 }
 .aab-cat img {
@@ -371,32 +371,75 @@ main.container:has(.aab-branch) .aab-branch {
 	background: var(--aab-red); padding: 4px 9px; border-radius: var(--aab-r-sm);
 }
 
-/* Homes gallery: the same full-bleed rhythm and card shape as the category
- * row, so the two read as one family. Captions sit under the picture rather
- * than over it: a room photograph has no reliably dark corner to put text on. */
-.aab-homes {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+/* Homes rail: a horizontal strip of labelled pictures with the copy sitting
+ * inside it rather than above it. Scrolls natively, so a phone gets a real
+ * swipe and a desktop gets the arrows. */
+.aab-rail {
+	display: flex;
 	gap: 10px;
 	padding: 0 10px;
+	overflow-x: auto;
+	scroll-snap-type: x proximity;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
 }
-@media (min-width: 900px) { .aab-homes { grid-template-columns: repeat(4, 1fr); } }
+.aab-rail::-webkit-scrollbar { display: none; }
 
-.aab-home-shot { margin: 0; display: flex; flex-direction: column; }
-.aab-home-shot img {
-	width: 100%;
-	aspect-ratio: 10 / 11;
-	object-fit: cover;
-	display: block;
-	border-radius: 18px;
+.aab-rail-shot {
+	position: relative;
+	margin: 0;
+	flex: 0 0 clamp(230px, 27vw, 390px);
+	aspect-ratio: 39 / 50;
+	scroll-snap-align: start;
+	overflow: hidden;
 	background: var(--aab-wash-deep);
 }
-.aab-home-shot figcaption {
-	padding: 12px 4px 0;
-	display: flex; flex-direction: column; gap: 2px;
+.aab-rail-shot img {
+	position: absolute; inset: 0;
+	width: 100%; height: 100%;
+	object-fit: cover;
+	display: block;
 }
-.aab-home-shot figcaption strong { font-size: 14.5px; font-weight: 600; }
-.aab-home-shot figcaption span { font-size: 13px; color: var(--aab-muted); }
+/* The label needs its own ground: a room photograph has no reliably dark
+ * corner to sit white type on. */
+.aab-rail-shot::after {
+	content: "";
+	position: absolute; inset: 0;
+	background: linear-gradient(180deg, rgba(28,27,26,0) 52%, rgba(28,27,26,.72) 88%, rgba(28,27,26,.84) 100%);
+}
+.aab-rail-shot figcaption {
+	position: absolute; z-index: 1; left: 0; right: 0; bottom: 0;
+	padding: 22px 22px 24px;
+	color: #fff;
+	display: flex; flex-direction: column; gap: 3px;
+}
+.aab-rail-shot figcaption strong {
+	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
+	font-size: clamp(22px, 2.4vw, 30px); line-height: 1; letter-spacing: .01em;
+}
+.aab-rail-shot figcaption span { font-size: 13px; color: rgba(255,255,255,.78); }
+
+.aab-rail-copy {
+	flex: 0 0 clamp(230px, 24vw, 330px);
+	scroll-snap-align: start;
+	display: flex; flex-direction: column; justify-content: center;
+	padding: 0 clamp(14px, 2vw, 34px);
+}
+.aab-rail-nav { display: flex; gap: 10px; margin-bottom: 26px; }
+.aab-rail-nav button {
+	width: 42px; height: 42px; border-radius: 50%;
+	border: 1px solid var(--aab-line);
+	background: var(--aab-surface); color: var(--aab-ink);
+	font-size: 17px; line-height: 1; cursor: pointer;
+	transition: border-color .15s, color .15s, opacity .15s;
+}
+.aab-rail-nav button:hover { border-color: var(--aab-ink); }
+.aab-rail-nav button[disabled] { opacity: .35; cursor: default; }
+.aab-rail-copy h2 { margin: 0 0 12px; }
+.aab-rail-copy p.aab-rail-lede {
+	margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: var(--aab-muted);
+}
+.aab-rail-copy .aab-btn { align-self: flex-start; }
 
 /* Split panels */
 .aab-panels {
@@ -408,7 +451,7 @@ main.container:has(.aab-branch) .aab-branch {
 @media (min-width: 800px) { .aab-panels { grid-template-columns: 1fr 1fr; } }
 .aab-panel {
 	padding: clamp(30px, 4vw, 48px);
-	border-radius: 18px;
+	border-radius: 0;
 	color: var(--aab-ink);
 	box-shadow: inset 0 0 0 1px rgba(28,27,26,.10);
 	background-size: cover;
@@ -449,14 +492,19 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-why span { font-size: 14px; color: var(--aab-muted); line-height: 1.55; }
 
 /* Featured products */
+/* Sized from the all-products page rather than by eye: a card there is 303
+ * wide with a 303x275 image area, so the minimum track is 303 and the cards
+ * grow from there. Five of them will not fit across 1425px, which is why the
+ * row is four. */
 .aab-products-row {
 	display: grid;
-	grid-template-columns: repeat(2, 1fr);
+	grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
 	gap: 20px;
 	padding: 0 10px;
 }
-@media (min-width: 600px) { .aab-products-row { grid-template-columns: repeat(3, 1fr); } }
-@media (min-width: 1000px) { .aab-products-row { grid-template-columns: repeat(5, 1fr); } }
+@media (min-width: 1000px) {
+	.aab-products-row { grid-template-columns: repeat(auto-fill, minmax(303px, 1fr)); }
+}
 .aab-product {
 	border: 1px solid var(--aab-line); border-radius: var(--aab-r); overflow: hidden;
 	background: var(--aab-surface); text-decoration: none; color: var(--aab-ink);
@@ -464,9 +512,8 @@ main.container:has(.aab-branch) .aab-branch {
 }
 .aab-product:hover { border-color: var(--aab-red); color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
-	aspect-ratio: 4 / 3;
+	aspect-ratio: 303 / 275;   /* the all-products image area */
 	background: var(--aab-wash);
-	border-radius: calc(var(--aab-r) - 1px) calc(var(--aab-r) - 1px) 0 0;
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }

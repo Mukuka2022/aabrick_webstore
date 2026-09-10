@@ -219,3 +219,64 @@
 		start();
 	}
 })();
+
+
+/* Homes rail: the arrows scroll it by one picture. A horizontal strip scrolls
+ * natively, but on a desktop with a trackpad there is nothing on screen to say
+ * so, and the strip looks like it just runs off the edge. */
+(function () {
+	function initRail() {
+		var rail = document.querySelector(".aab-rail");
+		if (!rail || rail.__aabBound) {
+			return;
+		}
+		rail.__aabBound = true;
+		bind(rail);
+	}
+
+	function bind(rail) {
+	var prev = rail.querySelector(".aab-rail-prev");
+	var next = rail.querySelector(".aab-rail-next");
+
+	function step() {
+		var shot = rail.querySelector(".aab-rail-shot");
+		return shot ? shot.getBoundingClientRect().width + 10 : 300;
+	}
+
+	function sync() {
+		var end = rail.scrollWidth - rail.clientWidth - 2;
+		// The rail is padded, so it comes to rest at the padding rather than at
+		// zero and a bare "scrollLeft <= 2" never fires.
+		var start = rail.firstElementChild ? rail.firstElementChild.offsetLeft : 0;
+		if (prev) {
+			prev.disabled = rail.scrollLeft <= start + 2;
+		}
+		if (next) {
+			next.disabled = rail.scrollLeft >= end;
+		}
+	}
+
+	function go(direction) {
+		var end = rail.scrollWidth - rail.clientWidth;
+		var target = rail.scrollLeft + direction * step();
+		rail.scrollLeft = Math.max(0, Math.min(target, end));
+		sync();
+	}
+
+	if (prev) {
+		prev.addEventListener("click", function () { go(-1); });
+	}
+	if (next) {
+		next.addEventListener("click", function () { go(1); });
+	}
+	rail.addEventListener("scroll", sync);
+	window.addEventListener("resize", sync);
+	sync();
+	}
+
+	document.addEventListener("DOMContentLoaded", initRail);
+	window.addEventListener("load", initRail);
+	if (document.readyState !== "loading") {
+		initRail();
+	}
+})();

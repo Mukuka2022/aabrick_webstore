@@ -138,20 +138,10 @@
   <!-- homes ------------------------------------------------------------ -->
   {% if showcase %}
   <section class="aab-section">
-    <div class="aab-inner">
-      <div class="aab-section-head">
-        <div>
-          <p class="aab-eyebrow">Inspiration</p>
-          <h2>Homes built with AABrick</h2>
-        </div>
-        <a class="aab-more" href="/all-products">Shop the look</a>
-      </div>
-    </div>
-
-    <div class="aab-homes">
+    <div class="aab-rail">
       {% for s in showcase %}
-        <figure class="aab-home-shot">
-          <img src="{{ s.src }}" alt="{{ s.caption or 'A home finished with AABrick materials' }}" loading="lazy">
+        <figure class="aab-rail-shot">
+          <img src="{{ s.src }}" alt="{{ s.caption or 'A room finished with AABrick materials' }}" loading="lazy">
           {% if s.caption %}
             <figcaption>
               <strong>{{ s.caption }}</strong>
@@ -159,6 +149,21 @@
             </figcaption>
           {% endif %}
         </figure>
+
+        {% if loop.first %}
+          <div class="aab-rail-copy">
+            <div class="aab-rail-nav">
+              <button type="button" class="aab-rail-prev" aria-label="Previous">&#8592;</button>
+              <button type="button" class="aab-rail-next" aria-label="Next">&#8594;</button>
+            </div>
+            <p class="aab-eyebrow">Shop by room</p>
+            <h2>Finished with AABrick</h2>
+            <p class="aab-rail-lede">
+              Tiles, tile fix and PVC ceiling boards, in the rooms they end up in.
+            </p>
+            <a class="aab-btn aab-btn-dark" href="/all-products">Shop the look</a>
+          </div>
+        {% endif %}
       {% endfor %}
     </div>
   </section>
