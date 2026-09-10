@@ -1,9 +1,10 @@
 """The "homes built with AABrick" gallery.
 
-Four photographs of finished rooms. They live in the app rather than the site
-file store so they travel with a git deploy, exactly like the hero.
+Photographs of finished rooms, one per slot in SLOTS. They live in the app
+rather than the site file store so they travel with a git deploy, exactly
+like the hero.
 
-The section renders only when all four slots are filled. A gallery of one or
+The section renders only when every slot is filled. A gallery of one or
 two reads as something half broken rather than as a smaller gallery, and an
 empty one on a live homepage is worse than no section at all.
 
@@ -31,7 +32,7 @@ HERE = os.path.dirname(__file__)
 IMAGES = os.path.join(HERE, "public", "images")
 CAPTIONS = os.path.join(HERE, "showcase.json")
 
-SLOTS = (1, 2, 3, 4)
+SLOTS = (1, 2, 3)
 SIZE = (900, 990)          # 10:11, the same shape as the category cards
 MIN_WIDTH = 900            # rendered up to ~350px wide, so 900 is a 2x source
 
@@ -99,7 +100,7 @@ def set_slot(slot=None, path=None, caption="", detail="", focus=0.35, pan=0.5, a
 
     slot = int(slot or 0)
     if slot not in SLOTS:
-        frappe.throw("slot must be 1, 2, 3 or 4")
+        frappe.throw("slot must be 1, 2 or 3")
 
     src = _resolve(path or "")
     if not os.path.exists(src):
@@ -165,9 +166,11 @@ def status():
         else:
             print("  %d  empty" % slot)
     if filled == len(SLOTS):
-        print("\nAll four filled: the section is live. Run bench build --app aabrick_webstore.")
+        print("\nAll %d filled: the section is live. Run bench build --app aabrick_webstore."
+              % len(SLOTS))
     else:
-        print("\n%d of 4 filled: the section stays hidden until all four are in." % filled)
+        print("\n%d of %d filled: the section stays hidden until every slot is in."
+              % (filled, len(SLOTS)))
 
 
 def context():

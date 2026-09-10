@@ -387,7 +387,7 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-rail-shot {
 	position: relative;
 	margin: 0;
-	flex: 0 0 clamp(230px, 27vw, 390px);
+	flex: 0 0 clamp(230px, 24vw, 348px);
 	aspect-ratio: 39 / 50;
 	scroll-snap-align: start;
 	overflow: hidden;
@@ -424,16 +424,16 @@ main.container:has(.aab-branch) .aab-branch {
 	display: flex; flex-direction: column; justify-content: center;
 	padding: 0 clamp(14px, 2vw, 34px);
 }
-.aab-rail-nav { display: flex; gap: 10px; margin-bottom: 26px; }
-.aab-rail-nav button {
-	width: 42px; height: 42px; border-radius: 50%;
-	border: 1px solid var(--aab-line);
-	background: var(--aab-surface); color: var(--aab-ink);
-	font-size: 17px; line-height: 1; cursor: pointer;
-	transition: border-color .15s, color .15s, opacity .15s;
+/* One arrow, and it goes to the shop rather than paging the rail. */
+.aab-rail-go {
+	display: flex; align-items: center; justify-content: center;
+	width: 46px; height: 46px; border-radius: 50%;
+	margin-bottom: 26px;
+	background: var(--aab-red); color: #fff;
+	font-size: 19px; line-height: 1; text-decoration: none;
+	transition: background .15s, transform .15s;
 }
-.aab-rail-nav button:hover { border-color: var(--aab-ink); }
-.aab-rail-nav button[disabled] { opacity: .35; cursor: default; }
+.aab-rail-go:hover { background: var(--aab-red-dark); color: #fff; transform: translateX(3px); }
 .aab-rail-copy h2 { margin: 0 0 12px; }
 .aab-rail-copy p.aab-rail-lede {
 	margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: var(--aab-muted);
@@ -514,7 +514,9 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-product:hover { color: var(--aab-ink); transform: translateY(-3px); }
 .aab-product-img {
 	aspect-ratio: 303 / 275;   /* the all-products image area */
-	background: var(--aab-wash);
+	/* A step darker than the section, so the picture sits in a panel rather
+	 * than floating on the page now that the card has no border. */
+	background: var(--aab-wash-deep);
 	overflow: hidden;
 	display: flex; align-items: center; justify-content: center;
 }
@@ -530,7 +532,7 @@ main.container:has(.aab-branch) .aab-branch {
 	transition: transform .3s ease;
 }
 .aab-product:hover .aab-product-img img { transform: scale(1.04); }
-.aab-product-body { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 3px; }
+.aab-product-body { padding: 35px 16px; display: flex; flex-direction: column; gap: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
 	.aab-product, .aab-product-img img { transition: none; }
