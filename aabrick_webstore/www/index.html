@@ -105,36 +105,6 @@
     </div>
   </section>
 
-  <!-- featured products ------------------------------------------------ -->
-  {% if featured %}
-  <section class="aab-section">
-    <div class="aab-inner">
-      <div class="aab-section-head">
-        <div>
-          <p class="aab-eyebrow">From the range</p>
-          <h2>Popular right now</h2>
-        </div>
-        <a class="aab-more" href="/all-products">View all products</a>
-      </div>
-    </div>
-
-    <div class="aab-products-row">
-        {% for p in featured %}
-          <a class="aab-product" href="/{{ p.route }}">
-            <div class="aab-product-img">
-              <img src="{{ p.website_image }}" alt="{{ p.item_code }}" loading="lazy">
-            </div>
-            <div class="aab-product-body">
-              <span class="aab-product-code">{{ p.item_code }}</span>
-              <strong>{{ p.group_label }}</strong>
-              <span class="aab-product-price">{{ p.price }}</span>
-            </div>
-          </a>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-
   <!-- homes ------------------------------------------------------------ -->
   {% if showcase %}
   <section class="aab-section">
@@ -161,6 +131,36 @@
             <a class="aab-btn aab-btn-dark" href="/all-products">Shop the look</a>
           </div>
         {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- featured products ------------------------------------------------ -->
+  {% if featured %}
+  <section class="aab-section">
+    <div class="aab-inner">
+      <div class="aab-section-head">
+        <div>
+          <p class="aab-eyebrow">From the range</p>
+          <h2>Popular right now</h2>
+        </div>
+        <a class="aab-more" href="/all-products">View all products</a>
+      </div>
+    </div>
+
+    <div class="aab-products-row">
+        {% for p in featured %}
+          <a class="aab-product" href="/{{ p.route }}">
+            <div class="aab-product-img">
+              <img src="{{ p.website_image }}" alt="{{ p.item_code }}" loading="lazy">
+            </div>
+            <div class="aab-product-body">
+              <span class="aab-product-code">{{ p.item_code }}</span>
+              <strong>{{ p.group_label }}</strong>
+              <span class="aab-product-price">{{ p.price }}</span>
+            </div>
+          </a>
       {% endfor %}
     </div>
   </section>
