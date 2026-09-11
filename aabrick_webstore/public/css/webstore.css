@@ -1817,3 +1817,161 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 	.aab-nav-cta { margin-left: auto; }
 	.aab-nav-link--shop { background: none; color: var(--aab-red); }
 }
+
+/* ------------------------------------------------------------------
+ * Cart, which is also the checkout
+ *
+ * Webshop's markup, our colours. Every rule is scoped under .cart-container
+ * or .cart-empty: .frappe-card, .card and .table are webshop's own generic
+ * class names and styling them loose would reach half the site.
+ * ------------------------------------------------------------------ */
+.shopping-cart-header {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; letter-spacing: .01em;
+	font-size: clamp(30px, 4.4vw, 44px);
+	color: var(--aab-ink);
+}
+
+.cart-container { font-family: var(--aab-body); color: var(--aab-ink); }
+
+/* Brought back on the cart alone. The theme rule is !important, so this
+ * needs both the extra specificity and an !important to answer it, which
+ * is the one place on this page that earns one. */
+main.container:has(.cart-container) .page-header,
+main.container:has(.cart-empty) .page-header {
+	display: block !important;
+	visibility: visible !important;
+	margin-bottom: 10px;
+}
+main.container:has(.cart-container) .page-header-wrapper,
+main.container:has(.cart-empty) .page-header-wrapper { display: block; }
+
+/* Flat panels with a drawn edge, the same as the rest of the site, rather
+ * than the floating rounded cards webshop ships. */
+.cart-container .frappe-card,
+.cart-empty.frappe-card {
+	background: var(--aab-surface);
+	border: 1px solid var(--aab-line);
+	border-radius: 0;
+	box-shadow: none;
+}
+.cart-container .card,
+.cart-container .card-body {
+	background: none; border: 0; border-radius: 0; box-shadow: none;
+}
+
+.cart-container .cart-items-header,
+.cart-container .payment-summary h6,
+.cart-container .address-header {
+	font-family: var(--aab-body); font-size: 11.5px; font-weight: 700;
+	letter-spacing: .14em; text-transform: uppercase;
+	color: var(--aab-muted); margin-bottom: 4px;
+}
+
+/* ---- the items ---- */
+.cart-container .cart-table { margin-bottom: 0; }
+.cart-container .cart-table th {
+	font-size: 11px; font-weight: 700; letter-spacing: .12em;
+	text-transform: uppercase; color: var(--aab-muted);
+	border-top: 0; border-bottom: 1px solid var(--aab-line);
+	padding: 10px 8px;
+}
+.cart-container .cart-table td {
+	border-top: 0; border-bottom: 1px solid var(--aab-line);
+	padding: 16px 8px; vertical-align: middle; font-size: 14px;
+}
+.cart-container .cart-table .item-name,
+.cart-container .cart-table .item-title {
+	font-weight: 600; color: var(--aab-ink);
+}
+.cart-container .cart-table .item-thumb,
+.cart-container .cart-table img {
+	border-radius: 0; background: var(--aab-shot-ground); object-fit: contain;
+}
+
+/* The quantity stepper, which is the one control people actually use here. */
+.cart-container .cart-qty,
+.cart-container input.cart-qty,
+.cart-container .number-spinner input {
+	font-family: var(--aab-body); font-size: 16px; text-align: center;
+	border: 1px solid var(--aab-line); border-radius: 0; box-shadow: none;
+	color: var(--aab-ink);
+}
+.cart-container .number-spinner .btn,
+.cart-container .cart-btn {
+	border: 1px solid var(--aab-line); border-radius: 0;
+	background: var(--aab-surface); color: var(--aab-ink); box-shadow: none;
+}
+.cart-container .number-spinner .btn:hover,
+.cart-container .cart-btn:hover { border-color: var(--aab-ink); }
+
+/* ---- the money ---- */
+.cart-container .bill-label { color: var(--aab-muted); font-size: 14px; }
+.cart-container .bill-content {
+	font-size: 14px; font-variant-numeric: tabular-nums; color: var(--aab-ink);
+}
+.cart-container .grand-total,
+.cart-container .grand-total td,
+.cart-container tr.grand-total .bill-content {
+	font-weight: 700; font-size: 17px; color: var(--aab-ink);
+}
+.cart-container .payment-summary table td { border: 0; padding: 7px 0; }
+
+/* ---- the buttons ---- */
+.cart-container .btn-place-order,
+.cart-container .btn-request-for-quotation,
+.cart-container .btn-primary {
+	font-family: var(--aab-body); font-size: 13px; font-weight: 700;
+	letter-spacing: .1em; text-transform: uppercase;
+	background: var(--aab-red); border: 1px solid var(--aab-red); color: #fff;
+	border-radius: 0; padding: 15px 18px; box-shadow: none;
+}
+.cart-container .btn-place-order:hover,
+.cart-container .btn-request-for-quotation:hover,
+.cart-container .btn-primary:hover {
+	background: var(--aab-red-dark); border-color: var(--aab-red-dark);
+}
+.cart-container .btn-primary-light,
+.cart-container .btn-outline-primary,
+.cart-container .btn-new-address,
+.cart-empty .btn-outline-primary {
+	font-family: var(--aab-body); font-size: 12.5px; font-weight: 700;
+	letter-spacing: .09em; text-transform: uppercase;
+	background: var(--aab-surface); color: var(--aab-ink);
+	border: 1px solid var(--aab-line); border-radius: 0;
+	padding: 13px 18px; box-shadow: none;
+}
+.cart-container .btn-primary-light:hover,
+.cart-container .btn-outline-primary:hover,
+.cart-container .btn-new-address:hover,
+.cart-empty .btn-outline-primary:hover {
+	border-color: var(--aab-ink); background: var(--aab-wash); color: var(--aab-ink);
+}
+
+/* ---- where it goes ---- */
+.cart-container .address-container .card,
+.cart-container .address-card {
+	border: 1px solid var(--aab-line); border-radius: 0; box-shadow: none;
+}
+.cart-container .t-and-c-container h5 {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; font-size: 20px; color: var(--aab-ink);
+}
+
+/* ---- nothing in it yet ---- */
+.cart-empty.frappe-card { text-align: center; padding: 64px 24px; }
+/* Webshop's empty state is a stock illustration of a basket. It says
+ * nothing this page does not already say, and it is not our drawing. */
+.cart-empty .cart-empty-state { display: none; }
+.cart-empty .cart-empty-message {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; letter-spacing: .01em;
+	font-size: clamp(26px, 4vw, 36px); color: var(--aab-ink);
+	margin: 0 0 22px;
+}
+
+@media (max-width: 767.98px) {
+	.cart-container .row.m-0 > [class^="col-"] { padding-left: 0; padding-right: 0; }
+	.cart-container .frappe-card { padding: 20px !important; }
+	.cart-container .cart-table td { padding: 13px 6px; }
+}
