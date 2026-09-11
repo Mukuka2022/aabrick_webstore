@@ -267,10 +267,16 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "94"
+ASSET_VERSION = "95"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
+]
+
+# Loaded in the desk. Frappe concatenates these in app order, so ours lands
+# after frappe's own and can replace a toolbar action frappe defined.
+app_include_js = [
+	"/assets/aabrick_webstore/js/desk.js?v=" + ASSET_VERSION,
 ]
 
 # inject analytics tags into the website page head
