@@ -14,6 +14,7 @@ into a database settings field.
 """
 
 import frappe
+import frappe.website.serve
 
 SETTINGS = "Web Analytics Settings"
 MODULE = "Aabrick Webstore"
@@ -174,14 +175,60 @@ def status():
         print("  WARNING: that field emits Universal Analytics, dead since July 2023.")
         print("  It collects nothing. Clear it to avoid loading a useless script.")
 
-    live = bool(s.enabled and (_clean(s.gtm_container_id)
-                               or _clean(s.ga4_measurement_id)
-                               or _clean(s.meta_pixel_id)))
-    print("\ntracking actually live: %s" % live)
-    if not live:
+    configured = bool(s.enabled and (_clean(s.gtm_container_id)
+                                     or _clean(s.ga4_measurement_id)
+                                     or _clean(s.meta_pixel_id)))
+    print("\nconfigured           : %s" % configured)
+    if not configured:
         print("  Nothing is being tracked. Paste a GTM container ID or GA4")
         print("  measurement ID into Web Analytics Settings to switch it on.")
-    return live
+        return False
+
+    # Configured is not the same as reaching the page. Every page we write
+    # declares its own head_include block, and a Jinja block replaces the
+    # parent's rather than adding to it, so a page that forgets super()
+    # silently throws these tags away. Render one and look.
+    print("\nrendered into the page:")
+    missing = []
+    for route in _SAMPLE:
+        found = _in_page(route)
+        print("  %-44s %s" % (route or "/", "yes" if found else "NO"))
+        if not found:
+            missing.append(route)
+
+    if missing:
+        print("\n  Configured but not reaching %d of %d pages checked."
+              % (len(missing), len(_SAMPLE)))
+        print("  Each of those templates declares {% block head_include %}")
+        print("  without {{ super() }}, which discards it.")
+    return not missing
+
+
+# One page of each kind we render, because they inherit differently.
+_SAMPLE = (
+    # The home page is reached as index here: the empty route only
+    # resolves inside a real request, and this runs from the console.
+    "index",
+    "all-products",
+    "branches",
+    "contact",
+    "tile-calculator",
+    "guides",
+)
+
+
+def _in_page(route):
+    """Does a rendered page actually carry the tag?"""
+    needle = _clean(_settings().gtm_container_id) or _clean(
+        _settings().ga4_measurement_id)
+    if not needle:
+        return False
+    try:
+        html = frappe.website.serve.get_response_content(route)
+    except Exception as e:
+        print("     could not render %r: %s" % (route or "/", e))
+        return False
+    return needle in html
 
 
 def trim_ids():

@@ -3,6 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block head_include %}
+{{ super() }}
 <meta name="description" content="{{ aab_description }}">
 <link rel="canonical" href="{{ aab_canonical }}">
 <meta property="og:title" content="Tile Calculator | AABrick Zambia">

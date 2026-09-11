@@ -3,6 +3,7 @@
 {% block title %}AABrick {{ doc.branch_name }} | Tiles, Tile Fix, PVC Ceiling &amp; Fertilizer{% endblock %}
 
 {% block head_include %}
+{{ super() }}
 <meta name="description" content="{{ doc.meta_description or doc.intro or '' }}">
 <link rel="canonical" href="{{ frappe.utils.get_url(doc.route) }}">
 <meta property="og:title" content="AABrick {{ doc.branch_name }}">
