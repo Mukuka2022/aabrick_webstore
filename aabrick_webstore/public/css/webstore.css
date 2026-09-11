@@ -194,7 +194,7 @@ main.container:has(.aab-branch) .aab-branch {
 			rgba(28,27,26,.86) 38%,
 			rgba(28,27,26,.45) 78%,
 			rgba(28,27,26,.30) 100%),
-		url("/assets/aabrick_webstore/images/hero.jpg");
+		var(--aab-hero-shot, url("/assets/aabrick_webstore/images/hero.jpg"));
 	background-size: cover;
 	background-position: center;
 }
@@ -210,7 +210,9 @@ main.container:has(.aab-branch) .aab-branch {
 				rgba(28,27,26,.90) 0%,
 				rgba(28,27,26,.82) 55%,
 				rgba(28,27,26,.88) 100%),
-			url("/assets/aabrick_webstore/images/hero-mobile.jpg");
+			var(--aab-hero-shot-mobile,
+				var(--aab-hero-shot,
+					url("/assets/aabrick_webstore/images/hero-mobile.jpg")));
 	}
 }
 
@@ -1521,4 +1523,65 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 		padding-left: 18px;
 		padding-right: 18px;
 	}
+}
+
+/* ------------------------------------------------------------------
+ * Pictures beside the page titles
+ *
+ * Optional everywhere. A page with nothing uploaded keeps the plain heading
+ * it has, so the layout has to read as finished either way rather than as a
+ * heading with a hole next to it.
+ * ------------------------------------------------------------------ */
+.aab-head-shot { display: none; }
+
+.has-shot .aab-inner {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 22px;
+	align-items: center;
+}
+@media (min-width: 880px) {
+	.has-shot .aab-inner { grid-template-columns: 1.25fr 1fr; gap: 44px; }
+}
+
+.has-shot .aab-head-shot {
+	display: block;
+	margin: 0;
+	background: var(--aab-shot-ground);
+	overflow: hidden;
+}
+.has-shot .aab-head-shot img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 3 / 2;
+	object-fit: cover;
+}
+
+/* The copy keeps its own measure whether or not a picture sits beside it. */
+.aab-head-copy > *:last-child { margin-bottom: 0; }
+
+/* The branches heading is its own grid: unlike the other pages it has no
+ * .aab-inner inside the header to lay out. */
+.aab-head-split.has-shot {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 22px;
+	align-items: center;
+}
+@media (min-width: 880px) {
+	.aab-head-split.has-shot { grid-template-columns: 1.25fr 1fr; gap: 44px; }
+}
+
+/* ------------------------------------------------------------------
+ * The shopfront on a branch page
+ * ------------------------------------------------------------------ */
+.aab-branch-shot {
+	margin: 0 0 26px;
+	background: var(--aab-shot-ground);
+	overflow: hidden;
+}
+.aab-branch-shot img {
+	display: block; width: 100%;
+	aspect-ratio: 16 / 9; object-fit: cover;
 }

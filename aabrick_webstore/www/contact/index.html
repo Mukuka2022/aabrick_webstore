@@ -22,14 +22,22 @@
     </nav>
   </div>
 
-  <header class="aab-calc-head">
+  {% set shot = site_images().heads.contact %}
+  <header class="aab-calc-head{% if shot %} has-shot{% endif %}">
     <div class="aab-inner">
+        <div class="aab-head-copy">
       <p class="aab-eyebrow">Talk to us</p>
       <h1>Send us an enquiry</h1>
       <p class="aab-calc-lede">
         Tell us what you are building and we will come back with quantities and
         a price. If it is urgent, the sales line is quicker.
       </p>
+        </div>
+        {%- if shot %}
+        <figure class="aab-head-shot">
+          <img src="{{ shot }}" alt="The sales counter at an AABrick branch" loading="lazy">
+        </figure>
+        {%- endif %}
     </div>
   </header>
 

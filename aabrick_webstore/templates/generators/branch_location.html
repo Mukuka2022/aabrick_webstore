@@ -28,6 +28,13 @@
 		{% if doc.intro %}<p class="aab-intro">{{ doc.intro }}</p>{% endif %}
 	</header>
 
+	{%- if doc.photo %}
+	<figure class="aab-branch-shot">
+		<img src="{{ doc.photo }}"
+		     alt="The AABrick branch in {{ doc.city or doc.branch_name }}" loading="lazy">
+	</figure>
+	{%- endif %}
+
 	<div class="aab-branch-grid">
 
 		<section class="aab-card">

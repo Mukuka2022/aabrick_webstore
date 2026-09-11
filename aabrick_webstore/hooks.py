@@ -81,7 +81,10 @@ home_page = "index"
 # list somebody types out, so the templates need a way to read it.
 # A plain dotted path: the alias form, name:path, is parsed as an app name
 # here and fails to import. The method takes the function's own name.
-jinja = {"methods": ["aabrick_webstore.jinja_helpers.nav_data"]}
+jinja = {"methods": [
+	"aabrick_webstore.jinja_helpers.nav_data",
+	"aabrick_webstore.jinja_helpers.site_images",
+]}
 
 # add methods and filters to jinja environment
 # jinja = {
@@ -264,7 +267,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "84"
+ASSET_VERSION = "85"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,

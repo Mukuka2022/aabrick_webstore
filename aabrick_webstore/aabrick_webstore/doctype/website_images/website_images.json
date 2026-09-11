@@ -1,0 +1,190 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-11 13:53:36.703810",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_hero",
+  "hero",
+  "hero_mobile",
+  "sec_shots",
+  "shot_1",
+  "caption_1",
+  "detail_1",
+  "col_shots_1",
+  "shot_2",
+  "caption_2",
+  "detail_2",
+  "col_shots_2",
+  "shot_3",
+  "caption_3",
+  "detail_3",
+  "sec_heads",
+  "head_all_products",
+  "head_branches",
+  "head_contact",
+  "col_heads",
+  "head_guides",
+  "head_tile_calculator",
+  "head_pvc_calculator"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_hero",
+   "fieldtype": "Section Break",
+   "label": "Home page"
+  },
+  {
+   "description": "The big picture behind the words on the home page. Wide, about 2400 by 1100. Dark or busy is fine: the page lays a dark wash over it so the words stay readable.",
+   "fieldname": "hero",
+   "fieldtype": "Attach Image",
+   "label": "Hero photograph"
+  },
+  {
+   "description": "Optional. A taller crop of the same scene, about 900 by 1000. A wide picture on a phone becomes a slit too shallow to read. Left empty, the wide one is used.",
+   "fieldname": "hero_mobile",
+   "fieldtype": "Attach Image",
+   "label": "Hero photograph, phone"
+  },
+  {
+   "description": "Three photographs of rooms. The section only appears when all three are set: a gallery of one reads as something half broken.",
+   "fieldname": "sec_shots",
+   "fieldtype": "Section Break",
+   "label": "Finished with AABrick"
+  },
+  {
+   "fieldname": "shot_1",
+   "fieldtype": "Attach Image",
+   "label": "Photograph 1"
+  },
+  {
+   "description": "Where it is. For example: Sitting room, Kitwe",
+   "fieldname": "caption_1",
+   "fieldtype": "Data",
+   "label": "Caption 1"
+  },
+  {
+   "description": "Optional. What is on the floor. For example: Tile 86072",
+   "fieldname": "detail_1",
+   "fieldtype": "Data",
+   "label": "Detail 1"
+  },
+  {
+   "fieldname": "col_shots_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shot_2",
+   "fieldtype": "Attach Image",
+   "label": "Photograph 2"
+  },
+  {
+   "fieldname": "caption_2",
+   "fieldtype": "Data",
+   "label": "Caption 2"
+  },
+  {
+   "fieldname": "detail_2",
+   "fieldtype": "Data",
+   "label": "Detail 2"
+  },
+  {
+   "fieldname": "col_shots_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "shot_3",
+   "fieldtype": "Attach Image",
+   "label": "Photograph 3"
+  },
+  {
+   "fieldname": "caption_3",
+   "fieldtype": "Data",
+   "label": "Caption 3"
+  },
+  {
+   "fieldname": "detail_3",
+   "fieldtype": "Data",
+   "label": "Detail 3"
+  },
+  {
+   "description": "One picture per page, shown next to the heading. Each is optional: a page with none keeps the plain heading it has now. Landscape, about 1200 by 800.",
+   "fieldname": "sec_heads",
+   "fieldtype": "Section Break",
+   "label": "Beside the page titles"
+  },
+  {
+   "fieldname": "head_all_products",
+   "fieldtype": "Attach Image",
+   "label": "All products"
+  },
+  {
+   "fieldname": "head_branches",
+   "fieldtype": "Attach Image",
+   "label": "Branches"
+  },
+  {
+   "fieldname": "head_contact",
+   "fieldtype": "Attach Image",
+   "label": "Contact"
+  },
+  {
+   "fieldname": "col_heads",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "head_guides",
+   "fieldtype": "Attach Image",
+   "label": "Guides"
+  },
+  {
+   "fieldname": "head_tile_calculator",
+   "fieldtype": "Attach Image",
+   "label": "Tile calculator"
+  },
+  {
+   "fieldname": "head_pvc_calculator",
+   "fieldtype": "Attach Image",
+   "label": "PVC ceiling calculator"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-11 13:53:36.703810",
+ "modified_by": "Administrator",
+ "module": "Aabrick Webstore",
+ "name": "Website Images",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Website Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

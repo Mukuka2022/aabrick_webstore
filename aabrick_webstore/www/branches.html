@@ -13,14 +13,22 @@
 {% block page_content %}
 <div class="aab-branch"><div class="aab-inner">
 
-	<header class="aab-branch-head">
-		<p class="aab-eyebrow">Find your nearest branch</p>
-		<h1>Branches Across Zambia</h1>
-		<p class="aab-intro">
-			Tiles, tile fix, PVC ceiling boards and fertilizer, stocked nationwide.
-			Anything not on the shelf is ordered from the manufacturer and delivered
-			within 7 days.
-		</p>
+	{%- set shot = site_images().heads.branches %}
+	<header class="aab-branch-head aab-head-split{% if shot %} has-shot{% endif %}">
+		<div class="aab-head-copy">
+			<p class="aab-eyebrow">Find your nearest branch</p>
+			<h1>Branches Across Zambia</h1>
+			<p class="aab-intro">
+				Tiles, tile fix, PVC ceiling boards and fertilizer, stocked nationwide.
+				Anything not on the shelf is ordered from the manufacturer and delivered
+				within 7 days.
+			</p>
+		</div>
+		{%- if shot %}
+		<figure class="aab-head-shot">
+			<img src="{{ shot }}" alt="An AABrick branch" loading="lazy">
+		</figure>
+		{%- endif %}
 	</header>
 
 	{% if branch_count %}

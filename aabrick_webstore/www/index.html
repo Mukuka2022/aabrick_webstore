@@ -32,7 +32,10 @@
 <div class="aab-home">
 
   <!-- hero ------------------------------------------------------------- -->
-  <section class="aab-hero{% if has_hero %} aab-hero--photo{% endif %}">
+  {%- set img = site_images() %}
+  <section class="aab-hero{% if has_hero or img.hero %} aab-hero--photo{% endif %}"
+    {%- if img.hero %} style="--aab-hero-shot: url('{{ img.hero }}');
+      {%- if img.hero_mobile %} --aab-hero-shot-mobile: url('{{ img.hero_mobile }}');{% endif %}"{% endif %}>
     <div class="aab-inner">
       <p class="aab-hero-eyebrow">Premium building &amp; finishing materials</p>
       <h1>Building Zambia<span>Beautifully</span></h1>
@@ -108,6 +111,7 @@
   </section>
 
   <!-- homes ------------------------------------------------------------ -->
+  {%- set showcase = img.shots or showcase %}
   {% if showcase %}
   <section class="aab-section">
     <div class="aab-rail">

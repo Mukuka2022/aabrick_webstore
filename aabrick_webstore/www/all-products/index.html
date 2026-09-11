@@ -24,10 +24,18 @@
     </nav>
   </div>
 
-  <header class="aab-shop-head">
+  {% set shot = site_images().heads.all_products %}
+  <header class="aab-shop-head{% if shot %} has-shot{% endif %}">
     <div class="aab-inner">
+        <div class="aab-head-copy">
       <p class="aab-eyebrow">{{ aab_total }} products</p>
       <h1>{{ aab_heading }}</h1>
+        </div>
+        {%- if shot %}
+        <figure class="aab-head-shot">
+          <img src="{{ shot }}" alt="Tiles on display in an AABrick branch" loading="lazy">
+        </figure>
+        {%- endif %}
     </div>
   </header>
 

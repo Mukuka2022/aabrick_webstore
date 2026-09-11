@@ -22,8 +22,10 @@
     </nav>
   </div>
 
-  <header class="aab-guide-head">
+  {% set shot = site_images().heads.guides %}
+  <header class="aab-guide-head{% if shot %} has-shot{% endif %}">
     <div class="aab-inner">
+        <div class="aab-head-copy">
       <p class="aab-eyebrow">Before you buy</p>
       <h1>Guides</h1>
       <p class="aab-guide-stand">
@@ -31,6 +33,12 @@
         belongs in which room, what the sizes mean, how much to order, and how
         it goes down.
       </p>
+        </div>
+        {%- if shot %}
+        <figure class="aab-head-shot">
+          <img src="{{ shot }}" alt="Tiles being laid" loading="lazy">
+        </figure>
+        {%- endif %}
     </div>
   </header>
 

@@ -22,8 +22,10 @@
     </nav>
   </div>
 
-  <header class="aab-calc-head">
+  {% set shot = site_images().heads.tile_calculator %}
+  <header class="aab-calc-head{% if shot %} has-shot{% endif %}">
     <div class="aab-inner">
+        <div class="aab-head-copy">
       <p class="aab-eyebrow">Work out what you need</p>
       <h1>Tile Calculator</h1>
       <p class="aab-calc-lede">
@@ -31,6 +33,12 @@
         boxes. Pick from our range and the size, pieces per box and price fill
         themselves in.
       </p>
+        </div>
+        {%- if shot %}
+        <figure class="aab-head-shot">
+          <img src="{{ shot }}" alt="Measuring a floor for tiles" loading="lazy">
+        </figure>
+        {%- endif %}
     </div>
   </header>
 

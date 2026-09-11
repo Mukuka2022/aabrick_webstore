@@ -22,14 +22,22 @@
     </nav>
   </div>
 
-  <header class="aab-calc-head">
+  {% set shot = site_images().heads.pvc_calculator %}
+  <header class="aab-calc-head{% if shot %} has-shot{% endif %}">
     <div class="aab-inner">
+        <div class="aab-head-copy">
       <p class="aab-eyebrow">Work out what you need</p>
       <h1>PVC Ceiling Calculator</h1>
       <p class="aab-calc-lede">
         Measure the ceiling, choose a board, and this counts the boards and
         estimates what they cost.
       </p>
+        </div>
+        {%- if shot %}
+        <figure class="aab-head-shot">
+          <img src="{{ shot }}" alt="PVC ceiling boards fitted in a room" loading="lazy">
+        </figure>
+        {%- endif %}
     </div>
   </header>
 

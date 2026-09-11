@@ -69,3 +69,55 @@ def _guides():
         return guides()
     except Exception:
         return []
+
+
+def site_images():
+    """Pictures somebody at AABrick can change, without a terminal.
+
+    Everything here is optional. A page with no picture set keeps the plain
+    heading it has now, and the home page falls back to the photograph that
+    ships in the app, so a fresh install looks like this one before anybody
+    has uploaded anything.
+
+    Cached per request: a page head, the hero and the gallery would
+    otherwise read the same single doctype three times.
+    """
+    cached = getattr(frappe.local, "_aab_images", None)
+    if cached is not None:
+        return cached
+
+    try:
+        s = frappe.get_cached_doc("Website Images")
+    except Exception:
+        s = None
+
+    def pick(field):
+        return (s.get(field) or "").strip() if s else ""
+
+    shots = []
+    for i in (1, 2, 3):
+        src = pick("shot_%d" % i)
+        if src:
+            shots.append(frappe._dict({
+                "src": src,
+                "caption": pick("caption_%d" % i),
+                "detail": pick("detail_%d" % i),
+            }))
+
+    out = frappe._dict({
+        "hero": pick("hero"),
+        "hero_mobile": pick("hero_mobile"),
+        # The gallery is all three or none. Two reads as one that failed.
+        "shots": shots if len(shots) == 3 else [],
+        "heads": frappe._dict({
+            "all_products": pick("head_all_products"),
+            "branches": pick("head_branches"),
+            "contact": pick("head_contact"),
+            "guides": pick("head_guides"),
+            "tile_calculator": pick("head_tile_calculator"),
+            "pvc_calculator": pick("head_pvc_calculator"),
+        }),
+    })
+
+    frappe.local._aab_images = out
+    return out
