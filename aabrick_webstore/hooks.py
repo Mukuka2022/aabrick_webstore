@@ -282,6 +282,15 @@ app_include_js = [
 # inject analytics tags into the website page head
 update_website_context = ["aabrick_webstore.analytics.add_analytics_tags"]
 
+# A webshop cart is a draft Quotation and keeps the date it was started on.
+# ERPNext will not read a price whose valid_from is later than that date, so
+# an old cart prices itself at nothing, and checkout is enabled.
+doc_events = {
+	"Quotation": {
+		"before_validate": "aabrick_webstore.cart_pricing.before_validate",
+	},
+}
+
 # include css on every website page
 web_include_css = "/assets/aabrick_webstore/css/webstore.css?v=" + ASSET_VERSION
 
