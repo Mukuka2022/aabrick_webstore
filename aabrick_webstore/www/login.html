@@ -1,0 +1,36 @@
+{% extends "frappe/www/login.html" %}
+
+{#
+  The login page, in AABrick's clothes.
+
+  Nothing inside the form is ours. super() renders Frappe's markup exactly
+  as it ships, so the login, forgot password, sign up, email link and LDAP
+  branches all keep working and keep updating with Frappe. This only puts a
+  panel beside it and lets the stylesheet do the rest.
+#}
+
+{% block page_content %}
+<div class="aab-login">
+
+	<aside class="aab-login-brand">
+		<div class="aab-login-brand-inner">
+			<p class="aab-eyebrow-light">AABrick Zambia Limited</p>
+			<h2>Building Zambia<span>Beautifully</span></h2>
+			<p class="aab-login-lede">
+				Tiles, tile fix, PVC ceiling boards and fertilizer, supplied
+				across Zambia since 2005.
+			</p>
+			<ul class="aab-login-points">
+				<li><strong>{{ nav_data().branch_count }} branches</strong><span>Nationwide</span></li>
+				<li><strong>7-day delivery</strong><span>On anything not in stock</span></li>
+				<li><strong>Marcopolo Tiles</strong><span>Official distributor</span></li>
+			</ul>
+		</div>
+	</aside>
+
+	<div class="aab-login-panel">
+		{{ super() }}
+	</div>
+
+</div>
+{% endblock %}

@@ -1585,3 +1585,165 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	display: block; width: 100%;
 	aspect-ratio: 16 / 9; object-fit: cover;
 }
+
+/* ------------------------------------------------------------------
+ * Login
+ *
+ * The form is Frappe's, untouched. The template puts a brand panel beside
+ * it and this colours what Frappe rendered. Selectors are Frappe's class
+ * names on purpose: nothing about the form is re-declared, so an upgrade
+ * that changes the form changes the form rather than breaking the login.
+ * ------------------------------------------------------------------ */
+main.container:has(.aab-login) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+}
+
+/* A four column footer under a login form is noise. The bottom bar, which
+ * carries the copyright and the VAT line, stays. */
+body:has(.aab-login) .aab-foot-main { display: none; }
+
+.aab-login {
+	display: grid;
+	grid-template-columns: 1fr;
+	min-height: calc(100vh - 240px);
+	font-family: var(--aab-body);
+}
+@media (min-width: 900px) {
+	.aab-login { grid-template-columns: 1.05fr 1fr; }
+}
+
+/* ---- the panel beside the form ---- */
+.aab-login-brand {
+	display: flex; align-items: center;
+	padding: clamp(34px, 5vw, 72px) clamp(18px, 4vw, 64px);
+	color: #fff;
+	background:
+		linear-gradient(160deg, rgba(28,27,26,.94) 0%, rgba(28,27,26,.80) 100%),
+		var(--aab-hero-shot, url("/assets/aabrick_webstore/images/hero.jpg"));
+	background-size: cover;
+	background-position: center;
+}
+.aab-login-brand-inner { max-width: 34rem; }
+
+.aab-login-brand h2 {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; line-height: .96;
+	font-size: clamp(38px, 5vw, 62px);
+	margin: 10px 0 0; color: #fff;
+}
+.aab-login-brand h2 span { display: block; color: var(--aab-red-light); }
+
+.aab-login-lede {
+	margin: 18px 0 0; max-width: 40ch;
+	font-size: 15.5px; line-height: 1.65; color: rgba(255,255,255,.78);
+}
+
+.aab-login-points {
+	list-style: none; margin: 30px 0 0; padding: 26px 0 0;
+	border-top: 1px solid rgba(255,255,255,.18);
+	display: grid; gap: 16px;
+}
+.aab-login-points strong { display: block; font-size: 15px; color: #fff; }
+.aab-login-points span { font-size: 13px; color: rgba(255,255,255,.6); }
+
+@media (max-width: 899.98px) {
+	.aab-login-brand { padding-top: 40px; padding-bottom: 40px; }
+	.aab-login-points { display: none; }
+	.aab-login-lede { display: none; }
+}
+
+/* ---- the side the form sits on ---- */
+/* These carry .aab-login as well as .aab-login-panel for one reason:
+ * login.bundle.css is linked after our stylesheet, so on equal specificity
+ * Frappe wins and the fields come out at 14px, which Safari then zooms.
+ * One more class settles it without reaching for !important. */
+
+.aab-login .aab-login-panel {
+	display: flex; align-items: center; justify-content: center;
+	padding: clamp(34px, 5vw, 64px) clamp(18px, 4vw, 48px);
+	background: var(--aab-surface);
+}
+.aab-login .aab-login-panel > div { width: 100%; max-width: 25rem; }
+
+/* Frappe centres the card and gives it a shadow. Here it is the page. */
+.aab-login .aab-login-panel .page-card,
+.aab-login .aab-login-panel .login-content {
+	background: none; box-shadow: none; border: 0;
+	padding: 0; margin: 0; max-width: none; width: 100%;
+}
+.aab-login .aab-login-panel .page-card-head { text-align: left; margin-bottom: 26px; }
+/* The logo is already in the header above and on the panel beside this, so
+ * a third one here is branding for its own sake. The heading carries it. */
+.aab-login .aab-login-panel .page-card-head .app-logo { display: none; }
+.aab-login .aab-login-panel .page-card-head h4 {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; letter-spacing: .01em;
+	font-size: 28px; color: var(--aab-ink); margin: 0;
+}
+
+.aab-login .aab-login-panel .form-control {
+	font-family: var(--aab-body); font-size: 16px; color: var(--aab-ink);
+	border: 1px solid var(--aab-line); border-radius: 0;
+	background: var(--aab-surface);
+	padding: 12px 14px 12px 38px; height: auto; box-shadow: none;
+}
+.aab-login .aab-login-panel .form-control:focus {
+	border-color: var(--aab-red);
+	outline: 2px solid var(--aab-red); outline-offset: -2px;
+	box-shadow: none;
+}
+.aab-login .aab-login-panel .field-icon { top: 15px; left: 13px; color: var(--aab-muted); }
+.aab-login .aab-login-panel .toggle-password {
+	font-size: 12px; font-weight: 700; letter-spacing: .06em;
+	text-transform: uppercase; color: var(--aab-red); cursor: pointer;
+}
+
+.aab-login .aab-login-panel .btn-login,
+.aab-login .aab-login-panel .btn-primary {
+	font-family: var(--aab-body); font-size: 13px; font-weight: 700;
+	letter-spacing: .1em; text-transform: uppercase;
+	background: var(--aab-red); border: 1px solid var(--aab-red);
+	color: #fff; border-radius: 0; padding: 14px 18px; box-shadow: none;
+}
+.aab-login .aab-login-panel .btn-login:hover,
+.aab-login .aab-login-panel .btn-primary:hover {
+	background: var(--aab-red-dark); border-color: var(--aab-red-dark);
+}
+.aab-login .aab-login-panel .btn-default,
+.aab-login .aab-login-panel .btn-login-option {
+	font-family: var(--aab-body); font-size: 13px; font-weight: 700;
+	letter-spacing: .1em; text-transform: uppercase;
+	background: var(--aab-surface); color: var(--aab-ink);
+	border: 1px solid var(--aab-line); border-radius: 0;
+	padding: 13px 18px; box-shadow: none;
+}
+.aab-login .aab-login-panel .btn-default:hover,
+.aab-login .aab-login-panel .btn-login-option:hover { border-color: var(--aab-ink); }
+
+.aab-login .aab-login-panel .forgot-password-message,
+.aab-login .aab-login-panel .sign-up-message,
+.aab-login .aab-login-panel .login-divider {
+	font-size: 13.5px; color: var(--aab-muted);
+}
+.aab-login .aab-login-panel .sign-up-message { text-align: left; margin-top: 22px; }
+.aab-login .aab-login-panel a { color: var(--aab-red); text-decoration: none; }
+.aab-login .aab-login-panel a:hover { text-decoration: underline; }
+
+/* Frappe hides and shows these sections as the user moves between login,
+ * forgot password and sign up. Leave that alone: only the look changes. */
+.aab-login .aab-login-panel section { width: 100%; }
+
+/* login.bundle.css sets the fields from
+ *   .for-login .page-card .page-card-body input[type="text"]
+ * which outranks anything sensible on our side, and lands them at 14px.
+ * Safari zooms the page in on any field it focuses under 16px, so on a phone
+ * that turns signing in into a form wider than the screen. Matching the
+ * shape of their selector with one class more is the smallest thing that
+ * wins, and it beats reaching for !important. */
+.aab-login .aab-login-panel .page-card .page-card-body input.form-control,
+.aab-login .aab-login-panel .page-card .page-card-body input[type="text"],
+.aab-login .aab-login-panel .page-card .page-card-body input[type="email"],
+.aab-login .aab-login-panel .page-card .page-card-body input[type="password"] {
+	font-size: 16px;
+}
