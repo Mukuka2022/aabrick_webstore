@@ -1975,3 +1975,106 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	.cart-container .frappe-card { padding: 20px !important; }
 	.cart-container .cart-table td { padding: 13px 6px; }
 }
+
+/* ------------------------------------------------------------------
+ * Anything written in the desk
+ *
+ * Web Pages and Blog Posts. They already inherit the header, the footer,
+ * the stylesheet and the analytics tag, because those are hooks and reach
+ * every website page. This is the typography, which was scoped to the pages
+ * we built by hand and so never reached an article.
+ * ------------------------------------------------------------------ */
+.web-page-content,
+.blog-content,
+.blog-header {
+	font-family: var(--aab-body);
+	color: var(--aab-ink);
+	/* Frappe gives written content no container, so it ran the full width of
+	 * the screen with the text hard against the left edge. 46rem is about 75
+	 * characters at this size, which is a column somebody can read down. */
+	max-width: 46rem;
+	margin-left: auto;
+	margin-right: auto;
+	padding-left: clamp(18px, 4vw, 40px);
+	padding-right: clamp(18px, 4vw, 40px);
+}
+.web-page-content { padding-top: clamp(26px, 4vw, 48px); padding-bottom: clamp(34px, 5vw, 64px); }
+.blog-header { padding-top: clamp(26px, 4vw, 48px); }
+.blog-content { padding-bottom: clamp(34px, 5vw, 64px); }
+
+.blog-header { margin-bottom: 26px; }
+
+.web-page-content h1, .web-page-content h2, .web-page-content h3,
+.blog-content h1, .blog-content h2, .blog-content h3,
+.blog-title, h1.blog-title {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; letter-spacing: .01em; line-height: 1.05;
+	color: var(--aab-ink);
+	text-wrap: balance;
+}
+.blog-title, h1.blog-title { font-size: clamp(30px, 4.4vw, 46px); margin: 0 0 10px; }
+.web-page-content h1 { font-size: clamp(30px, 4.4vw, 46px); margin: 0 0 18px; }
+.web-page-content h2, .blog-content h2 { font-size: clamp(24px, 3vw, 32px); margin: 40px 0 14px; }
+.web-page-content h3, .blog-content h3 { font-size: 20px; margin: 30px 0 10px; }
+
+/* h4 and below stay in Montserrat: at that size Anton reads as a different
+ * brand rather than a quieter one, which is the same call the cards make. */
+.web-page-content h4, .blog-content h4 {
+	font-family: var(--aab-body); font-weight: 700; font-size: 16px;
+	letter-spacing: .02em; margin: 24px 0 8px; color: var(--aab-ink);
+}
+
+.web-page-content p, .blog-content p,
+.web-page-content li, .blog-content li {
+	font-size: 16.5px; line-height: 1.7; color: var(--aab-ink);
+}
+.web-page-content p, .blog-content p { margin: 0 0 18px; }
+
+.web-page-content ul, .web-page-content ol,
+.blog-content ul, .blog-content ol { margin: 0 0 20px; padding-left: 22px; }
+.web-page-content li, .blog-content li { margin-bottom: 7px; }
+
+.web-page-content a, .blog-content a {
+	color: var(--aab-red); text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.web-page-content a:hover, .blog-content a:hover { color: var(--aab-red-dark); }
+
+.web-page-content blockquote, .blog-content blockquote {
+	margin: 26px 0; padding: 4px 0 4px 20px;
+	border-left: 3px solid var(--aab-red);
+	color: var(--aab-muted); font-size: 17px; line-height: 1.65;
+}
+.web-page-content blockquote p:last-child,
+.blog-content blockquote p:last-child { margin-bottom: 0; }
+
+.web-page-content img, .blog-content img {
+	max-width: 100%; height: auto; display: block;
+	margin: 26px 0; border-radius: 0;
+}
+
+.web-page-content hr, .blog-content hr {
+	border: 0; border-top: 1px solid var(--aab-line); margin: 34px 0;
+}
+
+/* A table in an article is usually a price list or a size chart, and both
+ * are wider than a phone. It scrolls in its own box rather than pushing the
+ * page sideways. */
+.web-page-content .table-responsive,
+.blog-content .table-responsive { overflow-x: auto; }
+.web-page-content table, .blog-content table {
+	width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px;
+}
+.web-page-content th, .blog-content th {
+	text-align: left; font-size: 11.5px; font-weight: 700;
+	letter-spacing: .12em; text-transform: uppercase; color: var(--aab-muted);
+	border-bottom: 1px solid var(--aab-line); padding: 10px 12px 10px 0;
+}
+.web-page-content td, .blog-content td {
+	border-bottom: 1px solid var(--aab-line); padding: 12px 12px 12px 0;
+	vertical-align: top;
+}
+
+.web-page-content code, .blog-content code {
+	font-size: 14px; background: var(--aab-wash); padding: 2px 5px;
+}

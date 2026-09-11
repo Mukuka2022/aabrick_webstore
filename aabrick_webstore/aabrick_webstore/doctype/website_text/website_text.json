@@ -1,0 +1,273 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-09-11 17:25:00.036345",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_strip",
+  "strip_line",
+  "sec_hero",
+  "hero_eyebrow",
+  "hero_line_1",
+  "hero_line_2",
+  "hero_lede",
+  "hero_button_1",
+  "hero_button_2",
+  "sec_cat",
+  "category_eyebrow",
+  "category_heading",
+  "sec_panels",
+  "panel_1_eyebrow",
+  "panel_1_heading",
+  "panel_1_text",
+  "panel_2_eyebrow",
+  "panel_2_heading",
+  "panel_2_text",
+  "sec_rail",
+  "rail_eyebrow",
+  "rail_heading",
+  "rail_lede",
+  "sec_popular",
+  "popular_eyebrow",
+  "popular_heading",
+  "sec_why",
+  "why_eyebrow",
+  "why_heading",
+  "sec_branch",
+  "branch_heading",
+  "branch_text",
+  "sec_talk",
+  "talk_eyebrow",
+  "talk_heading",
+  "sec_foot",
+  "footer_blurb"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_strip",
+   "fieldtype": "Section Break",
+   "label": "Above the header"
+  },
+  {
+   "description": "The thin dark strip at the very top. Write {branches} where the number should go and it fills itself in.",
+   "fieldname": "strip_line",
+   "fieldtype": "Data",
+   "label": "The promise line"
+  },
+  {
+   "fieldname": "sec_hero",
+   "fieldtype": "Section Break",
+   "label": "The first screen"
+  },
+  {
+   "fieldname": "hero_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line above the headline"
+  },
+  {
+   "fieldname": "hero_line_1",
+   "fieldtype": "Data",
+   "label": "Headline, first line"
+  },
+  {
+   "description": "Shown in red, under the first line.",
+   "fieldname": "hero_line_2",
+   "fieldtype": "Data",
+   "label": "Headline, second line"
+  },
+  {
+   "fieldname": "hero_lede",
+   "fieldtype": "Small Text",
+   "label": "Paragraph under the headline"
+  },
+  {
+   "fieldname": "hero_button_1",
+   "fieldtype": "Data",
+   "label": "Red button"
+  },
+  {
+   "fieldname": "hero_button_2",
+   "fieldtype": "Data",
+   "label": "Outline button"
+  },
+  {
+   "fieldname": "sec_cat",
+   "fieldtype": "Section Break",
+   "label": "Shop by category"
+  },
+  {
+   "fieldname": "category_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "category_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "sec_panels",
+   "fieldtype": "Section Break",
+   "label": "The two coloured panels"
+  },
+  {
+   "fieldname": "panel_1_eyebrow",
+   "fieldtype": "Data",
+   "label": "Red panel, small line"
+  },
+  {
+   "fieldname": "panel_1_heading",
+   "fieldtype": "Data",
+   "label": "Red panel, heading"
+  },
+  {
+   "fieldname": "panel_1_text",
+   "fieldtype": "Small Text",
+   "label": "Red panel, paragraph"
+  },
+  {
+   "fieldname": "panel_2_eyebrow",
+   "fieldtype": "Data",
+   "label": "Dark panel, small line"
+  },
+  {
+   "fieldname": "panel_2_heading",
+   "fieldtype": "Data",
+   "label": "Dark panel, heading"
+  },
+  {
+   "fieldname": "panel_2_text",
+   "fieldtype": "Small Text",
+   "label": "Dark panel, paragraph"
+  },
+  {
+   "fieldname": "sec_rail",
+   "fieldtype": "Section Break",
+   "label": "Finished with AABrick"
+  },
+  {
+   "fieldname": "rail_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "rail_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "rail_lede",
+   "fieldtype": "Small Text",
+   "label": "Paragraph"
+  },
+  {
+   "fieldname": "sec_popular",
+   "fieldtype": "Section Break",
+   "label": "Popular right now"
+  },
+  {
+   "fieldname": "popular_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "popular_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "sec_why",
+   "fieldtype": "Section Break",
+   "label": "Why choose AABrick"
+  },
+  {
+   "fieldname": "why_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "why_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "sec_branch",
+   "fieldtype": "Section Break",
+   "label": "The branch band"
+  },
+  {
+   "fieldname": "branch_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "branch_text",
+   "fieldtype": "Small Text",
+   "label": "Paragraph"
+  },
+  {
+   "fieldname": "sec_talk",
+   "fieldtype": "Section Break",
+   "label": "Talk to us"
+  },
+  {
+   "fieldname": "talk_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "talk_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "sec_foot",
+   "fieldtype": "Section Break",
+   "label": "Footer"
+  },
+  {
+   "fieldname": "footer_blurb",
+   "fieldtype": "Small Text",
+   "label": "The paragraph under the company name"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-09-11 17:25:00.036345",
+ "modified_by": "Administrator",
+ "module": "Aabrick Webstore",
+ "name": "Website Text",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Website Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -50,6 +50,9 @@ cd ~/frappe-bench
 # The Website Images settings page, and the photo field on Branch Location
 bench --site SITE execute aabrick_webstore.setup_images.run
 
+# The Website Text settings page, seeded with the wording on the site today
+bench --site SITE execute aabrick_webstore.setup_text.run
+
 # The 46 branches: details, then put them on the site
 bench --site SITE execute aabrick_webstore.load_branches.run
 bench --site SITE execute aabrick_webstore.load_branches.publish

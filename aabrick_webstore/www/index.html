@@ -29,6 +29,7 @@
 {% endblock %}
 
 {% block page_content %}
+{%- set txt = site_text() %}
 <div class="aab-home">
 
   <!-- hero ------------------------------------------------------------- -->
@@ -37,15 +38,12 @@
     {%- if img.hero %} style="--aab-hero-shot: url('{{ img.hero }}');
       {%- if img.hero_mobile %} --aab-hero-shot-mobile: url('{{ img.hero_mobile }}');{% endif %}"{% endif %}>
     <div class="aab-inner">
-      <p class="aab-hero-eyebrow">Premium building &amp; finishing materials</p>
-      <h1>Building Zambia<span>Beautifully</span></h1>
-      <p class="aab-hero-lede">
-        Tiles, tile fix, PVC ceiling boards and fertilizer. Trusted by
-        contractors, homeowners and farmers since 2005.
-      </p>
+      <p class="aab-hero-eyebrow">{{ txt.hero_eyebrow }}</p>
+      <h1>{{ txt.hero_line_1 }}<span>{{ txt.hero_line_2 }}</span></h1>
+      <p class="aab-hero-lede">{{ txt.hero_lede }}</p>
       <div class="aab-hero-actions">
-        <a class="aab-btn aab-btn-primary" href="/all-products">Shop online</a>
-        <a class="aab-btn aab-btn-outline" href="/branches">Find a branch</a>
+        <a class="aab-btn aab-btn-primary" href="/all-products">{{ txt.hero_button_1 }}</a>
+        <a class="aab-btn aab-btn-outline" href="/branches">{{ txt.hero_button_2 }}</a>
       </div>
       <ul class="aab-hero-points">
         <li><strong>{{ branch_count }} branches</strong><span>Nationwide</span></li>
@@ -61,8 +59,8 @@
     <div class="aab-inner">
       <div class="aab-section-head">
         <div>
-          <p class="aab-eyebrow">Shop by category</p>
-          <h2>Find what you need</h2>
+          <p class="aab-eyebrow">{{ txt.category_eyebrow }}</p>
+          <h2>{{ txt.category_heading }}</h2>
         </div>
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
@@ -92,15 +90,15 @@
   <section class="aab-section">
     <div class="aab-panels">
         <div class="aab-panel aab-panel-red">
-          <p class="aab-eyebrow-light">Shop online</p>
-          <h3>Your finishing needs, a click away</h3>
-          <p>Browse the full range, see prices, and order for delivery or collection at your nearest branch.</p>
+          <p class="aab-eyebrow-light">{{ txt.panel_1_eyebrow }}</p>
+          <h3>{{ txt.panel_1_heading }}</h3>
+          <p>{{ txt.panel_1_text }}</p>
           <a class="aab-btn aab-btn-dark" href="/all-products">Shop now</a>
         </div>
         <div class="aab-panel aab-panel-dark">
-          <p class="aab-eyebrow-light">Need a hand?</p>
-          <h3>Work out exactly how much you need</h3>
-          <p>Our tile and PVC ceiling calculators tell you how many boxes or boards to buy, before you spend anything.</p>
+          <p class="aab-eyebrow-light">{{ txt.panel_2_eyebrow }}</p>
+          <h3>{{ txt.panel_2_heading }}</h3>
+          <p>{{ txt.panel_2_text }}</p>
           <div class="aab-panel-actions">
             <a class="aab-btn aab-btn-dark" href="/tile-calculator">Tile calculator</a>
             <a class="aab-btn aab-btn-ghost-dark" href="/pvc-ceiling-calculater">PVC calculator</a>
@@ -129,11 +127,9 @@
         {% if loop.first %}
           <div class="aab-rail-copy">
             <a class="aab-rail-go" href="/all-products" aria-label="Shop all products">&#8594;</a>
-            <p class="aab-eyebrow">Shop by room</p>
-            <h2>Finished with AABrick</h2>
-            <p class="aab-rail-lede">
-              Tiles, tile fix and PVC ceiling boards, in the rooms they end up in.
-            </p>
+            <p class="aab-eyebrow">{{ txt.rail_eyebrow }}</p>
+            <h2>{{ txt.rail_heading }}</h2>
+            <p class="aab-rail-lede">{{ txt.rail_lede }}</p>
             <a class="aab-btn aab-btn-dark" href="/all-products">Shop the look</a>
           </div>
         {% endif %}
@@ -148,8 +144,8 @@
     <div class="aab-inner">
       <div class="aab-section-head">
         <div>
-          <p class="aab-eyebrow">From the range</p>
-          <h2>Popular right now</h2>
+          <p class="aab-eyebrow">{{ txt.popular_eyebrow }}</p>
+          <h2>{{ txt.popular_heading }}</h2>
         </div>
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
@@ -168,8 +164,8 @@
   <!-- why aabrick ------------------------------------------------------ -->
   <section class="aab-section aab-section--reasons">
     <div class="aab-inner">
-      <p class="aab-eyebrow">Why choose AABrick</p>
-      <h2>Twenty years supplying Zambia</h2>
+      <p class="aab-eyebrow">{{ txt.why_eyebrow }}</p>
+      <h2>{{ txt.why_heading }}</h2>
 
       <div class="aab-why">
         <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
@@ -187,8 +183,8 @@
     <div class="aab-inner">
       <div>
         <p class="aab-eyebrow-light">{{ branch_count }} branches nationwide</p>
-        <h2>There is a branch near you</h2>
-        <p>Come and see the tiles in person, or call and we will tell you what is on the shelf today.</p>
+        <h2>{{ txt.branch_heading }}</h2>
+        <p>{{ txt.branch_text }}</p>
       </div>
       <div class="aab-branch-cta-actions">
         <a class="aab-btn aab-btn-light" href="/branches">View branches</a>
@@ -200,8 +196,8 @@
   <!-- talk to us ------------------------------------------------------- -->
   <section class="aab-section">
     <div class="aab-inner">
-      <p class="aab-eyebrow">Talk to us</p>
-      <h2>However you prefer to buy</h2>
+      <p class="aab-eyebrow">{{ txt.talk_eyebrow }}</p>
+      <h2>{{ txt.talk_heading }}</h2>
       <div class="aab-talk">
         <a class="aab-talk-card" href="tel:{{ company_phone|replace(' ', '') }}">
           <strong>Call the sales line</strong>

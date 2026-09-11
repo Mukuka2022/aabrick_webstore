@@ -134,3 +134,39 @@ def site_images():
 
     frappe.local._aab_images = out
     return out
+
+
+def site_text():
+    """The words on the pages we built, as AABrick has them today.
+
+    Every key falls back to the wording in site_copy.py, so a field cleared
+    in the desk restores the original sentence rather than emptying the
+    page, and a fresh install reads the same as this one.
+
+    Cached per request: the homepage alone asks for a dozen of these.
+    """
+    cached = getattr(frappe.local, "_aab_text", None)
+    if cached is not None:
+        return cached
+
+    from aabrick_webstore.site_copy import DEFAULTS
+
+    try:
+        doc = frappe.get_cached_doc("Website Text")
+    except Exception:
+        doc = None
+
+    out = frappe._dict()
+    for key, default in DEFAULTS.items():
+        value = ""
+        if doc:
+            value = (doc.get(key) or "").strip()
+        out[key] = value or default
+
+    # The promise line carries the branch count, which nobody should have to
+    # keep up to date by hand.
+    out["strip_line"] = out["strip_line"].replace(
+        "{branches}", str(nav_data().branch_count))
+
+    frappe.local._aab_text = out
+    return out

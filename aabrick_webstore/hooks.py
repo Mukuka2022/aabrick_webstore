@@ -84,6 +84,7 @@ home_page = "index"
 jinja = {"methods": [
 	"aabrick_webstore.jinja_helpers.nav_data",
 	"aabrick_webstore.jinja_helpers.site_images",
+	"aabrick_webstore.jinja_helpers.site_text",
 ]}
 
 # add methods and filters to jinja environment
@@ -267,7 +268,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "95"
+ASSET_VERSION = "97"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
