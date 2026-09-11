@@ -1,4 +1,19 @@
 {%- set nav = nav_data() -%}
+{%- set _icon_user %}
+<svg class="aab-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+  <circle cx="12" cy="7" r="4"></circle>
+</svg>
+{%- endset -%}
+{%- set _icon_cart %}
+<svg class="aab-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path>
+  <path d="M3 6h18"></path>
+  <path d="M16 10a4 4 0 0 1-8 0"></path>
+</svg>
+{%- endset -%}
 <header class="aab-nav" id="aab-nav">
 
   <div class="aab-nav-strip">
@@ -28,7 +43,7 @@
         <ul class="aab-nav-list">
 
           <li class="aab-nav-has-panel">
-            <button type="button" class="aab-nav-link" aria-expanded="false">Shop</button>
+            <button type="button" class="aab-nav-link aab-nav-link--shop" aria-expanded="false">Shop</button>
             <div class="aab-nav-panel">
               <div class="aab-nav-panel-inner">
                 <div class="aab-nav-col aab-nav-col-wide">
@@ -82,7 +97,25 @@
         </ul>
 
         <div class="aab-nav-actions">
-          <a class="aab-nav-cart" href="/cart" aria-label="Cart">Cart</a>
+
+          {%- if not nav.is_guest %}
+          <a class="aab-nav-account" href="/me">
+            {{ _icon_user }}
+            <span>{{ nav.user_name or "Account" }}</span>
+          </a>
+          {%- else %}
+          <a class="aab-nav-account" href="/login">
+            {{ _icon_user }}
+            <span>Log in</span>
+          </a>
+          <a class="aab-nav-signup" href="/login#signup">Sign up</a>
+          {%- endif %}
+
+          <a class="aab-nav-cart" href="/cart">
+            {{ _icon_cart }}
+            <span>Cart</span>
+          </a>
+
           <a class="aab-btn aab-btn-primary aab-nav-cta" href="tel:{{ nav.phone_link }}">Call us</a>
         </div>
       </nav>

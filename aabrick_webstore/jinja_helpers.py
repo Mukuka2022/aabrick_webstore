@@ -18,6 +18,15 @@ def nav_data():
     if cached is not None:
         return cached
 
+    # Worked out here rather than in the template: Jinja is handed a
+    # restricted frappe object, so frappe.utils.get_fullname resolves to
+    # None there and takes every page down for anyone who is signed in.
+    user = frappe.session.user or "Guest"
+    name = ""
+    if user != "Guest":
+        full = frappe.utils.get_fullname(user) or user
+        name = full.split(" ")[0]
+
     data = frappe._dict({
         "phone": PHONE,
         "phone_link": PHONE.replace(" ", ""),
@@ -25,6 +34,10 @@ def nav_data():
         "guides": _guides(),
         "branch_count": frappe.db.count("Branch Location") or 46,
         "year": frappe.utils.now_datetime().year,
+        "is_guest": user == "Guest",
+        # First name only: the navbar has room for a greeting, not a full
+        # name, and a company login is often named after the company.
+        "user_name": name,
     })
     frappe.local._aab_nav = data
     return data

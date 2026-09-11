@@ -21,6 +21,7 @@
 	--aab-red-dark: #8C0000;
 	--aab-red-bright: #C73333;
 	--aab-red-light: #E85252;   /* display type on charcoal, where #C73333 is too dark */
+	--aab-red-wash: #FBEDED;   /* the brand red at a whisper, for a tinted ground */
 	--aab-charcoal: #2A2725;
 	--aab-charcoal-soft: #33332F;
 	--aab-grey: #828282;
@@ -1058,10 +1059,19 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	white-space: nowrap;
 }
 
-/* Two buttons cannot hold their labels on a phone, where the card is 178. */
-@media (max-width: 619.98px) {
-	.aab-tile-actions { grid-template-columns: 1fr; }
+/* Two buttons cannot hold their labels side by side in a narrow card, and
+ * how narrow the card is has nothing to do with how wide the window is: the
+ * home page puts five across at 1000px, which is a 182px card, while a phone
+ * puts two across at 375, which is 178. A viewport query cannot see that and
+ * was letting Add to cart hang 53px off the side of the page between 1000
+ * and about 1100. The card measures itself instead. */
+.aab-tile { container-type: inline-size; }
+.aab-tile-actions { grid-template-columns: 1fr; }
+@container (min-width: 236px) {
+	.aab-tile-actions { grid-template-columns: 1fr 1fr; }
 }
+/* Browsers without container queries keep the single column above, which is
+ * the safe way round: a stacked pair is tidy, an overflowing one is not. */
 
 @media (prefers-reduced-motion: reduce) {
 	.aab-tile-shot img { transition: none; }
@@ -1746,4 +1756,64 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 .aab-login .aab-login-panel .page-card .page-card-body input[type="email"],
 .aab-login .aab-login-panel .page-card .page-card-body input[type="password"] {
 	font-size: 16px;
+}
+
+/* ------------------------------------------------------------------
+ * Navbar: the way in, and who you are
+ * ------------------------------------------------------------------ */
+
+/* Shop is the reason most people opened the site, so it is the one entry
+ * in the row that carries a colour. A tint rather than the solid red of
+ * the Call us button: two solid reds in one bar and neither of them means
+ * anything. */
+.aab-nav-link--shop {
+	background: var(--aab-red-wash);
+	color: var(--aab-red);
+	padding-left: 16px; padding-right: 16px;
+}
+.aab-nav-link--shop:hover,
+.aab-nav-has-panel.is-open > .aab-nav-link--shop {
+	background: var(--aab-red);
+	color: #fff;
+}
+
+.aab-nav-icon {
+	width: 17px; height: 17px; flex: 0 0 17px;
+	display: block;
+}
+
+.aab-nav-account,
+.aab-nav-cart {
+	display: inline-flex; align-items: center; gap: 7px;
+	font-size: 12px; font-weight: 700; letter-spacing: .09em;
+	text-transform: uppercase;
+	color: var(--aab-ink); text-decoration: none;
+}
+.aab-nav-account:hover,
+.aab-nav-cart:hover { color: var(--aab-red); }
+
+.aab-nav-signup {
+	font-size: 12px; font-weight: 700; letter-spacing: .09em;
+	text-transform: uppercase;
+	color: var(--aab-muted); text-decoration: none;
+	padding-left: 12px; margin-left: -4px;
+	border-left: 1px solid var(--aab-line);
+}
+.aab-nav-signup:hover { color: var(--aab-red); }
+
+/* The bar runs out of room before the words do. Below 1180 the labels go
+ * and the icons carry it, which is what they are for. */
+@media (min-width: 992px) and (max-width: 1179.98px) {
+	.aab-nav-account span,
+	.aab-nav-cart span { display: none; }
+	.aab-nav-signup { display: none; }
+}
+
+/* In the drawer there is room, so everything keeps its label and the row
+ * spreads out rather than huddling in a corner. */
+@media (max-width: 991.98px) {
+	.aab-nav-actions { flex-wrap: wrap; gap: 14px 18px; }
+	.aab-nav-account, .aab-nav-cart { font-size: 13px; }
+	.aab-nav-cta { margin-left: auto; }
+	.aab-nav-link--shop { background: none; color: var(--aab-red); }
 }
