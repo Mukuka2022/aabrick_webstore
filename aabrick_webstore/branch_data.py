@@ -269,7 +269,7 @@ BRANCHES = [
     {
         "branch": 'Chinsali',
         "counter_or_depot": 'Counter',
-        "street_address": 'Green farm road next to pk guest house',
+        "street_address": 'Green Road',
         "landmark": '',
         "town": 'Chinsali',
         "phone": '+260 77 373 7378',
@@ -359,7 +359,7 @@ BRANCHES = [
     {
         "branch": 'Chipata',
         "counter_or_depot": 'Counter',
-        "street_address": 'Along Great East Road, next to Old Breweries',
+        "street_address": 'Along Great East Road, next to Old Bakery',
         "landmark": '',
         "town": 'Chipata',
         "phone": '+260 77 237 7705',
@@ -389,7 +389,7 @@ BRANCHES = [
     {
         "branch": 'Lundazi',
         "counter_or_depot": 'Counter',
-        "street_address": "Albino's mall",
+        "street_address": 'Aliboos Mall',
         "landmark": '',
         "town": 'Lundazi',
         "phone": '+260 97 924 8467',
@@ -599,7 +599,7 @@ BRANCHES = [
     {
         "branch": 'Kalomo',
         "counter_or_depot": 'Counter',
-        "street_address": 'Plot no 71 town centre',
+        "street_address": 'shop No 710616/2 Along Livingston road',
         "landmark": '',
         "town": 'Kalomo',
         "phone": '+260 77 159 0866',
