@@ -35,11 +35,19 @@ SCENES = [
         "horizon": 460,
         "cx": 768,
         "focal": 1536,
-        "height": 2.0,
+        "height": 1.5,
+        # Traced off the photograph rather than guessed at: for every
+        # sixteenth column, the highest row that still looks like floor,
+        # pale and barely coloured. Two columns had to be thrown away, at
+        # x 416 and x 1040, where the island top and the marble wall are
+        # the same pale colour as the floor and the scan ran up the wall
+        # to the ceiling.
         "floor": [
-            [0, 1024], [1536, 1024], [1536, 780], [1450, 755],
-            [1200, 715], [1035, 700], [400, 700], [330, 650],
-            [150, 625], [0, 615],
+            [0, 1024], [1536, 1024], [1536, 792], [1456, 787],
+            [1392, 776], [1328, 748], [1264, 694], [1200, 694],
+            [1136, 678], [1060, 672], [1032, 706], [400, 706],
+            [352, 700], [288, 710], [208, 707], [144, 686],
+            [64, 706], [32, 735], [0, 751],
         ],
     },
     {

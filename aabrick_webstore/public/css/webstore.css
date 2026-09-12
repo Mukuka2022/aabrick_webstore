@@ -2356,7 +2356,19 @@ main.container:has(.aab-vis) .aab-vis {
 	border: 1px solid #E2E2E2; border-radius: 4px; overflow: hidden;
 	line-height: 0;
 }
-.aab-vis-canvas { display: block; width: 100%; height: auto; }
+/* The whole room has to be on screen at once. A floor you have to scroll
+ * to see is a floor you cannot judge, so the picture is fitted to the
+ * window rather than to the column: it takes the width it can get and
+ * gives height back when there is not enough of it. */
+.aab-vis-stage {
+	display: flex; align-items: center; justify-content: center;
+}
+.aab-vis-canvas {
+	display: block;
+	max-width: 100%;
+	max-height: calc(100vh - 250px);
+	width: auto; height: auto;
+}
 .aab-vis-loading {
 	position: absolute; inset: 0; margin: 0; display: none;
 	align-items: center; justify-content: center;

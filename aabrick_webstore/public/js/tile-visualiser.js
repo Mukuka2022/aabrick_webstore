@@ -47,6 +47,7 @@
 	var U = null, V = null;  // metres across and into the room, per pixel
 	var PX = null;           // pixels per metre, per pixel
 	var texCache = {};
+	var SHOW_MASK = /[?&]mask=1/.test(location.search);
 
 	function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -239,6 +240,14 @@
 				// picture with every window reflection gone. Highlights are
 				// screened towards white instead, which is the one way to put
 				// light back onto a dark tile.
+				if (SHOW_MASK) {
+					// Tracing a floor by eye is guesswork until you can see
+					// what you traced. ?mask=1 paints it red.
+					var q = i * 4;
+					dst[q] = 230; dst[q + 1] = 40; dst[q + 2] = 40;
+					dst[q + 3] = 255;
+					continue;
+				}
 				var f = shade[i];
 				if (f > 1) {
 					var t = (f - 1) * HIGHLIGHT;
