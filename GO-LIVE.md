@@ -120,6 +120,25 @@ d.save(ignore_permissions=True); frappe.db.rollback(); print("saved fine")
 github.com/dawoodjee/posawesome, or it comes back the next time that app
 is pulled or reinstalled.
 
+### There is no newer posawesome to upgrade to
+
+Checked, so nobody has to look again. The fork at
+github.com/dawoodjee/posawesome has one branch, no tags, and is zero
+commits ahead of what is installed: October 2025 is its tip. The project
+it came from, github.com/yrestom/POS-Awesome, was last touched in
+February 2024 and has nothing past version-14. What is installed is
+already the newest build in that line.
+
+The one line is also the only thing wrong at import level: all 79 modules
+in the app import cleanly against ERPNext 15.121.0 once it is corrected.
+That is worth knowing, because the usual worry with a fix like this is
+that it only uncovers the next break.
+
+It proves the imports, not the till. A function whose signature changed
+would import fine and fail in a cashier's hands. Before ERPNext on live
+is updated, POSAwesome needs a real pass at a till: ring up a sale, take
+a payment, close a shift.
+
 ### Why live looks fine today
 
 Because live is on an older ERPNext. The dev bench was built on
