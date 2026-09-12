@@ -30,6 +30,7 @@
 	var MAX_W = 1100;        // a room is drawn no wider than this
 	var GROUT_MM = 2;        // the line between tiles
 	var SOFT_PX = 8;         // below this, a tile is too small to draw honestly
+	var HIGHLIGHT = 0.75;   // how hard a reflection is put back onto the tile
 
 	var scenes = [];
 	var tiles = [];
@@ -222,9 +223,24 @@
 					r *= 0.82; g *= 0.82; b *= 0.82;
 				}
 
+				// Darker than the floor average is a shadow, and multiplying
+				// is right for it. Brighter is a reflection, and multiplying
+				// is useless for it: a black tile times anything is still
+				// black, so a polished black floor came out as a hole in the
+				// picture with every window reflection gone. Highlights are
+				// screened towards white instead, which is the one way to put
+				// light back onto a dark tile.
 				var f = shade[i];
+				if (f > 1) {
+					var t = (f - 1) * HIGHLIGHT;
+					if (t > 1) { t = 1; }
+					r = r + (255 - r) * t;
+					g = g + (255 - g) * t;
+					b = b + (255 - b) * t;
+				} else {
+					r *= f; g *= f; b *= f;
+				}
 				var p = i * 4;
-				r *= f; g *= f; b *= f;
 				dst[p] = r > 255 ? 255 : r;
 				dst[p + 1] = g > 255 ? 255 : g;
 				dst[p + 2] = b > 255 ? 255 : b;
