@@ -2266,9 +2266,6 @@ main.container:has(.aab-vis) .aab-vis {
 	font-size: clamp(2rem, 6vw, 3.1rem); line-height: .96;
 	letter-spacing: .01em; color: var(--aab-ink); margin: 4px 0 10px;
 }
-.aab-vis-lede {
-	max-width: 46rem; color: #4A4A4A; line-height: 1.6; margin: 0;
-}
 
 /* The room runs the full width of the window.
  *
