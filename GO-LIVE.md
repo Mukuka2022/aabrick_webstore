@@ -40,6 +40,51 @@ Frappe's default page headers; without it the pages carry two headings.
 
 ---
 
+## 2b. Check the site can still read its own secrets
+
+An `encryption_key` that does not match the database it was restored from
+is silent until somebody tries to sign up, and then it reads as a bug in
+the website rather than a configuration fault. On this dev bench both
+stored secrets are unreadable for exactly that reason.
+
+```bash
+bench --site SITE console
+```
+
+```python
+from frappe.utils.password import get_decrypted_password
+for a in frappe.db.sql("SELECT doctype, name, fieldname FROM `__Auth` WHERE encrypted = 1", as_dict=True):
+    try:
+        get_decrypted_password(a.doctype, a.name, a.fieldname, raise_exception=True)
+        print("readable  ", a.doctype, a.name, a.fieldname)
+    except Exception:
+        print("UNREADABLE", a.doctype, a.name, a.fieldname)
+```
+
+Anything unreadable has to be entered again on that server, or the
+original `encryption_key` copied into `site_config.json`. The two that
+matter here:
+
+- **Email Account / AABrick / password** - outgoing mail. Without it
+  nobody can sign up, because the welcome mail cannot be sent, and no
+  enquiry notification goes out either. It is a Gmail account, so the
+  value is a 16 character **App Password** from Google Account security,
+  never the real account password. That account also offers OAuth, which
+  stores no password at all.
+- **Social Login Key / google / client_secret** - Sign in with Google.
+  For a customer on a phone, tapping a Google button beats inventing a
+  password and waiting for an email.
+
+## 2c. Server Scripts stay off
+
+Four Server Script records sit in the database and all four are disabled.
+Two of them are now code in `portal_rules.py`. Do **not** set
+`server_script_enabled`: the other two, Stock Availability API and Access
+To View Stock as Guest, are whitelisted to guests and return every item
+quantity in every warehouse to anyone who asks.
+
+---
+
 ## 3. Run once after the first deploy
 
 In order. All are safe to run twice.
