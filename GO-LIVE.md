@@ -163,6 +163,91 @@ grep -m1 __version__ ~/frappe-bench/apps/erpnext/erpnext/__init__.py
 grep -m1 __version__ ~/frappe-bench/apps/frappe/frappe/__init__.py
 ```
 
+## 2b3. The Customer Group that stops a customer logging in
+
+This one is data, not code, and a `git pull` will not touch it.
+
+`All Customer Groups` is the root of the Customer Group tree, so it is a
+group node, and ERPNext refuses to file a customer against it. Webshop
+does not know that. When a customer signs in, webshop appends a Portal
+User row to their Customer record and saves it, and the save throws:
+
+```
+ValidationError: Cannot select a Group type Customer Group.
+Please select a non-group Customer Group.
+```
+
+The throw happens inside `on_session_creation`, which means the login
+transaction itself dies. There is no session, so no cart, no price list
+and no totals. What a customer sees is an error on sign-in, or a cart with
+no amounts in it, which is what was reported and chased through the
+website code for half a day before anyone looked at the data.
+
+On the dev bench, two things are in that state:
+
+- `Webshop Settings.default_customer_group` is `All Customer Groups`, so
+  every new sign-up is stamped with the invalid value
+- 23 of 112 customers sit in `All Customer Groups`, and all 23 are
+  exactly the ones with an enabled website login
+
+Check live before changing anything:
+
+```bash
+bench --site www.aabrick.com mariadb -e "
+  SELECT c.customer_group, COUNT(*)
+  FROM \`tabCustomer\` c
+  JOIN \`tabCustomer Group\` g ON g.name = c.customer_group
+  WHERE g.is_group = 1
+  GROUP BY c.customer_group;"
+```
+
+If live returns nothing, live is clean today. It will not stay clean: the
+default setting keeps stamping new sign-ups, and a customer created that
+way only fails once something saves them again.
+
+The fix is two values. Pick the non-group to use first; `E-Commerce`
+already exists and keeps web customers separable in reports, and
+`Individual` is the other sensible answer.
+
+Do it in `bench --site www.aabrick.com console`, rather than by hand in the
+desk, so the 23 move together:
+
+```python
+group = "E-Commerce"   # decide this before running
+
+s = frappe.get_single("Webshop Settings")
+s.default_customer_group = group
+s.save()
+
+bad = frappe.db.sql_list("""
+    SELECT c.name FROM `tabCustomer` c
+    JOIN `tabCustomer Group` g ON g.name = c.customer_group
+    WHERE g.is_group = 1
+""")
+for name in bad:
+    frappe.db.set_value("Customer", name, "customer_group", group)
+print("moved", len(bad), "customers to", group)
+frappe.db.commit()
+```
+
+`frappe.db.set_value` is deliberate: a full `save()` on those records runs
+every Customer hook, and one of those is the posawesome import in 2b2.
+Fix that first or the loop stops on the first record.
+
+### Why this surfaced now
+
+Most likely those 23 were created by website sign-up using the bad
+default, back when nothing rejected it, and this bench's ERPNext has since
+moved while live's has not. That is inference, not proof: the ERPNext
+checkout here is one squashed commit, so there is no history to date the
+validation against. It fits every symptom, including posawesome breaking
+in the same hour.
+
+Treat it as a warning rather than a finding: if it is right, live breaks
+this way on its next ERPNext update, and the cheap moment to fix the data
+is before that, not after.
+
+---
 ## 2c. Server Scripts stay off
 
 Four Server Script records sit in the database and all four are disabled.
