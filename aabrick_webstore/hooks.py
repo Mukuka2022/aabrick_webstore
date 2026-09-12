@@ -296,6 +296,15 @@ doc_events = {
 	"Quotation": {
 		"before_validate": "aabrick_webstore.cart_pricing.before_validate",
 	},
+	# Both of these were Server Scripts, which live in the database, do not
+	# travel with a git pull, and are edited on the live server. See
+	# portal_rules for why they moved.
+	"User": {
+		"after_insert": "aabrick_webstore.portal_rules.user_after_insert",
+	},
+	"Sales Order": {
+		"before_insert": "aabrick_webstore.portal_rules.sales_order_before_insert",
+	},
 }
 
 # include css on every website page
