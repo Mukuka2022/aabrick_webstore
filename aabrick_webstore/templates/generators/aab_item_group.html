@@ -49,10 +49,12 @@
 
   {% if aab_products %}
     <section class="aab-section">
-      <div class="aab-tiles">
-        {% for p in aab_products %}
-          {% include "templates/includes/product_card.html" %}
-        {% endfor %}
+      <div class="aab-inner">
+        <div class="aab-tiles">
+          {% for p in aab_products %}
+            {% include "templates/includes/product_card.html" %}
+          {% endfor %}
+        </div>
       </div>
     </section>
   {% else %}

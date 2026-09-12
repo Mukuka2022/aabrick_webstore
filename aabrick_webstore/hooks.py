@@ -268,7 +268,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "106"
+ASSET_VERSION = "107"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,

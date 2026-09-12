@@ -1520,16 +1520,17 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	.aab-field input, .aab-field select, .aab-field textarea { font-size: 16px; }
 }
 
-/* Card rows run edge to edge at desktop widths on purpose. On a phone the
- * same rule reads as a slip: the card touches the glass while the heading
- * above it sits 18px in. This lines every row up with the headings. The shop
- * listing is not here, as its grid already sits inside .aab-inner. */
+/* Rails and rows still run edge to edge at desktop widths on purpose. On a
+ * phone the same rule reads as a slip: the card touches the glass while the
+ * heading above it sits 18px in. This lines every row up with the headings.
+ * Neither product grid is here any more: both now sit inside .aab-inner,
+ * which carries the same gutter, and listing them twice put 36px down the
+ * side of a phone. */
 @media (max-width: 619.98px) {
 	.aab-cats,
 	.aab-rail,
 	.aab-products-row,
-	.aab-home .aab-tiles,
-	.aab-cat-page .aab-tiles {
+	.aab-home .aab-tiles {
 		padding-left: 18px;
 		padding-right: 18px;
 	}
