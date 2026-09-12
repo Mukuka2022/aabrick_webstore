@@ -35,7 +35,7 @@ SCENES = [
         "horizon": 460,
         "cx": 768,
         "focal": 1536,
-        "height": 1.15,
+        "height": 0.9,
         # Traced off the photograph, on the second and looser reading.
         #
         # The first scan wanted floor to be pale and grey, which the lit toe

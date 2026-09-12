@@ -28,7 +28,9 @@
 	"use strict";
 
 	var MAX_W = 1100;        // a room is drawn no wider than this
-	var GROUT_MM = 2;        // the line between tiles
+	var GROUT_MM = 1;        // the line between tiles
+	var GROUT_DARK = 0.82;  // how dark a joint is, at full strength
+	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
 	var SOFT_PX = 8;         // below this, a tile is too small to draw honestly
 	var HIGHLIGHT = 0.75;   // how hard a reflection is put back onto the tile
 
@@ -220,16 +222,23 @@
 					g = g * m + avg[1] * (1 - m);
 					b = b * m + avg[2] * (1 - m);
 				} else if (grout) {
-					// A 2mm joint on a 600mm tile is one three hundredth of
-					// it, which at this size is a quarter of a pixel and so
-					// never drew at all. The floor came out as one unbroken
-					// sheet and the tiles read as slabs. A joint is held to
-					// at least a pixel wide, which is a lie about the grout
-					// and the truth about the tile.
+					// A 1mm joint on a 600mm tile is a quarter of a pixel at
+					// the size these rooms are drawn, so it cannot be drawn
+					// narrow: nothing is thinner than a pixel. It is drawn a
+					// pixel wide and paid for in strength instead, so it
+					// reads as the hairline it is rather than as a grid
+					// pencilled over the floor. Where the tile is close
+					// enough for the joint to cover a pixel honestly, full
+					// strength returns.
 					var ppm = PX[i];
-					var g2 = gm > 1 / ppm ? gm : 1 / ppm;
+					var gpx = gm * ppm;
+					var band = gpx > 1 ? gpx : 1;
+					var g2 = band / ppm;
 					if (fu < g2 / S || fv < g2 / Sv) {
-						r *= 0.82; g *= 0.82; b *= 0.82;
+						var k = gpx / band;
+						if (k < GROUT_FAINT) { k = GROUT_FAINT; }
+						var d2 = 1 - (1 - GROUT_DARK) * k;
+						r *= d2; g *= d2; b *= d2;
 					}
 				}
 
