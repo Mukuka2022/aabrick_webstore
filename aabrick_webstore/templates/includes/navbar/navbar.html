@@ -99,10 +99,25 @@
         <div class="aab-nav-actions">
 
           {%- if not nav.is_guest %}
-          <a class="aab-nav-account" href="/me">
-            {{ _icon_user }}
-            <span>{{ nav.user_name or "Account" }}</span>
-          </a>
+          <div class="aab-nav-has-panel aab-nav-account-wrap">
+            <button type="button" class="aab-nav-link aab-nav-account"
+                    aria-expanded="false">
+              {{ _icon_user }}
+              <span>{{ nav.user_name or "Account" }}</span>
+            </button>
+            <div class="aab-nav-panel aab-nav-panel-account">
+              <div class="aab-nav-panel-inner">
+                <ul class="aab-nav-account-list">
+                  <li><a href="/me">My account</a></li>
+                  <li><a href="/orders">Orders</a></li>
+                  <li><a href="/quotations">Quotations</a></li>
+                  <li><a href="/invoices">Invoices</a></li>
+                  <li><a href="/addresses">Delivery addresses</a></li>
+                </ul>
+                <a class="aab-nav-signout" href="/?cmd=web_logout">Log out</a>
+              </div>
+            </div>
+          </div>
           {%- else %}
           <a class="aab-nav-account" href="/login">
             {{ _icon_user }}

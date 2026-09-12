@@ -2085,3 +2085,51 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .web-page-content code, .blog-content code {
 	font-size: 14px; background: var(--aab-wash); padding: 2px 5px;
 }
+
+/* ---- the account menu ----
+ * Reuses the panel machinery the Shop and Guides menus use, so it opens on
+ * click, closes on Escape and closes when you touch anything else, without
+ * a second implementation of any of that. */
+.aab-nav-account-wrap { position: relative; }
+.aab-nav-account-wrap > .aab-nav-link.aab-nav-account {
+	padding: 0; background: none; border: 0;
+}
+.aab-nav-account-wrap.is-open > .aab-nav-link { color: var(--aab-red); }
+
+.aab-nav-panel-account {
+	min-width: 210px;
+	left: auto; right: 0; transform: none;
+}
+.aab-nav-panel-account .aab-nav-panel-inner,
+.aab-nav-panel:not(.aab-nav-panel-narrow).aab-nav-panel-account .aab-nav-panel-inner {
+	grid-template-columns: 1fr;
+	gap: 0; padding: 10px 0;
+}
+
+.aab-nav-account-list { list-style: none; margin: 0; padding: 0; }
+.aab-nav-account-list a,
+.aab-nav-signout {
+	display: block; padding: 10px 20px;
+	font-size: 14px; font-weight: 500; letter-spacing: 0;
+	text-transform: none; color: var(--aab-ink); text-decoration: none;
+}
+.aab-nav-account-list a:hover { background: var(--aab-wash); color: var(--aab-red); }
+
+.aab-nav-signout {
+	margin-top: 8px; padding-top: 14px;
+	border-top: 1px solid var(--aab-line);
+	color: var(--aab-muted); font-weight: 700; font-size: 12.5px;
+	letter-spacing: .08em; text-transform: uppercase;
+}
+.aab-nav-signout:hover { color: var(--aab-red); }
+
+/* In the drawer there is no room beside anything, so it takes the width and
+ * the panel opens underneath like the other menus do. */
+@media (max-width: 991.98px) {
+	.aab-nav-account-wrap { width: 100%; }
+	.aab-nav-panel-account { right: auto; }
+	.aab-nav-account-list a, .aab-nav-signout {
+		padding-left: clamp(14px, 4vw, 40px);
+		padding-right: clamp(14px, 4vw, 40px);
+	}
+}
