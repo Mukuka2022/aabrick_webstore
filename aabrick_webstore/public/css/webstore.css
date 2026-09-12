@@ -2234,3 +2234,131 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	.aab-gcart-row { grid-template-columns: 64px 1fr; }
 	.aab-gcart-amount { grid-column: 2; margin-top: 8px; }
 }
+
+/* ------------------------------------------------------------------
+ * The tile visualiser
+ *
+ * The canvas is the page. Everything round it is deliberately quiet, so
+ * that the one thing with colour in it is the floor being looked at.
+ * ------------------------------------------------------------------ */
+
+.aab-vis { background: var(--aab-wash); }
+
+.aab-vis-head { padding: 28px 0 6px; }
+.aab-vis-head h1 {
+	font-family: var(--aab-display);
+	font-weight: 400; text-transform: uppercase;
+	font-size: clamp(2rem, 6vw, 3.1rem); line-height: .96;
+	letter-spacing: .01em; color: var(--aab-ink); margin: 4px 0 10px;
+}
+.aab-vis-lede {
+	max-width: 46rem; color: #4A4A4A; line-height: 1.6; margin: 0;
+}
+
+/* the rooms ---------------------------------------------------------- */
+
+.aab-vis-rooms {
+	display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+}
+.aab-vis-room {
+	appearance: none; border: 1px solid #D8D8D8; background: #fff;
+	color: var(--aab-ink); font: inherit; font-size: .9rem;
+	padding: 9px 16px; border-radius: 999px; cursor: pointer;
+	transition: border-color .15s, color .15s, background .15s;
+}
+.aab-vis-room:hover { border-color: var(--aab-red); color: var(--aab-red); }
+.aab-vis-room.is-on {
+	background: var(--aab-ink); border-color: var(--aab-ink); color: #fff;
+}
+
+/* the picture -------------------------------------------------------- */
+
+.aab-vis-stage {
+	position: relative; background: #EFEFEF;
+	border: 1px solid #E2E2E2; border-radius: 4px; overflow: hidden;
+	line-height: 0;
+}
+.aab-vis-canvas { display: block; width: 100%; height: auto; }
+.aab-vis-loading {
+	position: absolute; inset: 0; margin: 0; display: none;
+	align-items: center; justify-content: center;
+	font-size: .9rem; color: #6A6A6A; line-height: 1.4;
+	background: rgba(255, 255, 255, .72);
+}
+.aab-vis-stage.is-loading .aab-vis-loading { display: flex; }
+
+/* the bar under it --------------------------------------------------- */
+
+.aab-vis-bar {
+	display: flex; flex-wrap: wrap; gap: 12px 18px;
+	align-items: center; justify-content: space-between;
+	padding: 14px 0 0;
+}
+.aab-vis-caption {
+	margin: 0; font-weight: 600; color: var(--aab-ink); font-size: .95rem;
+	font-variant-numeric: tabular-nums;
+}
+.aab-vis-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.aab-vis-turn, .aab-vis-grout {
+	appearance: none; border: 1px solid #D8D8D8; background: #fff;
+	color: #4A4A4A; font: inherit; font-size: .85rem;
+	padding: 8px 14px; border-radius: 3px; cursor: pointer;
+}
+.aab-vis-turn:hover, .aab-vis-grout:hover { border-color: #B5B5B5; }
+.aab-vis-turn.is-on, .aab-vis-grout.is-on {
+	background: var(--aab-red-wash); border-color: var(--aab-red);
+	color: var(--aab-red);
+}
+
+/* the tiles ---------------------------------------------------------- */
+
+.aab-vis-picker { padding: 22px 0 0; }
+.aab-vis-picker-head {
+	margin: 0 0 10px; font-size: .8rem; letter-spacing: .09em;
+	text-transform: uppercase; color: #6A6A6A;
+}
+.aab-vis-swatches {
+	display: grid; gap: 10px;
+	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+}
+.aab-vis-swatch {
+	appearance: none; border: 2px solid transparent; background: none;
+	padding: 0; cursor: pointer; font: inherit; display: block;
+	border-radius: 3px; overflow: hidden; line-height: 0;
+}
+.aab-vis-swatch img {
+	display: block; width: 100%; aspect-ratio: 1; object-fit: cover;
+	background: #E8E8E8;
+}
+.aab-vis-swatch span {
+	display: block; line-height: 1.2; padding: 5px 2px 0;
+	font-size: .72rem; color: #6A6A6A; letter-spacing: .02em;
+	text-align: center;
+}
+.aab-vis-swatch:hover { border-color: #C9C9C9; }
+.aab-vis-swatch.is-on { border-color: var(--aab-red); }
+.aab-vis-swatch.is-on span { color: var(--aab-red); font-weight: 600; }
+
+.aab-vis-note {
+	margin: 20px 0 0; font-size: .82rem; color: #6A6A6A; line-height: 1.55;
+	max-width: 44rem;
+}
+
+/* what comes next ---------------------------------------------------- */
+
+.aab-vis-next { padding: 30px 0; }
+.aab-vis-next h2 {
+	font-family: var(--aab-display); font-weight: 400;
+	text-transform: uppercase; font-size: clamp(1.4rem, 4vw, 2rem);
+	line-height: 1; letter-spacing: .01em; color: var(--aab-ink);
+	margin: 0 0 8px;
+}
+.aab-vis-next p { margin: 0 0 16px; color: #4A4A4A; max-width: 42rem; }
+.aab-vis-next-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+@media (max-width: 619.98px) {
+	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
+	.aab-vis-bar { align-items: flex-start; }
+	.aab-vis-tools { width: 100%; }
+	.aab-vis-product { flex: 1 0 100%; text-align: center; }
+}

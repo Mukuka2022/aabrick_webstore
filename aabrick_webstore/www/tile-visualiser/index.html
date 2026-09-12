@@ -1,0 +1,91 @@
+{% extends "templates/web.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block head_include %}
+{{ super() }}
+<meta name="description" content="{{ aab_description }}">
+<link rel="canonical" href="{{ aab_canonical }}">
+<meta property="og:title" content="Tile Visualiser | AABrick Zambia">
+<meta property="og:description" content="{{ aab_description }}">
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block page_content %}
+<div class="aab-vis" id="aab-visualiser">
+
+  <div class="aab-inner">
+    <nav class="aab-crumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a> <span>/</span>
+      <span aria-current="page">Tile Visualiser</span>
+    </nav>
+  </div>
+
+  <header class="aab-vis-head">
+    <div class="aab-inner">
+      <p class="aab-eyebrow">See it before you buy it</p>
+      <h1>Tile Visualiser</h1>
+      <p class="aab-vis-lede">
+        Pick a room, then pick a tile. It is laid at its real size, with the
+        light and shadows of that room on it, so a 600mm tile looks like a
+        600mm tile and not like a photograph stretched over a floor.
+      </p>
+    </div>
+  </header>
+
+  <section class="aab-section">
+    <div class="aab-inner">
+
+      <div class="aab-vis-rooms" role="group" aria-label="Choose a room"></div>
+
+      <div class="aab-vis-stage">
+        <canvas class="aab-vis-canvas" width="900" height="600"
+                aria-label="The chosen tile, laid on the floor of the chosen room"></canvas>
+        <p class="aab-vis-loading">Drawing the room</p>
+      </div>
+
+      <div class="aab-vis-bar">
+        <p class="aab-vis-caption"></p>
+        <div class="aab-vis-tools">
+          <button type="button" class="aab-vis-turn">Lay on the diagonal</button>
+          <button type="button" class="aab-vis-grout">Show grout</button>
+          <a class="aab-btn aab-btn-primary aab-vis-product" href="#">View tile</a>
+        </div>
+      </div>
+
+      <div class="aab-vis-picker">
+        <p class="aab-vis-picker-head">
+          {{ aab_tile_count }} tiles you can lay here
+        </p>
+        <div class="aab-vis-swatches"></div>
+      </div>
+
+      <p class="aab-vis-note">
+        A guide, not a match. Screens differ and so do batches, so check the
+        real tile at your branch before you buy. Rooms shown are examples.
+      </p>
+
+    </div>
+  </section>
+
+  <section class="aab-section aab-section--white">
+    <div class="aab-inner aab-vis-next">
+      <h2>Once you have chosen</h2>
+      <p>
+        Work out how many boxes the room needs, then take the list to your
+        nearest branch or send it to us and we will price it.
+      </p>
+      <div class="aab-vis-next-actions">
+        <a class="aab-btn aab-btn-primary" href="/tile-calculator">Tile calculator</a>
+        <a class="aab-btn aab-btn-ghost" href="/branches">Find a branch</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script type="application/json" id="aab-vis-scenes">{{ aab_scenes_json }}</script>
+<script type="application/json" id="aab-vis-tiles">{{ aab_tiles_json }}</script>
+<script src="/assets/aabrick_webstore/js/tile-visualiser.js?v={{ aab_version }}"></script>
+{% endblock %}
