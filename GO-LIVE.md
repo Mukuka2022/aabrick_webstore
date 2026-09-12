@@ -120,6 +120,30 @@ d.save(ignore_permissions=True); frappe.db.rollback(); print("saved fine")
 github.com/dawoodjee/posawesome, or it comes back the next time that app
 is pulled or reinstalled.
 
+### Why live looks fine today
+
+Because live is on an older ERPNext. The dev bench was built on
+2026-09-07 and runs ERPNext 15.121.0, where `get_party_bank_account` is
+not in `accounts/party.py` at all. posawesome 15.9.2 was last touched in
+October 2025 and was written against an ERPNext that still had it there.
+
+So this is not a dev-only fault. It is what live does the first time it
+is updated, and the website is the least of it: every Customer save
+across all 46 branches goes, including the POS. Fix the fork **before**
+updating ERPNext on live.
+
+Worth knowing while you are there: the ERPNext checkout on the dev bench
+is a single squashed commit labelled "ERPNext v15 baseline" rather than a
+real clone, so `bench update` cannot pull ERPNext fixes there and there is
+no history to read. Dev and live being on different platforms also means
+code proven on the bench is not proven against what live runs. Compare
+them:
+
+```bash
+grep -m1 __version__ ~/frappe-bench/apps/erpnext/erpnext/__init__.py
+grep -m1 __version__ ~/frappe-bench/apps/frappe/frappe/__init__.py
+```
+
 ## 2c. Server Scripts stay off
 
 Four Server Script records sit in the database and all four are disabled.
