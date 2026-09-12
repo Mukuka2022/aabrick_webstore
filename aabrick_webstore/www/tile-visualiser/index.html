@@ -34,6 +34,13 @@
 
       <div class="aab-vis-layout">
 
+        <aside class="aab-vis-panel aab-vis-side" aria-label="Choose a room">
+          <div class="aab-vis-panel-rooms">
+            <p class="aab-vis-panel-head">Room</p>
+            <div class="aab-vis-rooms" role="group" aria-label="Choose a room"></div>
+          </div>
+        </aside>
+
         <div class="aab-vis-main">
           <div class="aab-vis-stage">
             <canvas class="aab-vis-canvas" width="900" height="600"
@@ -51,11 +58,7 @@
           </div>
         </div>
 
-        <aside class="aab-vis-panel" aria-label="Choose a room and a tile">
-          <div class="aab-vis-panel-rooms">
-            <p class="aab-vis-panel-head">Room</p>
-            <div class="aab-vis-rooms" role="group" aria-label="Choose a room"></div>
-          </div>
+        <aside class="aab-vis-panel" aria-label="Choose a tile">
           <div class="aab-vis-panel-tiles">
             <p class="aab-vis-panel-head">
               Tiles <span>{{ aab_tile_count }}</span>

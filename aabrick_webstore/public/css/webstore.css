@@ -2284,10 +2284,13 @@ main.container:has(.aab-vis) .aab-vis {
 
 /* room on the left, the choosing on the right ------------------------ */
 
+/* Rooms down one side, tiles down the other, the floor in the middle.
+ * The two things being chosen are different questions and they stop
+ * competing for the same column when they are kept apart. */
 .aab-vis-layout {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 320px;
-	gap: 22px;
+	grid-template-columns: 186px minmax(0, 1fr) 320px;
+	gap: 20px;
 	align-items: start;
 }
 .aab-vis-main { min-width: 0; }
@@ -2312,10 +2315,11 @@ main.container:has(.aab-vis) .aab-vis {
 	color: #9A9A9A; letter-spacing: .04em;
 }
 .aab-vis-panel-rooms {
-	padding: 14px 14px 14px;
-	border-bottom: 1px solid #ECECEC;
+	padding: 14px;
 	flex: 0 0 auto;
 }
+.aab-vis-side { max-height: calc(100vh - 120px); overflow-y: auto; }
+.aab-vis-room span { font-size: .72rem; }
 .aab-vis-panel-tiles {
 	padding: 14px 14px 16px;
 	min-height: 0;
@@ -2326,8 +2330,8 @@ main.container:has(.aab-vis) .aab-vis {
 /* the rooms ---------------------------------------------------------- */
 
 .aab-vis-rooms {
-	display: grid; gap: 8px;
-	grid-template-columns: repeat(3, 1fr);
+	display: grid; gap: 9px;
+	grid-template-columns: 1fr;
 }
 .aab-vis-room {
 	appearance: none; border: 2px solid transparent; background: none;
@@ -2438,6 +2442,20 @@ main.container:has(.aab-vis) .aab-vis {
 .aab-vis-next p { margin: 0 0 16px; color: #4A4A4A; max-width: 42rem; }
 .aab-vis-next-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
+/* Between about 900 and 1100 there is not enough width for three columns
+ * without squeezing the floor, which is the one thing that must not be
+ * squeezed. The rooms give up their column first and become a row across
+ * the top, since there are only a handful of them. */
+@media (min-width: 900px) and (max-width: 1099.98px) {
+	.aab-vis-layout { grid-template-columns: minmax(0, 1fr) 300px; }
+	.aab-vis-side {
+		grid-column: 1 / -1;
+		max-height: none;
+		overflow: visible;
+	}
+	.aab-vis-rooms { grid-template-columns: repeat(4, 1fr); }
+}
+
 /* narrow ------------------------------------------------------------- */
 
 @media (max-width: 899.98px) {
@@ -2447,7 +2465,11 @@ main.container:has(.aab-vis) .aab-vis {
 	.aab-vis-layout { grid-template-columns: minmax(0, 1fr); }
 	.aab-vis-panel { position: static; max-height: none; }
 	.aab-vis-panel-tiles { overflow-y: visible; max-height: none; }
-	.aab-vis-rooms { grid-template-columns: repeat(3, 1fr); }
+	.aab-vis-side { max-height: none; overflow-y: visible; order: 2; }
+	.aab-vis-main { order: 1; }
+	/* Stacked, a column of rooms would be a long scroll before the tiles,
+	 * so they go back to a row under the floor. */
+	.aab-vis-rooms { grid-template-columns: repeat(4, 1fr); }
 	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); }
 }
 
