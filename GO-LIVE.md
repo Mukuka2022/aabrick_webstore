@@ -17,6 +17,27 @@ With it on, Frappe writes schema changes back to disk on the server, which
 collides with the next `git pull`. It stays **on** on the dev bench and
 **off** here.
 
+**`mute_emails` must be off on live.** The dev bench has it on:
+
+```bash
+bench --site SITE set-config mute_emails 0
+```
+
+It exists on the dev bench only because the AABrick email account cannot
+decrypt its own password (2b), and without it nobody can test sign-up at
+all: frappe sends the welcome mail inside `user.insert()`, the send
+throws, and `signup.py` correctly rolls the whole thing back and deletes
+the half-made account. Muted, sign-up returns "Please check your email for
+verification" and the account is kept.
+
+On live that same setting would swallow every welcome mail, password reset
+and order confirmation silently, with nothing in the Error Log to say so.
+Check it before announcing the address:
+
+```bash
+bench --site SITE execute frappe.are_emails_muted
+```
+
 **The site must be served over HTTPS.** The enquiry form on `/contact`
 collects a name and a phone number and posts them in the clear otherwise.
 
