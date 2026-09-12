@@ -75,6 +75,51 @@ matter here:
   For a customer on a phone, tapping a Google button beats inventing a
   password and waiting for an email.
 
+## 2b2. One line in posawesome, which stops every Customer saving
+
+Not our app, so it does not come with a `git pull` of this repository and
+the live server needs it doing separately.
+
+ERPNext moved `get_party_bank_account` out of `erpnext.accounts.party`
+and into the Bank Account doctype. posawesome 15.9.2 follows it in
+`api/payment_entry.py` and does not in `api/payments.py`, so importing
+`posawesome.posawesome.api` raises `ImportError`. posawesome hooks
+`Customer` on validate and after_insert, so that import runs on **every
+Customer save anywhere**: the desk, the POS, and the website, where
+webshop creates a Customer the first time a signed-in shopper opens the
+cart. On the website it surfaces as a 500, Uncaught Server Exception.
+
+Check whether the live server has it:
+
+```bash
+grep -rn "from erpnext.accounts.party import get_party_bank_account" \
+  ~/frappe-bench/apps/posawesome
+```
+
+If that prints a line, edit `apps/posawesome/posawesome/posawesome/api/payments.py`
+and change that import to:
+
+```python
+from erpnext.accounts.doctype.bank_account.bank_account import (
+    get_party_bank_account,
+)
+```
+
+then `bench restart`. Confirm with a Customer save:
+
+```bash
+bench --site SITE console
+```
+
+```python
+d = frappe.get_doc("Customer", frappe.db.get_value("Customer", {}, "name"))
+d.save(ignore_permissions=True); frappe.db.rollback(); print("saved fine")
+```
+
+**This belongs upstream**, in the posawesome fork at
+github.com/dawoodjee/posawesome, or it comes back the next time that app
+is pulled or reinstalled.
+
 ## 2c. Server Scripts stay off
 
 Four Server Script records sit in the database and all four are disabled.
