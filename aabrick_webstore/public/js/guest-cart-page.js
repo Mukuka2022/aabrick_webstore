@@ -12,6 +12,45 @@
 		return location.pathname.split("/")[1] === "cart";
 	}
 
+	// The element we drew into. render() overwrites its class, so looking
+	// it up again by ".cart-empty" finds nothing the second time round and
+	// the page stops answering. Hold on to it instead.
+	var host = null;
+
+	function findHost() {
+		if (host && document.body.contains(host)) {
+			return host;
+		}
+		host = document.querySelector(".cart-empty")
+			|| document.querySelector(".cart-container")
+			|| document.querySelector(".page_content");
+		return host;
+	}
+
+	// Every redraw is a trip to the server, so a customer tapping + five
+	// times must not send five. Wait for them to stop, then ask once.
+	var drawTimer = null;
+	var drawToken = 0;
+
+	function scheduleDraw() {
+		if (drawTimer) {
+			clearTimeout(drawTimer);
+		}
+		drawTimer = setTimeout(function () {
+			drawTimer = null;
+			draw();
+		}, 300);
+	}
+
+	// The quantity the basket holds right now, not the one that was on
+	// screen when this row was drawn.
+	function stepBy(itemCode, by) {
+		var basket = window.aabCart.items() || {};
+		var next = Math.max(0, (basket[itemCode] || 0) + by);
+		window.aabCart.set(itemCode, next);
+		return next;
+	}
+
 	function el(tag, cls, text) {
 		var e = document.createElement(tag);
 		if (cls) {
@@ -24,10 +63,8 @@
 	}
 
 	function render(data) {
-		var host = document.querySelector(".cart-empty")
-			|| document.querySelector(".cart-container")
-			|| document.querySelector(".page_content");
-		if (!host) {
+		var into = findHost();
+		if (!into) {
 			return;
 		}
 
@@ -75,16 +112,16 @@
 			drop.type = "button";
 
 			minus.addEventListener("click", function () {
-				window.aabCart.set(item.item_code, item.qty - 1);
-				draw();
+				num.textContent = String(stepBy(item.item_code, -1));
+				scheduleDraw();
 			});
 			plus.addEventListener("click", function () {
-				window.aabCart.set(item.item_code, item.qty + 1);
-				draw();
+				num.textContent = String(stepBy(item.item_code, 1));
+				scheduleDraw();
 			});
 			drop.addEventListener("click", function () {
 				window.aabCart.set(item.item_code, 0);
-				draw();
+				scheduleDraw();
 			});
 
 			qtyRow.appendChild(minus);
@@ -135,20 +172,37 @@
 		keep.href = "/all-products";
 		box.appendChild(keep);
 
-		host.innerHTML = "";
-		host.className = "aab-gcart-host";
-		host.appendChild(box);
+		into.innerHTML = "";
+		into.className = "aab-gcart-host";
+		into.appendChild(box);
 	}
 
 	function empty() {
-		var host = document.querySelector(".cart-empty");
-		if (!host) {
-			return;
-		}
-		var msg = host.querySelector(".cart-empty-message");
+		// Webshop's own empty state, still untouched: just reword it.
+		var msg = document.querySelector(".cart-empty .cart-empty-message");
 		if (msg) {
 			msg.textContent = "Your basket is empty";
+			return;
 		}
+
+		// We have already drawn over the page, so that message is gone and
+		// the basket somebody just emptied is still sitting there. Draw the
+		// empty state ourselves.
+		var into = findHost();
+		if (!into) {
+			return;
+		}
+		var box = el("div", "aab-gcart");
+		var head = el("div", "aab-gcart-head");
+		head.appendChild(el("h2", null, "Your basket"));
+		head.appendChild(el("p", "aab-gcart-note", "Your basket is empty."));
+		box.appendChild(head);
+		var keep = el("a", "aab-gcart-keep", "Keep shopping");
+		keep.href = "/all-products";
+		box.appendChild(keep);
+		into.innerHTML = "";
+		into.className = "aab-gcart-host";
+		into.appendChild(box);
 	}
 
 	function draw() {
@@ -159,10 +213,16 @@
 		if (!Object.keys(basket).length) {
 			return empty();
 		}
+		var token = ++drawToken;
 		frappe.call({
 			method: "aabrick_webstore.guest_cart.summary",
 			args: { items: JSON.stringify(basket) },
 			callback: function (r) {
+				// A later call has already been sent, so this answer is
+				// about a basket that no longer exists.
+				if (token !== drawToken) {
+					return;
+				}
 				if (r && r.message && r.message.items && r.message.items.length) {
 					render(r.message);
 				} else {
