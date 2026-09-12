@@ -26,6 +26,23 @@ sitemap = 1
 
 SCENES = [
     {
+        "id": "kitchen",
+        "label": "Kitchen",
+        "image": "/assets/aabrick_webstore/images/scene-kitchen.jpg",
+        # 1536x1024. The floor it replaces already has grout lines in it,
+        # which is the easiest calibration there is: the numbers below were
+        # moved until the new joints ran along the old ones.
+        "horizon": 460,
+        "cx": 768,
+        "focal": 1536,
+        "height": 2.0,
+        "floor": [
+            [0, 1024], [1536, 1024], [1536, 780], [1450, 755],
+            [1200, 715], [1035, 700], [400, 700], [330, 650],
+            [150, 625], [0, 615],
+        ],
+    },
+    {
         "id": "living",
         "label": "Living room",
         "image": "/assets/aabrick_webstore/images/showcase-3.jpg",

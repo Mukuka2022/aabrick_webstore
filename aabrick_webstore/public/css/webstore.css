@@ -2246,6 +2246,19 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 
 .aab-vis { background: var(--aab-wash); }
 
+/* Frappe wraps every page in main.container, which is where the 1280px
+ * comes from. The visualiser is no use inside it, so the container is
+ * unwrapped for this page the same way the home page and the product page
+ * unwrap it, and the bands inside decide their own width. */
+main.container:has(.aab-vis) {
+	max-width: none; width: 100%;
+	padding-left: 0; padding-right: 0;
+	margin-left: 0; margin-right: 0;
+}
+main.container:has(.aab-vis) .aab-vis {
+	width: 100%; margin-left: 0; margin-right: 0;
+}
+
 .aab-vis-head { padding: 28px 0 6px; }
 .aab-vis-head h1 {
 	font-family: var(--aab-display);
@@ -2257,12 +2270,27 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	max-width: 46rem; color: #4A4A4A; line-height: 1.6; margin: 0;
 }
 
+/* The room runs the full width of the window.
+ *
+ * Everything else on the site sits in .aab-inner, which stops at 1280px and
+ * is right for reading. This is not reading. The floor is the thing being
+ * judged, and the bigger it is drawn the better that judgement is, so the
+ * band it sits in takes the whole window and keeps only the gutter. The
+ * heading above it stays in .aab-inner, because that is words. */
+
+.aab-vis-wide {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding: 0 clamp(18px, 2.5vw, 34px);
+}
+
 /* room on the left, the choosing on the right ------------------------ */
 
 .aab-vis-layout {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) 310px;
-	gap: 20px;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: 22px;
 	align-items: start;
 }
 .aab-vis-main { min-width: 0; }
@@ -2385,7 +2413,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .aab-vis-swatch.is-on span { color: var(--aab-red); font-weight: 600; }
 
 .aab-vis-note {
-	margin: 20px 0 0; font-size: .82rem; color: #6A6A6A; line-height: 1.55;
+	margin: 18px 0 0; font-size: .82rem; color: #6A6A6A; line-height: 1.55;
 	max-width: 44rem;
 }
 

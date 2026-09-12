@@ -186,8 +186,7 @@
 			var side = tex.side;
 			var S = tile.w / 1000;          // tile size in metres
 			var Sv = tile.h / 1000;
-			var gu = grout ? (GROUT_MM / 1000) / S : 0;
-			var gv = grout ? (GROUT_MM / 1000) / Sv : 0;
+			var gm = GROUT_MM / 1000;   // grout, in metres
 			var ca = turned ? Math.SQRT1_2 : 1;
 			var sa = turned ? Math.SQRT1_2 : 0;
 			var avg = tex.avg;
@@ -219,8 +218,18 @@
 					r = r * m + avg[0] * (1 - m);
 					g = g * m + avg[1] * (1 - m);
 					b = b * m + avg[2] * (1 - m);
-				} else if (gu && (fu < gu || fv < gv)) {
-					r *= 0.82; g *= 0.82; b *= 0.82;
+				} else if (grout) {
+					// A 2mm joint on a 600mm tile is one three hundredth of
+					// it, which at this size is a quarter of a pixel and so
+					// never drew at all. The floor came out as one unbroken
+					// sheet and the tiles read as slabs. A joint is held to
+					// at least a pixel wide, which is a lie about the grout
+					// and the truth about the tile.
+					var ppm = PX[i];
+					var g2 = gm > 1 / ppm ? gm : 1 / ppm;
+					if (fu < g2 / S || fv < g2 / Sv) {
+						r *= 0.82; g *= 0.82; b *= 0.82;
+					}
 				}
 
 				// Darker than the floor average is a shadow, and multiplying
