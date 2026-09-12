@@ -293,11 +293,20 @@
 	}
 
 	function build() {
+		// A room is a photograph, so it is picked as one. A row of words
+		// made people miss that there was a choice at all.
 		var rooms = $(".aab-vis-rooms");
 		scenes.forEach(function (s) {
-			var b = el("button", "aab-vis-room", s.label);
+			var b = el("button", "aab-vis-room");
 			b.type = "button";
+			b.title = s.label;
 			b.setAttribute("data-room", s.id);
+			var im = document.createElement("img");
+			im.src = s.image;
+			im.alt = s.label;
+			im.loading = "lazy";
+			b.appendChild(im);
+			b.appendChild(el("span", null, s.label));
 			b.addEventListener("click", function () { loadScene(s); });
 			rooms.appendChild(b);
 		});

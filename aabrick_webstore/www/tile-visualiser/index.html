@@ -37,28 +37,38 @@
   <section class="aab-section">
     <div class="aab-inner">
 
-      <div class="aab-vis-rooms" role="group" aria-label="Choose a room"></div>
+      <div class="aab-vis-layout">
 
-      <div class="aab-vis-stage">
-        <canvas class="aab-vis-canvas" width="900" height="600"
-                aria-label="The chosen tile, laid on the floor of the chosen room"></canvas>
-        <p class="aab-vis-loading">Drawing the room</p>
-      </div>
+        <div class="aab-vis-main">
+          <div class="aab-vis-stage">
+            <canvas class="aab-vis-canvas" width="900" height="600"
+                    aria-label="The chosen tile, laid on the floor of the chosen room"></canvas>
+            <p class="aab-vis-loading">Drawing the room</p>
+          </div>
 
-      <div class="aab-vis-bar">
-        <p class="aab-vis-caption"></p>
-        <div class="aab-vis-tools">
-          <button type="button" class="aab-vis-turn">Lay on the diagonal</button>
-          <button type="button" class="aab-vis-grout">Show grout</button>
-          <a class="aab-btn aab-btn-primary aab-vis-product" href="#">View tile</a>
+          <div class="aab-vis-bar">
+            <p class="aab-vis-caption"></p>
+            <div class="aab-vis-tools">
+              <button type="button" class="aab-vis-turn">Lay on the diagonal</button>
+              <button type="button" class="aab-vis-grout">Show grout</button>
+              <a class="aab-btn aab-btn-primary aab-vis-product" href="#">View tile</a>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="aab-vis-picker">
-        <p class="aab-vis-picker-head">
-          {{ aab_tile_count }} tiles you can lay here
-        </p>
-        <div class="aab-vis-swatches"></div>
+        <aside class="aab-vis-panel" aria-label="Choose a room and a tile">
+          <div class="aab-vis-panel-rooms">
+            <p class="aab-vis-panel-head">Room</p>
+            <div class="aab-vis-rooms" role="group" aria-label="Choose a room"></div>
+          </div>
+          <div class="aab-vis-panel-tiles">
+            <p class="aab-vis-panel-head">
+              Tiles <span>{{ aab_tile_count }}</span>
+            </p>
+            <div class="aab-vis-swatches" role="group" aria-label="Choose a tile"></div>
+          </div>
+        </aside>
+
       </div>
 
       <p class="aab-vis-note">

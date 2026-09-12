@@ -2238,8 +2238,10 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 /* ------------------------------------------------------------------
  * The tile visualiser
  *
- * The canvas is the page. Everything round it is deliberately quiet, so
- * that the one thing with colour in it is the floor being looked at.
+ * The room is the page and everything round it is deliberately quiet, so
+ * the one thing with colour in it is the floor being looked at. The
+ * choosing happens in a panel beside the room rather than under it, so
+ * that changing tile does not move the thing you are judging.
  * ------------------------------------------------------------------ */
 
 .aab-vis { background: var(--aab-wash); }
@@ -2255,21 +2257,69 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	max-width: 46rem; color: #4A4A4A; line-height: 1.6; margin: 0;
 }
 
+/* room on the left, the choosing on the right ------------------------ */
+
+.aab-vis-layout {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 310px;
+	gap: 20px;
+	align-items: start;
+}
+.aab-vis-main { min-width: 0; }
+
+.aab-vis-panel {
+	background: #fff;
+	border: 1px solid #E2E2E2;
+	border-radius: 4px;
+	position: sticky;
+	top: 88px;
+	max-height: calc(100vh - 120px);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+.aab-vis-panel-head {
+	margin: 0 0 10px;
+	font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
+	color: #6A6A6A;
+}
+.aab-vis-panel-head span {
+	color: #9A9A9A; letter-spacing: .04em;
+}
+.aab-vis-panel-rooms {
+	padding: 14px 14px 14px;
+	border-bottom: 1px solid #ECECEC;
+	flex: 0 0 auto;
+}
+.aab-vis-panel-tiles {
+	padding: 14px 14px 16px;
+	min-height: 0;
+	overflow-y: auto;
+	flex: 1 1 auto;
+}
+
 /* the rooms ---------------------------------------------------------- */
 
 .aab-vis-rooms {
-	display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px;
+	display: grid; gap: 8px;
+	grid-template-columns: repeat(3, 1fr);
 }
 .aab-vis-room {
-	appearance: none; border: 1px solid #D8D8D8; background: #fff;
-	color: var(--aab-ink); font: inherit; font-size: .9rem;
-	padding: 9px 16px; border-radius: 999px; cursor: pointer;
-	transition: border-color .15s, color .15s, background .15s;
+	appearance: none; border: 2px solid transparent; background: none;
+	padding: 0; cursor: pointer; font: inherit; display: block;
+	border-radius: 3px; overflow: hidden; line-height: 0; text-align: left;
 }
-.aab-vis-room:hover { border-color: var(--aab-red); color: var(--aab-red); }
-.aab-vis-room.is-on {
-	background: var(--aab-ink); border-color: var(--aab-ink); color: #fff;
+.aab-vis-room img {
+	display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+	background: #E8E8E8;
 }
+.aab-vis-room span {
+	display: block; line-height: 1.25; padding: 5px 2px 0;
+	font-size: .68rem; color: #6A6A6A; letter-spacing: .01em;
+}
+.aab-vis-room:hover { border-color: #C9C9C9; }
+.aab-vis-room.is-on { border-color: var(--aab-red); }
+.aab-vis-room.is-on span { color: var(--aab-red); font-weight: 600; }
 
 /* the picture -------------------------------------------------------- */
 
@@ -2312,14 +2362,9 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 
 /* the tiles ---------------------------------------------------------- */
 
-.aab-vis-picker { padding: 22px 0 0; }
-.aab-vis-picker-head {
-	margin: 0 0 10px; font-size: .8rem; letter-spacing: .09em;
-	text-transform: uppercase; color: #6A6A6A;
-}
 .aab-vis-swatches {
-	display: grid; gap: 10px;
-	grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+	display: grid; gap: 8px;
+	grid-template-columns: repeat(3, 1fr);
 }
 .aab-vis-swatch {
 	appearance: none; border: 2px solid transparent; background: none;
@@ -2331,8 +2376,8 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	background: #E8E8E8;
 }
 .aab-vis-swatch span {
-	display: block; line-height: 1.2; padding: 5px 2px 0;
-	font-size: .72rem; color: #6A6A6A; letter-spacing: .02em;
+	display: block; line-height: 1.2; padding: 4px 2px 0;
+	font-size: .68rem; color: #6A6A6A; letter-spacing: .02em;
 	text-align: center;
 }
 .aab-vis-swatch:hover { border-color: #C9C9C9; }
@@ -2356,9 +2401,22 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .aab-vis-next p { margin: 0 0 16px; color: #4A4A4A; max-width: 42rem; }
 .aab-vis-next-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
+/* narrow ------------------------------------------------------------- */
+
+@media (max-width: 899.98px) {
+	/* The panel stops being a side and becomes a strip under the room.
+	 * Sticky is dropped with it: on a phone it would cover the very thing
+	 * it is there to change. */
+	.aab-vis-layout { grid-template-columns: minmax(0, 1fr); }
+	.aab-vis-panel { position: static; max-height: none; }
+	.aab-vis-panel-tiles { overflow-y: visible; max-height: none; }
+	.aab-vis-rooms { grid-template-columns: repeat(3, 1fr); }
+	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); }
+}
+
 @media (max-width: 619.98px) {
-	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 	.aab-vis-bar { align-items: flex-start; }
 	.aab-vis-tools { width: 100%; }
 	.aab-vis-product { flex: 1 0 100%; text-align: center; }
+	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
