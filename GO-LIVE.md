@@ -108,7 +108,24 @@ bench --site SITE execute aabrick_webstore.cart_pricing.repair
 
 # Any published tile pointing at a photograph that is not on disk
 bench --site SITE execute aabrick_webstore.fix_missing_images.run
+
+# What a customer needs to be able to use the cart, and the cost fields
+# they must not see on the way. Without this, adding to cart fails for
+# every signed-in customer with a bare permission error.
+bench --site SITE execute aabrick_webstore.shop_permissions.run
 ```
+
+Then confirm both halves of that last one:
+
+```bash
+bench --site SITE execute aabrick_webstore.shop_permissions.check
+bench --site SITE execute aabrick_webstore.shop_permissions.check_staff
+```
+
+The customer must come back with `cost came back: no`, and the staff
+check with `cost still visible: yes`. If the staff one fails, a role has
+Item read that this did not know about; re-running fixes it, because the
+roles are read from the doctype rather than listed in the script.
 
 If the catalogue is being built by script rather than restored:
 
