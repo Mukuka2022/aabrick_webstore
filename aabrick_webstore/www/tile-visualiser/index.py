@@ -35,19 +35,35 @@ SCENES = [
         "horizon": 460,
         "cx": 768,
         "focal": 1536,
-        "height": 1.5,
-        # Traced off the photograph rather than guessed at: for every
-        # sixteenth column, the highest row that still looks like floor,
-        # pale and barely coloured. Two columns had to be thrown away, at
-        # x 416 and x 1040, where the island top and the marble wall are
-        # the same pale colour as the floor and the scan ran up the wall
-        # to the ceiling.
+        "height": 1.15,
+        # Traced off the photograph, on the second and looser reading.
+        #
+        # The first scan wanted floor to be pale and grey, which the lit toe
+        # kicks are not: they throw warm light down, and the boundary
+        # stopped underneath them, leaving a line of old floor along the
+        # bottom of every cabinet. Allowing warm light in also found what
+        # the strict reading had hidden, that the floor runs back into both
+        # corners to about y 600 rather than stopping at the island.
+        #
+        # Three columns are still wrong and are interpolated across: x 416
+        # and x 1024, where the island top and the marble wall are the same
+        # colour as the floor and the scan climbs them, and x 64, where it
+        # climbs the front of the fridge.
         "floor": [
-            [0, 1024], [1536, 1024], [1536, 792], [1456, 787],
-            [1392, 776], [1328, 748], [1264, 694], [1200, 694],
-            [1136, 678], [1060, 672], [1032, 706], [400, 706],
-            [352, 700], [288, 710], [208, 707], [144, 686],
-            [64, 706], [32, 735], [0, 751],
+            [0, 1024], [1536, 1024],
+            [1536, 773], [1504, 779], [1472, 779], [1440, 771],
+            [1408, 752], [1376, 733], [1344, 715], [1312, 698],
+            [1280, 680], [1248, 662], [1216, 645], [1184, 627],
+            [1152, 611], [1120, 615], [1088, 597], [1056, 596],
+            [1024, 652], [992, 708], [960, 704], [928, 701],
+            [896, 693], [864, 712], [832, 698], [800, 694],
+            [768, 701], [736, 699], [704, 693], [672, 693],
+            [640, 704], [608, 693], [576, 696], [544, 704],
+            [512, 704], [480, 693], [448, 696], [416, 646],
+            [384, 596], [352, 596], [320, 596], [288, 611],
+            [256, 609], [224, 625], [192, 642], [160, 659],
+            [128, 679], [96, 682], [64, 700], [32, 726],
+            [0, 743],
         ],
     },
     {
