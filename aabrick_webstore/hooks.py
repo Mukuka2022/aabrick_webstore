@@ -268,10 +268,13 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "99"
+ASSET_VERSION = "104"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
+	"/assets/aabrick_webstore/js/guest-cart.js?v=" + ASSET_VERSION,
+	"/assets/aabrick_webstore/js/guest-cart-page.js?v=" + ASSET_VERSION,
+	"/assets/aabrick_webstore/js/basket-to-branch.js?v=" + ASSET_VERSION,
 ]
 
 # Loaded in the desk. Frappe concatenates these in app order, so ours lands
@@ -281,7 +284,10 @@ app_include_js = [
 ]
 
 # inject analytics tags into the website page head
-update_website_context = ["aabrick_webstore.analytics.add_analytics_tags"]
+update_website_context = [
+	"aabrick_webstore.analytics.add_analytics_tags",
+	"aabrick_webstore.guest_cart.quiet_guest_cart",
+]
 
 # A webshop cart is a draft Quotation and keeps the date it was started on.
 # ERPNext will not read a price whose valid_from is later than that date, so
