@@ -1686,6 +1686,13 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 /* The logo is already in the header above and on the panel beside this, so
  * a third one here is branding for its own sake. The heading carries it. */
 .aab-login .aab-login-panel .page-card-head .app-logo { display: none; }
+/* The line that says why the form appeared, written by nav.js when somebody
+ * was sent here from a tile. */
+.aab-login .aab-login-panel .aab-login-why {
+	margin: 12px 0 0;
+	font-size: 14px; line-height: 1.55;
+	color: var(--aab-muted); max-width: 34ch;
+}
 .aab-login .aab-login-panel .page-card-head h4 {
 	font-family: var(--aab-display); font-weight: 400;
 	text-transform: uppercase; letter-spacing: .01em;

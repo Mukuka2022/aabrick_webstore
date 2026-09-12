@@ -159,9 +159,70 @@
 		sync();
 	}
 
+
+	// Coming back to the tile.
+	//
+	// Add to cart while signed out bounces to /login. Webshop writes the page
+	// they were on into localStorage as last_visited and nothing reads it
+	// back, so after signing in they landed on the home page with an empty
+	// cart and a tile to find again. Frappe's login already honours
+	// ?redirect-to=, so this only joins two ends that were already there.
+	function comeBackToTheTile() {
+		if (location.pathname.split("/")[1] !== "login") {
+			return;
+		}
+		if (location.search.indexOf("redirect-to=") !== -1) {
+			return;
+		}
+
+		var last = null;
+		try {
+			last = localStorage.getItem("last_visited");
+		} catch (e) {
+			return;
+		}
+
+		// One leading slash and nothing else: a value starting // is another
+		// site, and sending someone off ours after they type a password is
+		// exactly the thing not to build.
+		if (!last || last.charAt(0) !== "/" || last.charAt(1) === "/") {
+			return;
+		}
+		if (last.split("/")[1] === "login") {
+			return;
+		}
+
+		try {
+			var url = new URL(window.location.href);
+			url.searchParams.set("redirect-to", last);
+			history.replaceState(null, "", url.toString());
+			// Used once. Left lying around it would still be sending people to
+			// a tile they looked at weeks ago.
+			localStorage.removeItem("last_visited");
+		} catch (e) {
+			return;
+		}
+
+		sayWhyTheyAreHere();
+	}
+
+	// The form asks for a password without ever saying why it appeared.
+	function sayWhyTheyAreHere() {
+		var head = document.querySelector(".aab-login-panel .page-card-head");
+		if (!head || document.querySelector(".aab-login-why")) {
+			return;
+		}
+		var p = document.createElement("p");
+		p.className = "aab-login-why";
+		p.textContent = "Sign in to put this in your cart. We will bring you "
+			+ "straight back to it.";
+		head.appendChild(p);
+	}
+
 	function boot() {
 		start();
 		startFilters();
+		comeBackToTheTile();
 	}
 
 	document.addEventListener("DOMContentLoaded", boot);
