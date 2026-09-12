@@ -268,7 +268,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "104"
+ASSET_VERSION = "105"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
@@ -292,6 +292,20 @@ update_website_context = [
 # A webshop cart is a draft Quotation and keeps the date it was started on.
 # ERPNext will not read a price whose valid_from is later than that date, so
 # an old cart prices itself at nothing, and checkout is enabled.
+# Two of frappe and webshop's own endpoints, answered by ours.
+#
+# update_cart: emptying the cart throws in webshop, which deletes the
+# quotation, sets the local name to None, and then reads .name off it.
+#
+# sign_up: when the welcome mail cannot be sent, frappe lets the exception
+# out and a customer is shown the name of a config file.
+override_whitelisted_methods = {
+	"webshop.webshop.shopping_cart.cart.update_cart":
+		"aabrick_webstore.cart_api.update_cart",
+	"frappe.core.doctype.user.user.sign_up":
+		"aabrick_webstore.signup.sign_up",
+}
+
 doc_events = {
 	"Quotation": {
 		"before_validate": "aabrick_webstore.cart_pricing.before_validate",

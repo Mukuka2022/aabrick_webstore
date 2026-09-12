@@ -219,10 +219,85 @@
 		head.appendChild(p);
 	}
 
+
+	// Log in and Sign up in the header are absolute links to /login, so they
+	// threw away whatever ?redirect-to= the page was carrying, and they sent
+	// people to the front page afterwards rather than back to what they were
+	// looking at. Both now carry somewhere to come back to.
+	function pointTheWayBack() {
+		var links = document.querySelectorAll(".aab-nav-account[href^='/login'], "
+			+ ".aab-nav-signup[href^='/login']");
+		if (!links.length) {
+			return;
+		}
+
+		var back;
+		if (location.pathname.split("/")[1] === "login") {
+			// Already here: keep whatever brought them, so the two links and
+			// the form all agree on where they are going afterwards.
+			back = new URLSearchParams(location.search).get("redirect-to") || "";
+		} else {
+			back = location.pathname + location.search;
+		}
+
+		if (!back || back.charAt(0) !== "/" || back.charAt(1) === "/") {
+			return;
+		}
+		if (back.split("/")[1] === "login") {
+			return;
+		}
+
+		for (var i = 0; i < links.length; i++) {
+			var a = links[i];
+			var hash = a.getAttribute("href").indexOf("#signup") !== -1
+				? "#signup" : "";
+			a.setAttribute("href",
+				"/login?redirect-to=" + encodeURIComponent(back) + hash);
+		}
+	}
+
 	function boot() {
 		start();
 		startFilters();
+
+	// The headings on the login page.
+	//
+	// frappe writes them around the site name with the article baked into
+	// the string: "Login to X" and "Create a X Account". AABrick is said
+	// ay-ay-brick, so "a AABrick" is wrong and there is no way to reach the
+	// article from here. These say something plainer instead, and the same
+	// words serve the login, sign up and forgot views.
+	var HEADINGS = {
+		"login": "Sign in",
+		"signup": "Create your account",
+		"forgot": "Forgot password",
+		"login-with-email-link": "Sign in by email"
+	};
+
+	function ourHeadings() {
+		if (location.pathname.split("/")[1] !== "login") {
+			return;
+		}
+		for (var key in HEADINGS) {
+			if (!Object.prototype.hasOwnProperty.call(HEADINGS, key)) {
+				continue;
+			}
+			var section = document.querySelector("section.for-" + key);
+			if (!section) {
+				continue;
+			}
+			var h = section.querySelector(".page-card-head h4");
+			if (h) {
+				h.textContent = HEADINGS[key];
+			}
+		}
+	}
+
 		comeBackToTheTile();
+		// After comeBackToTheTile, so that on the login page it can read the
+		// redirect-to that one has just put there.
+		pointTheWayBack();
+		ourHeadings();
 	}
 
 	document.addEventListener("DOMContentLoaded", boot);
