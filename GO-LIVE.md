@@ -307,6 +307,14 @@ bench --site SITE execute aabrick_webstore.setup_text.run
 # the row picks them itself, which is a working page, not a broken one.
 bench --site SITE execute aabrick_webstore.featured.run
 
+# Floor textures for the visualiser, cut out of the catalogue photographs.
+# These are generated files under sites/SITE/public/files/tex, so they do not
+# come with a git pull and have to be built here. Without them the visualiser
+# has no tiles to offer at all. Run it again whenever tile photographs are
+# re-uploaded. Takes a few minutes over the whole catalogue.
+bench --site SITE execute aabrick_webstore.textures.run
+bench --site SITE execute aabrick_webstore.textures.check
+
 # The 46 branches: details, then put them on the site
 bench --site SITE execute aabrick_webstore.load_branches.run
 bench --site SITE execute aabrick_webstore.load_branches.publish

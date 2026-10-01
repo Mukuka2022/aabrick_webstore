@@ -1,0 +1,252 @@
+"""Clean floor textures for the visualiser, cut out of the catalogue shots.
+
+Marcopolo prints its name and the tile code across the top of most catalogue
+photographs in orange. That is fine on a product card, where it reads as a
+label, and impossible on a floor, where it repeats every 600mm.
+
+Rather than paint the lettering out, which would mean inventing surface that
+the customer is buying on, this takes the largest piece of each photograph
+that does not contain it. A tile photograph is a picture of a repeating
+material, so a clean piece of it is as true as the whole: nothing is added,
+only less is shown.
+
+The crop keeps the picture's own proportions. A 600x1200 tile stays twice as
+long as it is wide, because the visualiser lays tiles at their real shape and
+a square texture on an oblong tile would stretch the grain.
+
+What it cannot do is change the scale. A texture cut to three quarters of the
+photograph still fills a whole tile on the floor, so its grain is drawn about
+a third larger than life. On stone, grain and plain colour that is invisible.
+On a strong directional pattern it is not, which is why anything cropped
+hard is left out rather than used.
+
+    bench --site SITE execute aabrick_webstore.textures.run
+    bench --site SITE execute aabrick_webstore.textures.check
+
+Safe to run twice: it skips anything already made, and never writes over an
+original. Delete the folder to start again.
+"""
+
+import os
+import re
+
+import frappe
+
+SIZE = re.compile(r"\((\d+)\s*[xX]\s*(\d+)\)")
+
+FOLDER = "tex"
+MAX_PX = 900          # a floor texture never needs more, and the page loads many
+THUMB_PX = 150        # the swatch in the picker, which is 78px at its biggest
+QUALITY = 82
+
+# Below this the texture is too small to hold up stretched across a room.
+MIN_PX = 420
+# And below this fraction of the original, the grain is drawn far enough from
+# life that the tile stops being an honest picture of itself.
+MIN_KEEP = 0.62
+
+
+def _is_mark(r, g, b):
+    """Marcopolo's orange, and the red the code is sometimes printed in.
+
+    Deliberately narrow. A terracotta tile is orange all over, and a loose
+    test cuts the whole catalogue in half.
+    """
+    return r > 150 and (r - b) > 85 and (r - g) > 30 and g < 200
+
+
+def _mark_box(im, probe=320):
+    """Where the lettering is, as fractions of the picture, or None.
+
+    Only the top and bottom fifths are looked at. That is where it is printed,
+    and a tile with a genuinely orange band through its middle is a tile, not
+    a label.
+    """
+    w, h = im.size
+    s = im.resize((probe, max(1, int(probe * h / float(w)))))
+    sw, sh = s.size
+    px = s.load()
+    band = max(2, int(sh * 0.22))
+
+    xs, ys = [], []
+    for y in list(range(0, band)) + list(range(sh - band, sh)):
+        for x in range(sw):
+            r, g, b = px[x, y]
+            if _is_mark(r, g, b):
+                xs.append(x)
+                ys.append(y)
+
+    # A handful of stray pixels is noise in the photograph, not lettering.
+    if len(xs) < max(30, int(sw * sh * 0.0012)):
+        return None
+    return (min(xs) / float(sw), min(ys) / float(sh),
+            (max(xs) + 1) / float(sw), (max(ys) + 1) / float(sh))
+
+
+def _crop_box(w, h, mark):
+    """The largest rectangle of the same proportions that misses the mark.
+
+    Four places it could go, above the lettering, below it, or to either side.
+    The biggest wins; the others are usually much smaller, because the name is
+    printed across most of the width.
+    """
+    if not mark:
+        return (0, 0, w, h), 1.0
+    l, t, r, b = mark
+    pad = 0.012
+    bands = [
+        (0, 0, 1.0, max(0.0, t - pad)),          # above
+        (0, min(1.0, b + pad), 1.0, 1.0),        # below
+        (0, 0, max(0.0, l - pad), 1.0),          # left
+        (min(1.0, r + pad), 0, 1.0, 1.0),        # right
+    ]
+    best = None
+    for bl, bt, br, bb in bands:
+        bw, bh = (br - bl) * w, (bb - bt) * h
+        if bw <= 1 or bh <= 1:
+            continue
+        # largest w:h rectangle inside this band
+        scale = min(bw / float(w), bh / float(h))
+        if best is None or scale > best[0]:
+            cw, ch = w * scale, h * scale
+            cx = bl * w + (bw - cw) / 2.0
+            cy = bt * h + (bh - ch) / 2.0
+            best = (scale, (int(cx), int(cy), int(cx + cw), int(cy + ch)))
+    if not best:
+        return None, 0.0
+    return best[1], best[0]
+
+
+def _out_dir():
+    d = frappe.get_site_path("public", "files", FOLDER)
+    os.makedirs(d, exist_ok=True)
+    return d
+
+
+def _candidates():
+    """Published items whose group names a tile size, and that have a picture."""
+    rows = frappe.db.sql(
+        """
+        SELECT item_code, website_image, item_group
+        FROM `tabWebsite Item`
+        WHERE published = 1 AND IFNULL(website_image, '') <> ''
+        """,
+        as_dict=True,
+    )
+    out = []
+    for r in rows:
+        m = SIZE.search(r.item_group or "")
+        if not m:
+            continue
+        src = frappe.get_site_path("public", (r.website_image or "").lstrip("/"))
+        if os.path.exists(src):
+            out.append((r.item_code, src, int(m.group(1)), int(m.group(2))))
+    return out
+
+
+def _safe(code):
+    return re.sub(r"[^A-Za-z0-9._-]", "_", code)
+
+
+def build(code, src, redo=False):
+    """Make one texture. Returns (status, note)."""
+    from PIL import Image
+
+    dst = os.path.join(_out_dir(), "%s.jpg" % _safe(code))
+    if os.path.exists(dst) and not redo:
+        return "kept", ""
+
+    with Image.open(src) as im:
+        im = im.convert("RGB")
+        w, h = im.size
+        mark = _mark_box(im)
+        box, scale = _crop_box(w, h, mark)
+        if box is None:
+            return "skipped", "nothing left after the lettering"
+        if mark and scale < MIN_KEEP:
+            return "skipped", "only %d%% of the picture is clear" % (scale * 100)
+
+        cut = im.crop(box)
+        cw, ch = cut.size
+        if min(cw, ch) < MIN_PX:
+            return "skipped", "clear piece is only %dpx" % min(cw, ch)
+
+        if max(cw, ch) > MAX_PX:
+            k = MAX_PX / float(max(cw, ch))
+            cut = cut.resize((max(1, int(cw * k)), max(1, int(ch * k))),
+                             Image.LANCZOS)
+        cut.save(dst, "JPEG", quality=QUALITY, optimize=True,
+                 progressive=True)
+
+        # A swatch as well. The picker now offers the whole range rather than
+        # a couple of dozen, and a panel that fetched the full texture for
+        # every one of them would pull several megabytes to draw a column of
+        # 78px squares.
+        tw, th = cut.size
+        k = THUMB_PX / float(max(tw, th))
+        if k < 1:
+            thumb = cut.resize((max(1, int(tw * k)), max(1, int(th * k))),
+                               Image.LANCZOS)
+        else:
+            thumb = cut
+        thumb.save(os.path.join(_out_dir(), "%s-sm.jpg" % _safe(code)),
+                   "JPEG", quality=78, optimize=True)
+
+    return ("cropped" if mark else "copied"), "%dx%d" % cut.size
+
+
+def run(redo=False):
+    cands = _candidates()
+    print("  %d published tiles with a picture" % len(cands))
+    tally = {}
+    skipped = []
+    for code, src, _w, _h in cands:
+        try:
+            status, note = build(code, src, redo=redo)
+        except Exception as e:
+            status, note = "failed", str(e)[:60]
+        tally[status] = tally.get(status, 0) + 1
+        if status in ("skipped", "failed"):
+            skipped.append((code, note))
+
+    for k in ("cropped", "copied", "kept", "skipped", "failed"):
+        if tally.get(k):
+            print("  %-8s %d" % (k, tally[k]))
+    if skipped:
+        print("  left out:")
+        for code, note in skipped[:12]:
+            print("    %-12s %s" % (code, note))
+        if len(skipped) > 12:
+            print("    and %d more" % (len(skipped) - 12))
+    print("  textures are at /files/%s/" % FOLDER)
+
+
+def texture_url(code):
+    """The cleaned texture for a tile, or None if there is not one."""
+    name = "%s.jpg" % _safe(code)
+    if os.path.exists(os.path.join(frappe.get_site_path(
+            "public", "files", FOLDER), name)):
+        return "/files/%s/%s" % (FOLDER, name)
+    return None
+
+
+def thumb_url(code):
+    """The swatch for the picker. Falls back to the texture itself, so a set
+    built before thumbnails existed still shows something."""
+    name = "%s-sm.jpg" % _safe(code)
+    if os.path.exists(os.path.join(frappe.get_site_path(
+            "public", "files", FOLDER), name)):
+        return "/files/%s/%s" % (FOLDER, name)
+    return texture_url(code)
+
+
+def check():
+    d = _out_dir()
+    made = [f for f in os.listdir(d)
+            if f.endswith(".jpg") and not f.endswith("-sm.jpg")]
+    print("  %d textures built, out of %d published tiles with a picture"
+          % (len(made), len(_candidates())))
+    if made:
+        total = sum(os.path.getsize(os.path.join(d, f)) for f in made)
+        print("  %.1f KB in total, %.1f KB each on average"
+              % (total / 1024.0, total / 1024.0 / len(made)))

@@ -345,7 +345,10 @@
 			b.title = t.name + " " + t.w + "x" + t.h;
 			b.setAttribute("data-code", t.code);
 			var im = document.createElement("img");
-			im.src = t.image;
+			// The small one, and only when it scrolls into view: the picker
+			// now holds the whole range rather than a couple of dozen.
+			im.loading = "lazy";
+			im.src = t.thumb || t.image;
 			im.alt = t.name;
 			im.loading = "lazy";
 			b.appendChild(im);
