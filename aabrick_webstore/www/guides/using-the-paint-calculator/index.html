@@ -1,0 +1,91 @@
+{% extends "templates/aab_guide.html" %}
+
+{% block guide_body %}
+<p class="aab-lead">
+  Paint is bought in litres and sold in tins, and the gap between the two is
+  where money gets wasted. This works out both, and takes the doors and windows
+  off for you.
+</p>
+
+<h2>1. Give it the room, not the floor</h2>
+<p>
+  This is the one that catches people. You are painting the <em>walls</em>, and
+  the walls are the perimeter times the height, which is nothing like the floor
+  area.
+</p>
+<p>
+  A room 5m by 4m has 20 square metres of floor. Its walls, at 3m high, come to
+  54. Someone who buys paint for 20 goes back to the shop twice.
+</p>
+<p>
+  So give it length, width <em>and</em> height and it does that sum. If you
+  already know the wall area, the other button lets you type it in directly.
+</p>
+
+<h2>2. Say whether the ceiling is included</h2>
+<p>
+  <strong>Walls only</strong> or <strong>walls and ceiling</strong>. The ceiling
+  is the floor area, which is why it is only counted when you ask: most jobs do
+  the ceiling in a different paint, often a different finish, and sometimes not
+  at all.
+</p>
+
+<h2>3. Take off the doors and windows</h2>
+<p>
+  Type how many there are. A standard door is about 1.8 square metres and a
+  window about 1.44, and both figures can be changed if yours are bigger.
+</p>
+<p>
+  Painting a boundary wall or a ceiling with nothing in it? Set them to zero.
+</p>
+
+<h2>4. Say what you are painting onto</h2>
+<p>
+  This is what decides how far a litre goes, and the difference is large.
+</p>
+<ul class="aab-guide-facts">
+  <li><strong>13 m&sup2;/L</strong><span>A repaint over sound, smooth emulsion</span></li>
+  <li><strong>11 m&sup2;/L</strong><span>New plaster or a skimmed wall</span></li>
+  <li><strong>8.5 m&sup2;/L</strong><span>Rough or textured plaster. Texture is surface area</span></li>
+  <li><strong>6.5 m&sup2;/L</strong><span>Bare block or brick, which drinks it</span></li>
+</ul>
+<p>
+  If the tin is in front of you, use the number printed on it instead: choose
+  <strong>I have the tin in front of me</strong> and type what it claims. These
+  figures are the careful end of what manufacturers print, because running
+  short mid wall is worse than having half a litre left.
+</p>
+
+<h2>5. Coats</h2>
+<p>
+  Two is normal. Three when a pale colour is going over a dark one, or onto
+  bare plaster. One is only ever a freshening up.
+</p>
+
+<h2>What it tells you</h2>
+<p>
+  Litres, and then the tins that is, in the size you chose. The tins are rounded
+  up once across the whole job rather than per coat, so you are not sold a tin
+  nobody needs.
+</p>
+<p>
+  <strong>A worked example.</strong> That 5m by 4m room at 3m high: 54 square
+  metres of wall, less a door and a window, leaves 50.76 to paint. Two coats at
+  13 square metres a litre is <strong>7.8 litres</strong>, which is one 20 litre
+  tin, or two 5 litre tins with a little spare.
+</p>
+
+<h2>Why there is no price</h2>
+<p>
+  We do not sell paint, so there is nothing for us to quote and the cost line
+  stays empty. Type in what a tin costs where you are buying it and it will work
+  out the total for you.
+</p>
+<p>
+  Buy the whole job in one batch whatever you pay for it. Two tins of the same
+  colour mixed months apart will not match on the wall.
+</p>
+<p>
+  <a href="/paint-calculator">Open the paint calculator</a>.
+</p>
+{% endblock %}

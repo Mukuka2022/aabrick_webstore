@@ -55,6 +55,36 @@ def guides():
             "minutes": 3,
         }),
         frappe._dict({
+            "slug": "using-the-tile-calculator",
+            "title": "Using the tile calculator",
+            "nav": "Tile calculator, how to",
+            "summary": (
+                "Turn a room into a number of boxes, and put them straight in "
+                "the basket. Two minutes."
+            ),
+            "minutes": 2,
+        }),
+        frappe._dict({
+            "slug": "using-the-ceiling-calculator",
+            "title": "Using the PVC ceiling calculator",
+            "nav": "Ceiling calculator, how to",
+            "summary": (
+                "Boards rather than square metres, and choosing the length "
+                "that wastes the least."
+            ),
+            "minutes": 2,
+        }),
+        frappe._dict({
+            "slug": "using-the-paint-calculator",
+            "title": "Using the paint calculator",
+            "nav": "Paint calculator, how to",
+            "summary": (
+                "Litres and tins, with the doors and windows taken off, and "
+                "the mistake that doubles your trips to the shop."
+            ),
+            "minutes": 3,
+        }),
+        frappe._dict({
             "slug": "laying-tiles",
             "title": "Laying tiles",
             "nav": "Laying tiles",
