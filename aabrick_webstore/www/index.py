@@ -160,7 +160,12 @@ def _shape(url):
 
 def _featured():
     """Published items with an image and a price, one per item group so the row
-    shows range rather than five near-identical tiles."""
+    shows range rather than four near-identical tiles.
+
+    Four, matching the four category cards above it. The count is here and the
+    column count is in the stylesheet, so both have to move together or the row
+    comes up short.
+    """
     rows = frappe.db.sql(
         """
         SELECT wi.item_code, wi.web_item_name, wi.website_image, wi.route,
@@ -173,7 +178,7 @@ def _featured():
           AND wi.item_group NOT LIKE '%% D (%%'
         GROUP BY wi.item_group
         ORDER BY ip.price_list_rate DESC
-        LIMIT 5
+        LIMIT 4
         """,
         as_dict=True,
     )

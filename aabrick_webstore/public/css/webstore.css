@@ -1071,10 +1071,15 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	.aab-shop .aab-tiles { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* One row on the homepage. Five fit across the full width at 265 each, which
- * still leaves room for the two buttons side by side. */
+/* One row on the homepage, four across, which lines the products up with the
+ * four category cards further up the page. The row runs the full width rather
+ * than sitting in the container, so this is a wider card than the four the
+ * shop grid gets: about 340 at 1440, and 230 at the 1000 where this starts.
+ *
+ * _featured() in www/index.py selects the four. Change one and change both, or
+ * the row comes up a card short. */
 @media (min-width: 1000px) {
-	.aab-home .aab-tiles { grid-template-columns: repeat(5, 1fr); }
+	.aab-home .aab-tiles { grid-template-columns: repeat(4, 1fr); }
 }
 .aab-home .aab-tiles { padding: 0 10px; }
 
