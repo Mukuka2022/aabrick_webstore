@@ -44,6 +44,21 @@
 	--aab-oxblood-lit: #47191B;
 	--aab-oxblood-deep: #2E1012;
 
+	/* Antique brass. The warm metal of a showroom: taps, mirror trim, the
+	 * edge of a display frame. It is the one accent that sits beside the
+	 * brand red without arguing with it, because it is warm too; a cool
+	 * silver or a yellow gold next to #B90000 reads as a mistake.
+	 *
+	 * Three values, because one cannot do the work. #9A7B45 is 3.97:1 on
+	 * white, which is enough for a border but not for a word, so a word on
+	 * a light ground takes the deep one and anything on charcoal or oxblood
+	 * takes the lit one. */
+	--aab-brass: #9A7B45;       /* borders and hairlines on light grounds */
+	--aab-brass-lit: #C8A465;   /* on charcoal and oxblood, where brass muddies */
+	--aab-brass-deep: #7C6236;  /* brass as a word on a light ground */
+	--aab-brass-wash: #FAF5EC;  /* brass at a whisper, for a hover ground */
+	--aab-ivory: #F7F3EB;       /* on a deep red ground, pure white reads cold */
+
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
 
@@ -147,22 +162,83 @@ main.container:has(.aab-branch) .aab-branch {
 	text-transform: uppercase; letter-spacing: .07em;
 	border: 1px solid transparent; transition: background .15s, border-color .15s, color .15s;
 }
+/* The brand red keeps the main call to action: it is the brand, and it is the
+ * button on fourteen pages. The hover deepens as it always did and gains a
+ * brass edge, which is the new signature. Taking it all the way down to the
+ * oxblood was tried and dropped: at that lightness a red button stops reading
+ * as pressed and starts reading as switched off. */
 .aab-btn-primary { background: var(--aab-red); color: #fff; }
-.aab-btn-primary:hover { background: var(--aab-red-dark); color: #fff; }
-.aab-btn-outline { border-color: rgba(255,255,255,.42); color: #fff; }
-.aab-btn-outline:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
-.aab-btn-light { background: #fff; color: var(--aab-ink); }
-.aab-btn-light:hover { background: #EDEDEA; color: var(--aab-ink); }
-.aab-btn-ghost-light { border-color: rgba(255,255,255,.42); color: #fff; }
-.aab-btn-ghost-light:hover { border-color: #fff; background: rgba(255,255,255,.1); color: #fff; }
+.aab-btn-primary:hover {
+	background: var(--aab-red-dark); color: #fff;
+	border-color: var(--aab-brass-lit);
+}
+
+/* This was charcoal, and charcoal beside a photograph just reads as black.
+ * Oxblood is the brand red taken all the way down, so it belongs to the same
+ * family as the primary rather than introducing a second colour to argue
+ * with it, and the brass hairline is what makes it look made rather than
+ * filled in. */
+.aab-btn-dark {
+	background: var(--aab-oxblood); color: var(--aab-ivory);
+	border-color: rgba(200,164,101,.55);
+}
+.aab-btn-dark:hover {
+	background: var(--aab-oxblood-lit); color: var(--aab-ivory);
+	border-color: var(--aab-brass-lit);
+}
+
+/* Secondary, on a light ground. At rest these keep a quiet grey line, so the
+ * brass is spent in one place rather than smeared over every button on the
+ * page. The hover is where it arrives, and the hover is what used to go
+ * black. */
 .aab-btn-ghost { border-color: var(--aab-line); color: var(--aab-ink); }
-.aab-btn-ghost:hover { border-color: var(--aab-red); color: var(--aab-red); }
-.aab-btn-dark { background: var(--aab-charcoal); color: #fff; }
-.aab-btn-dark:hover { background: var(--aab-ink); color: #fff; }
-.aab-btn-ghost-dark { border-color: rgba(28,27,26,.32); color: var(--aab-ink); }
-.aab-btn-ghost-dark:hover { border-color: var(--aab-ink); background: rgba(28,27,26,.06); color: var(--aab-ink); }
+.aab-btn-ghost:hover {
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+	color: var(--aab-oxblood);
+}
+
+/* This one sits beside an oxblood button on the panels, so it carries the
+ * brass at rest as well: the pair has to read as a set. */
+.aab-btn-ghost-dark { border-color: rgba(154,123,69,.52); color: var(--aab-ink); }
+.aab-btn-ghost-dark:hover {
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+	color: var(--aab-oxblood);
+}
+
+/* On a dark ground. Brass rather than a translucent white, because on
+ * charcoal a thin warm line reads as metal trim where a white one reads as a
+ * control that has been switched off. */
+.aab-btn-outline,
+.aab-btn-ghost-light {
+	border-color: rgba(200,164,101,.6); color: var(--aab-brass-lit);
+}
+.aab-btn-outline:hover,
+.aab-btn-ghost-light:hover {
+	border-color: var(--aab-brass-lit); background: rgba(200,164,101,.12);
+	color: var(--aab-ivory);
+}
+
+/* Ivory, not white, and the word in oxblood. On a photograph a pure white
+ * slab reads as a hole punched through the picture; a warm plate reads as
+ * something laid on top of it. */
+.aab-btn-light { background: var(--aab-ivory); color: var(--aab-oxblood); }
+.aab-btn-light:hover { background: #fff; color: var(--aab-red); }
+
+/* WhatsApp keeps its own green. It is the one button on the site people
+ * recognise before they read it, and that is worth more than matching. */
 .aab-btn-wa { background: #25D366; color: #08301A; }
 .aab-btn-wa:hover { background: #1DB954; color: #08301A; }
+
+/* Keyboard focus had no state at all on any of these. It needed one anyway,
+ * and needs it more now that the hover carries so much of the meaning. */
+.aab-btn:focus-visible {
+	outline: 2px solid var(--aab-brass); outline-offset: 2px;
+}
+.aab-btn-dark:focus-visible,
+.aab-btn-outline:focus-visible,
+.aab-btn-ghost-light:focus-visible {
+	outline-color: var(--aab-brass-lit);
+}
 
 /* ------------------------------------------------------------------
  * Homepage: hero
@@ -1731,7 +1807,8 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 }
 .aab-login .aab-login-panel .btn-login:hover,
 .aab-login .aab-login-panel .btn-primary:hover {
-	background: var(--aab-red-dark); border-color: var(--aab-red-dark);
+	background: var(--aab-red-dark); border-color: var(--aab-brass-lit);
+	color: #fff;
 }
 .aab-login .aab-login-panel .btn-default,
 .aab-login .aab-login-panel .btn-login-option {
@@ -1742,7 +1819,10 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 	padding: 13px 18px; box-shadow: none;
 }
 .aab-login .aab-login-panel .btn-default:hover,
-.aab-login .aab-login-panel .btn-login-option:hover { border-color: var(--aab-ink); }
+.aab-login .aab-login-panel .btn-login-option:hover {
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+	color: var(--aab-oxblood);
+}
 
 .aab-login .aab-login-panel .forgot-password-message,
 .aab-login .aab-login-panel .sign-up-message,
@@ -1916,7 +1996,9 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	background: var(--aab-surface); color: var(--aab-ink); box-shadow: none;
 }
 .cart-container .number-spinner .btn:hover,
-.cart-container .cart-btn:hover { border-color: var(--aab-ink); }
+.cart-container .cart-btn:hover {
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+}
 
 /* ---- the money ---- */
 .cart-container .bill-label { color: var(--aab-muted); font-size: 14px; }
@@ -1942,7 +2024,8 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .cart-container .btn-place-order:hover,
 .cart-container .btn-request-for-quotation:hover,
 .cart-container .btn-primary:hover {
-	background: var(--aab-red-dark); border-color: var(--aab-red-dark);
+	background: var(--aab-red-dark); border-color: var(--aab-brass-lit);
+	color: #fff;
 }
 .cart-container .btn-primary-light,
 .cart-container .btn-outline-primary,
@@ -1958,7 +2041,8 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .cart-container .btn-outline-primary:hover,
 .cart-container .btn-new-address:hover,
 .cart-empty .btn-outline-primary:hover {
-	border-color: var(--aab-ink); background: var(--aab-wash); color: var(--aab-ink);
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+	color: var(--aab-oxblood);
 }
 
 /* ---- where it goes ---- */
