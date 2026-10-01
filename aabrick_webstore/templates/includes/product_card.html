@@ -21,8 +21,12 @@
 			<p class="aab-tile-price aab-tile-price--none">Price on request</p>
 		{% endif %}
 
+		{#
+			One action. View product used to sit beside this, and it was the
+			third link to the same page on a card that is already clickable by
+			its photograph and its name.
+		#}
 		<div class="aab-tile-actions">
-			<a class="aab-btn aab-btn-ghost" href="/{{ p.route }}">View product</a>
 			{% if p.price %}
 				<button type="button" class="aab-btn aab-btn-primary btn-add-to-cart"
 				        data-item-code="{{ p.item_code }}">Add to cart</button>

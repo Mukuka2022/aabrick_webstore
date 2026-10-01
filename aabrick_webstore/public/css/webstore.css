@@ -34,11 +34,9 @@
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
-	/* Behind product photographs. The catalogue runs from white marble to a
-	 * plain black tile, so no single value separates all of it: a mid grey
-	 * matched the grey tiles and an off white would match the pale ones. The
-	 * brand charcoal clears everything except the black tile, and the edge
-	 * drawn round the photograph itself takes care of that one. */
+	/* Letterboxing a photograph that fills its box: a page head picture, a
+	 * branch shopfront. Product photography used to share this and no longer
+	 * does — see --aab-stone and the note on .aab-tile-shot. */
 	--aab-shot-ground: #2A2725;
 	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
 	--aab-oxblood-lit: #47191B;
@@ -58,6 +56,11 @@
 	--aab-brass-deep: #7C6236;  /* brass as a word on a light ground */
 	--aab-brass-wash: #FAF5EC;  /* brass at a whisper, for a hover ground */
 	--aab-ivory: #F7F3EB;       /* on a deep red ground, pure white reads cold */
+
+	/* Behind product photography, and the edge of the card it sits in. Warm,
+	 * because every other surface on this site now is. */
+	--aab-stone: #EFEAE1;
+	--aab-stone-line: #E4DDD0;
 
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
@@ -822,8 +825,10 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 	.aab-item-main { grid-template-columns: 1.1fr 1fr; gap: 50px; align-items: start; }
 }
 
+/* The same stone as the card, so opening a product does not change the
+ * surface it is presented on. */
 .aab-item-shot {
-	background: var(--aab-shot-ground);
+	background: var(--aab-stone);
 	aspect-ratio: 1 / 1;
 	display: flex; align-items: center; justify-content: center;
 	overflow: hidden;
@@ -874,9 +879,9 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 
 .aab-grade-tag {
 	display: inline-block;
-	font-size: 11px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
-	color: #fff; background: var(--aab-charcoal);
-	padding: 4px 9px; margin: 0 0 12px;
+	font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+	color: var(--aab-ivory); background: var(--aab-oxblood);
+	padding: 4px 10px; margin: 0 0 12px;
 }
 .aab-item-grade-note {
 	margin: 18px 0 0; padding: 12px 14px;
@@ -1063,34 +1068,54 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 }
 .aab-home .aab-tiles { padding: 0 10px; }
 
+/* The card has an edge now. Flat white on a near-white wash left the cards
+ * dissolving into the page, so nothing read as an object you could pick up.
+ * The edge is warm, and on hover it turns brass. */
 .aab-tile {
 	background: var(--aab-surface);
 	display: flex; flex-direction: column;
+	border: 1px solid var(--aab-stone-line);
+	transition: border-color .2s ease, box-shadow .25s ease;
+}
+.aab-tile:hover {
+	border-color: var(--aab-brass);
+	box-shadow: 0 10px 26px rgba(59,20,22,.10);
 }
 
-/* A square photograph on white, contained rather than cropped, so a 2:1 tile
- * strip and an upright bag can share a row without either being cut. */
+/* A square photograph, contained rather than cropped, so a 2:1 tile strip and
+ * an upright bag can share a row without either being cut.
+ *
+ * On warm stone, not charcoal. The old note here was right that no single
+ * value separates a catalogue running from white marble to a plain black
+ * tile — but charcoal solved it by making every card a dark box, and a grid
+ * of dark boxes is what stopped the shop looking like a showroom. The
+ * separation is done by the shadow instead, which is what it was always for. */
 .aab-tile-shot {
 	position: relative;
 	display: flex; align-items: center; justify-content: center;
 	aspect-ratio: 1 / 1;
-	background: var(--aab-shot-ground);
+	background: var(--aab-stone);
 	overflow: hidden;
 }
 .aab-tile-shot img {
 	width: 100%; height: 100%;
 	object-fit: contain;
-	padding: 6%;
+	padding: 9%;
 	display: block;
 	/* Drawn round the photograph, not the box it sits in: a border would trace
 	 * the square container, drop-shadow traces what is actually rendered, so it
-	 * hugs a 2:1 strip and a cut-out silhouette alike. The pale edge is what
-	 * separates the black tile from the charcoal. */
-	filter: drop-shadow(0 0 1px rgba(255,255,255,.5))
-	        drop-shadow(0 4px 10px rgba(0,0,0,.35));
+	 * hugs a 2:1 strip and a cut-out silhouette alike.
+	 *
+	 * Two shadows doing two jobs. The tight warm halo is what holds a white
+	 * marble tile apart from the stone behind it, which is the case the dark
+	 * ground used to handle. The soft one underneath, tinted towards the
+	 * oxblood rather than neutral black, reads as a sample laid on a counter. */
+	filter: drop-shadow(0 0 1.5px rgba(90,78,64,.45))
+	        drop-shadow(0 7px 16px rgba(59,20,22,.16));
 	transition: transform .3s ease;
 }
-.aab-tile-shot.is-square img { padding: 11%; }
+/* Enough margin that the soft shadow is never clipped by the overflow. */
+.aab-tile-shot.is-square img { padding: 12%; }
 
 /* The homepage mixes shapes on purpose, eight different ranges in one row, so
  * there every photograph takes the same margin and no shape is favoured. The
@@ -1100,16 +1125,19 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 .aab-home .aab-tile-shot.is-square img { padding: 17%; }
 .aab-tile:hover .aab-tile-shot img { transform: scale(1.03); }
 
+/* Oxblood, not the brand red. Red here put the loudest colour on the page on
+ * the one fact about a tile that is not a selling point, and it competed with
+ * the button underneath it. The grade still has to be legible, not shouted. */
 .aab-tile-grade {
 	position: absolute; top: 0; left: 0;
-	background: var(--aab-red); color: #fff;
-	font-size: 10.5px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
-	padding: 5px 9px;
+	background: var(--aab-oxblood); color: var(--aab-ivory);
+	font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+	padding: 5px 10px;
 }
 
 .aab-tile-body {
-	padding: 16px 16px 18px;
-	display: flex; flex-direction: column; gap: 8px;
+	padding: 18px 18px 20px;
+	display: flex; flex-direction: column; gap: 9px;
 	flex: 1;
 }
 .aab-tile-name {
@@ -1118,41 +1146,48 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 }
 .aab-tile-name:hover { color: var(--aab-red); }
 
+/* The price was 22px of Anton in brand red, which is the typography of a
+ * clearance poster: a condensed display face shouting a number is how a
+ * discount is announced, not how a price is stated. In the body face, in ink,
+ * at a size that does not need to raise its voice. It also frees the red to
+ * mean one thing on this card, which is the button. */
 .aab-tile-price {
 	margin: 0 0 2px;
-	font-family: var(--aab-display); font-weight: 400;
-	font-size: 22px; line-height: 1; letter-spacing: .01em;
-	color: var(--aab-red);
+	font-family: var(--aab-body); font-weight: 600;
+	font-size: 17px; line-height: 1.2; letter-spacing: .01em;
+	color: var(--aab-ink);
 	font-variant-numeric: tabular-nums;
 }
 .aab-tile-price span {
-	font-family: var(--aab-body); font-size: 12.5px; font-weight: 500;
-	color: var(--aab-muted); letter-spacing: 0;
+	font-weight: 500; font-size: 12px;
+	color: var(--aab-muted); letter-spacing: .02em;
 }
-.aab-tile-price--none { color: var(--aab-muted); font-size: 16px; }
+.aab-tile-price--none {
+	color: var(--aab-muted); font-size: 12px; font-weight: 600;
+	letter-spacing: .09em; text-transform: uppercase;
+}
 
+/* One action, full width. There were two, View product beside Add to cart,
+ * and View product was already the photograph and the name above it — so the
+ * card spent a third of its height restating a link it had made twice, in two
+ * cramped 11.5px boxes. One button can afford the room to look like a
+ * button. */
 .aab-tile-actions {
-	margin-top: auto; padding-top: 4px;
-	display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+	margin-top: auto; padding-top: 10px;
+	display: grid; grid-template-columns: 1fr; gap: 8px;
 }
 .aab-tile-actions .aab-btn {
-	padding: 11px 6px; font-size: 11.5px; letter-spacing: .05em;
+	padding: 12px 10px; font-size: 11px; letter-spacing: .09em;
 	white-space: nowrap;
 }
 
-/* Two buttons cannot hold their labels side by side in a narrow card, and
- * how narrow the card is has nothing to do with how wide the window is: the
- * home page puts five across at 1000px, which is a 182px card, while a phone
- * puts two across at 375, which is 178. A viewport query cannot see that and
- * was letting Add to cart hang 53px off the side of the page between 1000
- * and about 1100. The card measures itself instead. */
-.aab-tile { container-type: inline-size; }
-.aab-tile-actions { grid-template-columns: 1fr; }
-@container (min-width: 236px) {
-	.aab-tile-actions { grid-template-columns: 1fr 1fr; }
-}
-/* Browsers without container queries keep the single column above, which is
- * the safe way round: a stacked pair is tidy, an overflowing one is not. */
+/* There used to be a container query here, measuring the card so that two
+ * buttons could sit side by side when it was wide enough and stack when it was
+ * not: a viewport query could not see that the home page's five-across card at
+ * 1000px is narrower than a phone's two-across card at 375, and Add to cart
+ * was hanging 53px off the side of the page. With one button the question does
+ * not arise, so the query is gone rather than left to be puzzled over.
+ */
 
 @media (prefers-reduced-motion: reduce) {
 	.aab-tile-shot img { transition: none; }
@@ -1979,7 +2014,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 }
 .cart-container .cart-table .item-thumb,
 .cart-container .cart-table img {
-	border-radius: 0; background: var(--aab-shot-ground); object-fit: contain;
+	border-radius: 0; background: var(--aab-stone); object-fit: contain;
 }
 
 /* The quantity stepper, which is the one control people actually use here. */
@@ -2261,7 +2296,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	padding: 18px 0; border-bottom: 1px solid var(--aab-line);
 }
 .aab-gcart-shot {
-	display: block; background: var(--aab-shot-ground);
+	display: block; background: var(--aab-stone);
 	aspect-ratio: 1 / 1; overflow: hidden;
 }
 .aab-gcart-shot img { width: 100%; height: 100%; object-fit: contain; display: block; }
