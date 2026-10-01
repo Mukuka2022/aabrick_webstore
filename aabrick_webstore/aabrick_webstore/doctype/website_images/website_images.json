@@ -9,6 +9,22 @@
   "sec_hero",
   "hero",
   "hero_mobile",
+  "sec_cats",
+  "cat_tiles",
+  "cat_tiles_fit",
+  "col_cats_1",
+  "cat_tile_fix",
+  "cat_tile_fix_fit",
+  "col_cats_2",
+  "cat_pvc",
+  "cat_pvc_fit",
+  "col_cats_3",
+  "cat_fertilizer",
+  "cat_fertilizer_fit",
+  "sec_panels",
+  "panel_shop",
+  "col_panels",
+  "panel_calc",
   "sec_shots",
   "shot_1",
   "caption_1",
@@ -148,13 +164,100 @@
    "fieldname": "head_pvc_calculator",
    "fieldtype": "Attach Image",
    "label": "PVC ceiling calculator"
+  },
+  {
+   "description": "The four cards under the hero, in the order they appear on the page. Each is optional: a card with nothing uploaded keeps the picture that ships with the site. Upright, about 900 by 990.",
+   "fieldname": "sec_cats",
+   "fieldtype": "Section Break",
+   "label": "The four cards"
+  },
+  {
+   "fieldname": "cat_tiles",
+   "fieldtype": "Attach Image",
+   "label": "Tiles"
+  },
+  {
+   "default": "Fill the card",
+   "description": "Fill, for a photograph. Fit inside, for a pack shot cut out on a transparent background, which would otherwise be sliced at the edges.",
+   "fieldname": "cat_tiles_fit",
+   "fieldtype": "Select",
+   "label": "How to fit it",
+   "options": "Fill the card\nFit inside, on light grey"
+  },
+  {
+   "fieldname": "col_cats_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cat_tile_fix",
+   "fieldtype": "Attach Image",
+   "label": "Tile Fix"
+  },
+  {
+   "default": "Fit inside, on light grey",
+   "fieldname": "cat_tile_fix_fit",
+   "fieldtype": "Select",
+   "label": "How to fit it",
+   "options": "Fill the card\nFit inside, on light grey"
+  },
+  {
+   "fieldname": "col_cats_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cat_pvc",
+   "fieldtype": "Attach Image",
+   "label": "PVC Ceiling Boards"
+  },
+  {
+   "default": "Fit inside, on light grey",
+   "fieldname": "cat_pvc_fit",
+   "fieldtype": "Select",
+   "label": "How to fit it",
+   "options": "Fill the card\nFit inside, on light grey"
+  },
+  {
+   "fieldname": "col_cats_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cat_fertilizer",
+   "fieldtype": "Attach Image",
+   "label": "Fertilizer"
+  },
+  {
+   "default": "Fill the card",
+   "fieldname": "cat_fertilizer_fit",
+   "fieldtype": "Select",
+   "label": "How to fit it",
+   "options": "Fill the card\nFit inside, on light grey"
+  },
+  {
+   "description": "The two wide blocks under the cards. The picture sits under a near-opaque brand wash, so it reads as texture rather than as a photograph: busy or dark is fine, and a small file survives it. Landscape, about 1200 by 800.",
+   "fieldname": "sec_panels",
+   "fieldtype": "Section Break",
+   "label": "The two panels"
+  },
+  {
+   "fieldname": "panel_shop",
+   "fieldtype": "Attach Image",
+   "label": "Behind Shop now"
+  },
+  {
+   "fieldname": "col_panels",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "panel_calc",
+   "fieldtype": "Attach Image",
+   "label": "Behind the calculators"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-11 13:53:36.703810",
+ "modified": "2026-10-01 14:22:04.090749",
  "modified_by": "Administrator",
  "module": "Aabrick Webstore",
  "name": "Website Images",

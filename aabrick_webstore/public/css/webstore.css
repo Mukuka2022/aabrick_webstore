@@ -489,15 +489,20 @@ main.container:has(.aab-branch) .aab-branch {
  * keep their red and charcoal identity, and the picture is there for context,
  * not to be looked at in its own right. It also means a small source, like
  * the 540px laptop photograph, survives the treatment. */
+/* The photograph is named in a custom property so that a picture uploaded
+ * in the desk can replace it with one inline style, and the gradient over it
+ * stays here in the stylesheet where it belongs. */
 .aab-panel-red {
+	--aab-panel-shot: url("/assets/aabrick_webstore/images/panel-shop.jpg");
 	background-image:
 		linear-gradient(140deg, rgba(233,233,229,.90) 0%, rgba(195,195,189,.86) 100%),
-		url("/assets/aabrick_webstore/images/panel-shop.jpg");
+		var(--aab-panel-shot);
 }
 .aab-panel-dark {
+	--aab-panel-shot: url("/assets/aabrick_webstore/images/panel-calc.jpg");
 	background-image:
 		linear-gradient(140deg, rgba(216,216,211,.90) 0%, rgba(178,178,172,.88) 100%),
-		url("/assets/aabrick_webstore/images/panel-calc.jpg");
+		var(--aab-panel-shot);
 }
 .aab-panel h3 { font-size: clamp(22px, 2.8vw, 30px); margin: 0 0 14px; color: var(--aab-ink); }
 .aab-panel p { margin: 0 0 24px; color: var(--aab-ink); font-size: 15px; line-height: 1.6; max-width: 44ch; }

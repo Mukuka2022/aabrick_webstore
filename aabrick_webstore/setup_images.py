@@ -20,6 +20,13 @@ import frappe
 DT = "Website Images"
 MODULE = "Aabrick Webstore"
 
+# How a picture should sit in a card. The wording is the question a
+# shopkeeper can answer by looking at the file, rather than the CSS words
+# cover and contain, which are the same question asked from the inside.
+FILL = "Fill the card"
+INSIDE = "Fit inside, on light grey"
+FIT = FILL + "\n" + INSIDE
+
 
 def _f(fieldname, label, fieldtype="Attach Image", **kw):
     d = {"fieldname": fieldname, "label": label, "fieldtype": fieldtype}
@@ -38,6 +45,38 @@ FIELDS = [
        description="Optional. A taller crop of the same scene, about 900 "
                    "by 1000. A wide picture on a phone becomes a slit too "
                    "shallow to read. Left empty, the wide one is used."),
+
+    _f("sec_cats", "The four cards", "Section Break",
+       description="The four cards under the hero, in the order they "
+                   "appear on the page. Each is optional: a card with "
+                   "nothing uploaded keeps the picture that ships with "
+                   "the site. Upright, about 900 by 990."),
+    _f("cat_tiles", "Tiles"),
+    _f("cat_tiles_fit", "How to fit it", "Select", options=FIT, default=FILL,
+       description="Fill, for a photograph. Fit inside, for a pack shot "
+                   "cut out on a transparent background, which would "
+                   "otherwise be sliced at the edges."),
+    _f("col_cats_1", "", "Column Break"),
+    _f("cat_tile_fix", "Tile Fix"),
+    _f("cat_tile_fix_fit", "How to fit it", "Select", options=FIT,
+       default=INSIDE),
+    _f("col_cats_2", "", "Column Break"),
+    _f("cat_pvc", "PVC Ceiling Boards"),
+    _f("cat_pvc_fit", "How to fit it", "Select", options=FIT, default=INSIDE),
+    _f("col_cats_3", "", "Column Break"),
+    _f("cat_fertilizer", "Fertilizer"),
+    _f("cat_fertilizer_fit", "How to fit it", "Select", options=FIT,
+       default=FILL),
+
+    _f("sec_panels", "The two panels", "Section Break",
+       description="The two wide blocks under the cards. The picture sits "
+                   "under a near-opaque brand wash, so it reads as "
+                   "texture rather than as a photograph: busy or dark is "
+                   "fine, and a small file survives it. Landscape, about "
+                   "1200 by 800."),
+    _f("panel_shop", "Behind Shop now"),
+    _f("col_panels", "", "Column Break"),
+    _f("panel_calc", "Behind the calculators"),
 
     _f("sec_shots", "Finished with AABrick", "Section Break",
        description="Three photographs of rooms. The section only appears "
@@ -100,17 +139,33 @@ def run():
 
 
 def _sync_fields():
-    """Add any field the doctype does not have yet, leaving the rest alone."""
+    """Add any field the doctype does not have yet, leaving the rest alone.
+
+    The fields are then put into the order FIELDS gives them, because a
+    doctype that already exists would otherwise take new ones on the end,
+    and the home page cards would be filed below the page headings. A field
+    somebody added by hand is not in FIELDS, so it keeps its place at the
+    end rather than being moved or dropped.
+    """
     doc = frappe.get_doc("DocType", DT)
     have = {f.fieldname for f in doc.fields}
     added = [f for f in FIELDS if f["fieldname"] not in have]
-    if not added:
-        print("  %s is already up to date" % DT)
-        return
     for f in added:
         doc.append("fields", f)
+
+    order = {f["fieldname"]: i for i, f in enumerate(FIELDS)}
+    was = [f.fieldname for f in doc.fields]
+    doc.fields.sort(key=lambda f: order.get(f.fieldname, len(FIELDS)))
+    for i, f in enumerate(doc.fields, start=1):
+        f.idx = i
+    moved = [f.fieldname for f in doc.fields] != was
+
+    if not added and not moved:
+        print("  %s is already up to date" % DT)
+        return
     doc.save(ignore_permissions=True)
-    print("  added %d field(s) to %s" % (len(added), DT))
+    print("  added %d field(s) to %s, reordered: %s"
+          % (len(added), DT, "yes" if moved else "no"))
 
 
 def _branch_photo():

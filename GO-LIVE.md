@@ -286,7 +286,9 @@ In order. All are safe to run twice.
 ```bash
 cd ~/frappe-bench
 
-# The Website Images settings page, and the photo field on Branch Location
+# The Website Images settings page, and the photo field on Branch Location.
+# Run this again after any pull that adds a picture somebody can change:
+# it only adds the fields that are missing and leaves what is uploaded.
 bench --site SITE execute aabrick_webstore.setup_images.run
 
 # The Website Text settings page, seeded with the wording on the site today

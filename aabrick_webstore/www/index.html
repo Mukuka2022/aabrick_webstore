@@ -89,13 +89,13 @@
   <!-- split panels ----------------------------------------------------- -->
   <section class="aab-section">
     <div class="aab-panels">
-        <div class="aab-panel aab-panel-red">
+        <div class="aab-panel aab-panel-red"{% if img.panels.shop %} style="--aab-panel-shot: url({{ img.panels.shop }})"{% endif %}>
           <p class="aab-eyebrow-light">{{ txt.panel_1_eyebrow }}</p>
           <h3>{{ txt.panel_1_heading }}</h3>
           <p>{{ txt.panel_1_text }}</p>
           <a class="aab-btn aab-btn-dark" href="/all-products">Shop now</a>
         </div>
-        <div class="aab-panel aab-panel-dark">
+        <div class="aab-panel aab-panel-dark"{% if img.panels.calc %} style="--aab-panel-shot: url({{ img.panels.calc }})"{% endif %}>
           <p class="aab-eyebrow-light">{{ txt.panel_2_eyebrow }}</p>
           <h3>{{ txt.panel_2_heading }}</h3>
           <p>{{ txt.panel_2_text }}</p>

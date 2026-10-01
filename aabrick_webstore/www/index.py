@@ -31,6 +31,7 @@ HERO_FILE = os.path.join(
 # cut-out pack shots are letterboxed so nothing is sliced off their edges.
 CATEGORIES = [
     {
+        "key": "tiles",
         "title": "Tiles",
         "blurb": "Wall, floor, porcelain and polished",
         "match": "Tiles",
@@ -39,6 +40,7 @@ CATEGORIES = [
         "route": "/all-products?field_filters=%7B%22custom_category%22%3A%5B%22Tiles%22%5D%7D",
     },
     {
+        "key": "tile_fix",
         "title": "Tile Fix",
         "blurb": "Adhesive and grout",
         "match": "Tile Fix",
@@ -47,6 +49,7 @@ CATEGORIES = [
         "route": "/all-products?field_filters=%7B%22custom_category%22%3A%5B%22Tile%20Fix%22%5D%7D",
     },
     {
+        "key": "pvc",
         "title": "PVC Ceiling Boards",
         "blurb": "Boards, skirting and accessories",
         "match": "PVC",
@@ -55,6 +58,7 @@ CATEGORIES = [
         "route": "/all-products",
     },
     {
+        "key": "fertilizer",
         "title": "Fertilizer",
         "blurb": "For farm and garden",
         "match": "Fertilizer",
@@ -86,21 +90,34 @@ def get_context(context):
 
 
 def _categories():
-    """Card images are app assets so they deploy with the code. A product photo
-    from the group is the fallback, for a category that has no artwork yet."""
+    """A card shows whatever was last uploaded for it in Website Images, so
+    the four cards can be changed on the live server without a deploy.
+
+    Failing that it shows the artwork in the app, which is why that artwork
+    is still here: a fresh install looks like this one before anybody has
+    uploaded anything. A product photograph from the group is the last
+    resort, for a category with no artwork at all.
+    """
+    from aabrick_webstore.jinja_helpers import site_images
+
+    uploaded = site_images().cats
     out = []
     for c in CATEGORIES:
-        image = c.get("image") or frappe.db.get_value(
-            "Website Item",
-            {"published": 1, "item_group": ["like", "%%%s%%" % c["match"]],
-             "website_image": ["not in", ["", None]]},
-            "website_image",
-        )
+        card = uploaded.get(c["key"]) or {}
+        image, fit = card.get("src"), card.get("fit")
+        if not image:
+            image = c.get("image") or frappe.db.get_value(
+                "Website Item",
+                {"published": 1, "item_group": ["like", "%%%s%%" % c["match"]],
+                 "website_image": ["not in", ["", None]]},
+                "website_image",
+            )
+            fit = c["fit"]
         count = frappe.db.count(
             "Website Item",
             {"published": 1, "item_group": ["like", "%%%s%%" % c["match"]]},
         )
-        out.append(dict(c, image=image, count=count))
+        out.append(dict(c, image=image, fit=fit, count=count))
     return out
 
 

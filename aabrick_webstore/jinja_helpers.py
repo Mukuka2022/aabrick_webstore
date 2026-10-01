@@ -8,6 +8,8 @@ each render instead, and exposed to the templates as a Jinja method.
 Cached per request: the navbar and the footer both ask for it on every page.
 """
 
+from urllib.parse import quote
+
 import frappe
 
 PHONE = "+260 960 787 777"
@@ -107,6 +109,20 @@ def site_images():
     def pick(field):
         return (s.get(field) or "").strip() if s else ""
 
+    def card(field):
+        """A card's picture, and how it should sit in the card.
+
+        Empty when nothing has been uploaded, which is what tells the home
+        page to keep the artwork in the app and the fit chosen for it. The
+        fit only travels with an uploaded picture, because only whoever
+        uploaded it knows whether it is a photograph or a cut-out.
+        """
+        src = pick(field)
+        if not src:
+            return frappe._dict({"src": "", "fit": ""})
+        inside = pick(field + "_fit").startswith("Fit inside")
+        return frappe._dict({"src": src, "fit": "contain" if inside else "cover"})
+
     shots = []
     for i in (1, 2, 3):
         src = pick("shot_%d" % i)
@@ -122,6 +138,16 @@ def site_images():
         "hero_mobile": pick("hero_mobile"),
         # The gallery is all three or none. Two reads as one that failed.
         "shots": shots if len(shots) == 3 else [],
+        "cats": frappe._dict({
+            "tiles": card("cat_tiles"),
+            "tile_fix": card("cat_tile_fix"),
+            "pvc": card("cat_pvc"),
+            "fertilizer": card("cat_fertilizer"),
+        }),
+        "panels": frappe._dict({
+            "shop": _css_url(pick("panel_shop")),
+            "calc": _css_url(pick("panel_calc")),
+        }),
         "heads": frappe._dict({
             "all_products": pick("head_all_products"),
             "branches": pick("head_branches"),
@@ -134,6 +160,20 @@ def site_images():
 
     frappe.local._aab_images = out
     return out
+
+
+def _css_url(src):
+    """A picture's URL, safe to put inside a CSS url().
+
+    The two panels carry their photograph as a custom property rather than
+    an <img>, because the brand gradient laid over it belongs in the
+    stylesheet. That puts an uploaded filename into CSS, so the characters
+    that could close the url() early are percent encoded instead of being
+    stripped, which would quietly break a filename with a space in it.
+    """
+    if not src:
+        return ""
+    return quote(src, safe="/:%?=&-_.~")
 
 
 def site_text():
