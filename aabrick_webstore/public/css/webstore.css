@@ -1685,11 +1685,53 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 }
 
 /* ------------------------------------------------------------------
+ * The page heading band
+ *
+ * Six pages carry one of these, and each can have a photograph uploaded
+ * beside it in Website Images. Until one is, the heading stands on the same
+ * charcoal and red gradient the branch call to action uses, so a heading with
+ * nothing beside it reads as a band somebody meant rather than as a page
+ * waiting for something.
+ *
+ * It takes itself away. Upload the picture and .has-shot appears, this stops
+ * applying, and the heading goes back to white with the photograph in the
+ * right-hand column. Nothing has to be undone by hand later.
+ * ------------------------------------------------------------------ */
+.aab-page-head:not(.has-shot) {
+	background: var(--aab-charcoal);
+	background-image:
+		radial-gradient(110% 160% at 92% 50%, rgba(185,0,0,.34) 0%, rgba(185,0,0,0) 60%),
+		linear-gradient(100deg, #1C1B1A 0%, var(--aab-charcoal) 65%);
+	color: #fff;
+	/* More room than the white version had: at 30px this read as a tinted
+	 * strip rather than as a band. */
+	padding-top: clamp(34px, 4.2vw, 54px);
+	padding-bottom: clamp(34px, 4.2vw, 54px);
+	/* The branches heading carries a red rule under it, which on this ground
+	 * is a red line on a red glow. */
+	border-bottom: 0;
+}
+.aab-page-head:not(.has-shot) h1 { color: #fff; }
+
+/* Every page calls its standfirst something different, so this catches the
+ * paragraph rather than listing four class names. The eyebrow is a paragraph
+ * too, and is handled below: its selector carries one more class, so it wins
+ * regardless of which order these end up in. */
+.aab-page-head:not(.has-shot) p { color: rgba(255,255,255,.78); }
+
+/* The eyebrow's brand red is 2.4:1 on this charcoal and cannot be read.
+ * Brass is the trim everywhere else on the site and clears 6.3:1. */
+.aab-page-head:not(.has-shot) .aab-eyebrow { color: var(--aab-brass-lit); }
+.aab-page-head:not(.has-shot) .aab-eyebrow::before {
+	background: var(--aab-brass-lit);
+}
+
+/* ------------------------------------------------------------------
  * Pictures beside the page titles
  *
- * Optional everywhere. A page with nothing uploaded keeps the plain heading
- * it has, so the layout has to read as finished either way rather than as a
- * heading with a hole next to it.
+ * Optional everywhere. A page with nothing uploaded gets the band above, so
+ * the layout reads as finished either way rather than as a heading with a
+ * hole next to it.
  * ------------------------------------------------------------------ */
 .aab-head-shot { display: none; }
 
@@ -1720,17 +1762,6 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 /* The copy keeps its own measure whether or not a picture sits beside it. */
 .aab-head-copy > *:last-child { margin-bottom: 0; }
 
-/* The branches heading is its own grid: unlike the other pages it has no
- * .aab-inner inside the header to lay out. */
-.aab-head-split.has-shot {
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 22px;
-	align-items: center;
-}
-@media (min-width: 880px) {
-	.aab-head-split.has-shot { grid-template-columns: 1.25fr 1fr; gap: 44px; }
-}
 
 /* ------------------------------------------------------------------
  * The shopfront on a branch page
