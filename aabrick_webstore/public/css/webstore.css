@@ -66,11 +66,23 @@
 	--aab-brass-wash: #FAF5EC;  /* brass at a whisper, for a hover ground */
 	--aab-ivory: #F7F3EB;       /* on a deep red ground, pure white reads cold */
 
-	/* A card, and the ground any product photograph sits on: the same value,
-	 * because they are meant to read as one surface. It is warm white rather
-	 * than white, so that on the stone page it reads as a plate laid down
-	 * rather than a hole cut out. */
+	/* The card itself: warm white rather than white, so that on the stone page
+	 * it reads as a plate laid down rather than a hole cut out. */
 	--aab-card: #FBFAF6;
+
+	/* And the ground a tile is shown on. Grey, because grey is what a showroom
+	 * puts a sample against: it takes no side, where a warm white ground
+	 * flattered the pale tiles and left the dark ones looking like holes.
+	 *
+	 * This is the deepest grey the catalogue allows, and the limit is real
+	 * rather than a matter of taste. Against the two hardest tiles AABrick
+	 * sells, a near-white marble and a plain black, #5A564F keeps both apart
+	 * from the ground at 6.41 and 2.39. One step darker and the black tile is
+	 * at 2.17 and starting to disappear into it; at #4A4744 it is 1.89 and
+	 * gone. Warm, to sit in the ramp the rest of the site now uses. */
+	--aab-plinth: #5A564F;
+	--aab-plinth-lit: #666159;   /* the top of it, where the light falls */
+	--aab-plinth-deep: #4F4B45;  /* and the bottom, where it does not */
 
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
@@ -838,7 +850,11 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 /* The same stone as the card, so opening a product does not change the
  * surface it is presented on. */
 .aab-item-shot {
-	background: var(--aab-card);
+	background: var(--aab-plinth);
+	background-image: radial-gradient(112% 88% at 50% 16%,
+		var(--aab-plinth-lit) 0%,
+		var(--aab-plinth) 56%,
+		var(--aab-plinth-deep) 100%);
 	aspect-ratio: 1 / 1;
 	display: flex; align-items: center; justify-content: center;
 	overflow: hidden;
@@ -1100,28 +1116,33 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
  * tile — but charcoal solved it by making every card a dark box, and a grid
  * of dark boxes is what stopped the shop looking like a showroom. The
  * separation is done by the shadow instead, which is what it was always for. */
+/* Lit from above, not a flat fill. A single grey rectangle behind a tile is
+ * a swatch; a ground that is a little brighter where the light would fall
+ * reads as a sample standing on a plinth, and it costs one gradient. */
 .aab-tile-shot {
 	position: relative;
 	display: flex; align-items: center; justify-content: center;
 	aspect-ratio: 1 / 1;
-	/* No ground of its own: the card is one surface, and the two-tone split of
-	 * a dark photo box stacked on a pale body is what made this read as a
-	 * parts catalogue. */
-	background: transparent;
+	background: var(--aab-plinth);
+	background-image: radial-gradient(118% 92% at 50% 14%,
+		var(--aab-plinth-lit) 0%,
+		var(--aab-plinth) 54%,
+		var(--aab-plinth-deep) 100%);
 	overflow: hidden;
 }
 
-/* The brass arrives as a rule drawn under the photograph, rather than as a
- * box around the card. It is the one place the accent is spent here, and it
- * only appears when the card is being looked at. */
+/* The brass is a rule along the foot of the plinth rather than a box around
+ * the card. It is there at a whisper all the time, which is what stops the
+ * grey panel reading as a box dropped on top of the body, and comes up to
+ * full when the card is being looked at. */
 .aab-tile-shot::after {
 	content: "";
 	position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
 	background: var(--aab-brass);
-	transform: scaleX(0); transform-origin: left center;
-	transition: transform .3s ease;
+	opacity: .32;
+	transition: opacity .3s ease;
 }
-.aab-tile:hover .aab-tile-shot::after { transform: scaleX(1); }
+.aab-tile:hover .aab-tile-shot::after { opacity: 1; }
 .aab-tile-shot img {
 	width: 100%; height: 100%;
 	object-fit: contain;
@@ -1131,12 +1152,13 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	 * the square container, drop-shadow traces what is actually rendered, so it
 	 * hugs a 2:1 strip and a cut-out silhouette alike.
 	 *
-	 * Two shadows doing two jobs. The tight warm halo is what holds a white
-	 * marble tile apart from the stone behind it, which is the case the dark
-	 * ground used to handle. The soft one underneath, tinted towards the
-	 * oxblood rather than neutral black, reads as a sample laid on a counter. */
-	filter: drop-shadow(0 0 1.5px rgba(90,78,64,.52))
-	        drop-shadow(0 7px 16px rgba(59,20,22,.16));
+	 * Two shadows doing two jobs, and the halo flips with the ground. On a pale
+	 * ground the hard tile was the white marble and the halo was dark; on grey
+	 * the hard one is the black tile, so the halo is light. The grey is chosen
+	 * so that neither needs more than this. Under it, a real shadow: the tile
+	 * is standing on something now, and it should look like it. */
+	filter: drop-shadow(0 0 1.5px rgba(255,255,255,.40))
+	        drop-shadow(0 9px 20px rgba(0,0,0,.46));
 	transition: transform .3s ease;
 }
 /* Enough margin that the soft shadow is never clipped by the overflow. */
@@ -1150,12 +1172,13 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 .aab-home .aab-tile-shot.is-square img { padding: 17%; }
 .aab-tile:hover .aab-tile-shot img { transform: scale(1.03); }
 
-/* Oxblood, not the brand red. Red here put the loudest colour on the page on
- * the one fact about a tile that is not a selling point, and it competed with
- * the button underneath it. The grade still has to be legible, not shouted. */
+/* Ivory with the word in oxblood, which is the way round this has to be now:
+ * an oxblood flag on the grey plinth is 1.75:1 and cannot be read at all.
+ * Still not the brand red, which put the loudest colour on the page on the one
+ * fact about a tile that is not a selling point. */
 .aab-tile-grade {
 	position: absolute; top: 0; left: 0;
-	background: var(--aab-oxblood); color: var(--aab-ivory);
+	background: var(--aab-ivory); color: var(--aab-oxblood);
 	font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
 	padding: 5px 10px;
 }
@@ -2041,7 +2064,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 }
 .cart-container .cart-table .item-thumb,
 .cart-container .cart-table img {
-	border-radius: 0; background: var(--aab-card); object-fit: contain;
+	border-radius: 0; background: var(--aab-plinth); object-fit: contain;
 }
 
 /* The quantity stepper, which is the one control people actually use here. */
@@ -2323,7 +2346,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	padding: 18px 0; border-bottom: 1px solid var(--aab-line);
 }
 .aab-gcart-shot {
-	display: block; background: var(--aab-card);
+	display: block; background: var(--aab-plinth);
 	aspect-ratio: 1 / 1; overflow: hidden;
 }
 .aab-gcart-shot img { width: 100%; height: 100%; object-fit: contain; display: block; }
