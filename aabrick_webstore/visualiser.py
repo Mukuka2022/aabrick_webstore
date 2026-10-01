@@ -43,6 +43,16 @@ RANGE = re.compile(
 # Tiles whose cut texture is wrong even though it is clean. See the note above.
 SKIP = []
 
+# B grade is sold but not shown here. A visualiser is for choosing how a floor
+# will look, and the two grades of a range look the same: the difference is in
+# the tile, not the picture, so showing both doubled the picker for nothing a
+# customer could see. They are still on the shop pages, where the price and
+# the grade are next to each other and the distinction means something.
+#
+# One line to let them back in. The swatch still knows how to mark a B grade,
+# so nothing else has to change.
+INCLUDE_B_GRADE = False
+
 # This lays floors, so it offers floor tiles. Widening the picker from a hand
 # written list to a query swept in 43 wall tiles, which is worse than it looks:
 # a wall tile is not rated to be walked on, and a customer who picked one here
@@ -78,6 +88,8 @@ def tiles():
             continue
         rng = RANGE.match((r.item_group or "").strip())
         label, _s, _f, grade = describe_group(r.item_group)
+        if grade and not INCLUDE_B_GRADE:
+            continue
         if any(w in label.lower() for w in NOT_FLOOR):
             continue
         out.append({
@@ -110,9 +122,9 @@ def groups():
     porcelains are three quarters of what AABrick sells, so burying them under
     an alphabet would be tidy and useless.
 
-    Both grades of a range sit under one heading, because they are the same
-    tile and a customer choosing a floor is choosing the look first. Which one
-    it is shows on the swatch and in the caption with the price.
+    Only A grade reaches this, unless INCLUDE_B_GRADE is turned back on. If
+    it is, both grades of a range share a heading rather than making two:
+    they are the same tile, and the swatch carries the marker that says which.
     """
     out = []
     for t in tiles():
