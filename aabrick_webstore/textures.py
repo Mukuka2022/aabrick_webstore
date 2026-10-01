@@ -347,6 +347,83 @@ def thumb_url(code):
     return texture_url(code)
 
 
+def forget(code):
+    """Drop a tile's texture and its swatch."""
+    d = _out_dir()
+    gone = 0
+    for name in ("%s.jpg" % _safe(code), "%s-sm.jpg" % _safe(code)):
+        path = os.path.join(d, name)
+        if os.path.exists(path):
+            os.remove(path)
+            gone += 1
+    return gone
+
+
+def on_website_item(doc, method=None):
+    """Re-cut one tile when somebody changes its photograph.
+
+    Uploading a better picture and having to ask a developer to run a command
+    before anybody can see it is the thing this site keeps trying not to be.
+    Save the product and the visualiser has it.
+
+    Three rules it has to obey.
+
+    It never stops a save. A texture is a nicety and a product record is not,
+    so everything here is inside a try and the worst case is that the texture
+    is stale until the next run.
+
+    It only works when the photograph actually changed. on_update fires for a
+    price edit as readily as for a new picture, and re-cutting the catalogue
+    one tile at a time on every save would be a slow way to achieve nothing.
+
+    And it says when it refuses. A photograph rejected in silence looks like a
+    photograph accepted, and whoever uploaded it would have no way of knowing
+    the tile is still missing from the picker.
+    """
+    try:
+        if not SIZE.search(doc.get("item_group") or ""):
+            return
+
+        image = (doc.get("website_image") or "").strip()
+        if not image:
+            if forget(doc.get("item_code")):
+                frappe.msgprint(
+                    "The tile texture has been removed with the photograph.",
+                    indicator="orange", alert=True)
+            return
+
+        # A price edit is not a new picture. Already having a texture is the
+        # second half of that: a tile cut before this hook existed should not
+        # be re-cut on the next unrelated save either.
+        if not doc.has_value_changed("website_image") \
+                and texture_url(doc.get("item_code")):
+            return
+
+        src = frappe.get_site_path("public", image.lstrip("/"))
+        if not os.path.exists(src):
+            return
+
+        m = SIZE.search(doc.get("item_group") or "")
+        status, note = build(doc.get("item_code"), src, redo=True,
+                             long_mm=max(int(m.group(1)), int(m.group(2))))
+
+        if status in ("cropped", "copied"):
+            frappe.msgprint(
+                "Tile texture updated. It is in the visualiser now.",
+                indicator="green", alert=True)
+        else:
+            # Leave nothing behind that the new picture has outdated.
+            forget(doc.get("item_code"))
+            frappe.msgprint(
+                "This picture cannot be used in the tile visualiser: %s. "
+                "The tile is still on the shop pages." % note,
+                indicator="orange")
+    except Exception:
+        frappe.log_error(
+            title="Tile texture for %s" % doc.get("item_code"),
+            message=frappe.get_traceback())
+
+
 def check():
     d = _out_dir()
     made = [f for f in os.listdir(d)

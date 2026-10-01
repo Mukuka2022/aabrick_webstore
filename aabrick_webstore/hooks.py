@@ -319,6 +319,11 @@ doc_events = {
 	"Sales Order": {
 		"before_insert": "aabrick_webstore.portal_rules.sales_order_before_insert",
 	},
+	# Change a tile's photograph and its visualiser texture is cut on the
+	# spot, rather than waiting for somebody to run textures.run.
+	"Website Item": {
+		"on_update": "aabrick_webstore.textures.on_website_item",
+	},
 }
 
 # include css on every website page

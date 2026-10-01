@@ -309,9 +309,13 @@ bench --site SITE execute aabrick_webstore.featured.run
 
 # Floor textures for the visualiser, cut out of the catalogue photographs.
 # These are generated files under sites/SITE/public/files/tex, so they do not
-# come with a git pull and have to be built here. Without them the visualiser
-# has no tiles to offer at all. Run it again whenever tile photographs are
-# re-uploaded. Takes a few minutes over the whole catalogue.
+# come with a git pull and have to be built here once. Without them the
+# visualiser has no tiles to offer at all. Takes a few minutes.
+#
+# After that it keeps itself: changing a tile's photograph in the desk cuts
+# its texture on the spot, and says so, or says why it cannot. Run it again
+# by hand only to rebuild everything after a change to the cutting rules,
+# which needs --kwargs "{'redo': True}" or it will keep what is already there.
 bench --site SITE execute aabrick_webstore.textures.run
 bench --site SITE execute aabrick_webstore.textures.check
 
