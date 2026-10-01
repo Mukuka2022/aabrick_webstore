@@ -107,6 +107,7 @@ FIELDS = [
     _f("head_guides", "Guides"),
     _f("head_tile_calculator", "Tile calculator"),
     _f("head_pvc_calculator", "PVC ceiling calculator"),
+    _f("head_paint_calculator", "Paint calculator"),
 ]
 
 

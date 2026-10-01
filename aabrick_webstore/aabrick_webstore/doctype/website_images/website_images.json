@@ -44,7 +44,8 @@
   "col_heads",
   "head_guides",
   "head_tile_calculator",
-  "head_pvc_calculator"
+  "head_pvc_calculator",
+  "head_paint_calculator"
  ],
  "fields": [
   {
@@ -251,13 +252,18 @@
    "fieldname": "panel_calc",
    "fieldtype": "Attach Image",
    "label": "Behind the calculators"
+  },
+  {
+   "fieldname": "head_paint_calculator",
+   "fieldtype": "Attach Image",
+   "label": "Paint calculator"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-10-01 14:22:04.090749",
+ "modified": "2026-10-01 19:26:03.403142",
  "modified_by": "Administrator",
  "module": "Aabrick Webstore",
  "name": "Website Images",

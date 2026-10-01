@@ -383,6 +383,22 @@ Then, by eye:
 
 ---
 
+## 4b. The paint calculator sells something we do not stock
+
+`/paint-calculator` works out litres and tins and deliberately shows no
+price: there is not a tin of paint in the catalogue, so there is no shelf
+rate to quote and the cost line stays empty until the customer types one in.
+
+It is there to bring somebody planning a room into a branch, not to sell
+paint. If paint is ever stocked, the surfaces and tin sizes in
+`www/paint-calculator/index.py` become a query over the catalogue the same
+way the tile calculator already reads it, and the page starts pricing itself.
+
+Worth deciding before launch: whether AABrick wants a calculator on the site
+for a product it does not sell.
+
+---
+
 ## 5. Still open — content
 
 | | |

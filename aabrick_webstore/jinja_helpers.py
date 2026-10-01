@@ -155,6 +155,7 @@ def site_images():
             "guides": pick("head_guides"),
             "tile_calculator": pick("head_tile_calculator"),
             "pvc_calculator": pick("head_pvc_calculator"),
+            "paint_calculator": pick("head_paint_calculator"),
         }),
     })
 

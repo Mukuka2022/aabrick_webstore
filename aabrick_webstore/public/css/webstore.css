@@ -1321,6 +1321,19 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 	align-items: end; margin-bottom: 12px;
 }
 .aab-room.is-area { grid-template-columns: 1fr 34px; }
+/* Painting needs a height as well as a floor, so that row carries three
+ * fields and the delete button, four children rather than three.
+ *
+ * On a phone they go two to a row: length and width, then height with the
+ * delete button beside it. Three number inputs and a button across 375px
+ * leaves the last of them 34px wide, which is the column meant for the
+ * button, and a height field you cannot read is worse than a second row. */
+.aab-room.is-walls { grid-template-columns: 1fr 1fr; }
+.aab-room.is-walls .aab-room-drop { width: 34px; justify-self: start; }
+@media (min-width: 620px) {
+	.aab-room.is-walls { grid-template-columns: 1fr 1fr 1fr 34px; }
+	.aab-room.is-walls .aab-room-drop { width: auto; justify-self: stretch; }
+}
 .aab-modes { margin-bottom: 16px; }
 .aab-room-drop {
 	height: 40px; border: 1px solid var(--aab-line); background: var(--aab-surface);
