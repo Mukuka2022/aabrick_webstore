@@ -31,6 +31,12 @@ SIZE = re.compile(r"\((\d+)\s*[xX]\s*(\d+)\)")
 # Tiles whose cut texture is wrong even though it is clean. See the note above.
 SKIP = []
 
+# This lays floors, so it offers floor tiles. Widening the picker from a hand
+# written list to a query swept in 43 wall tiles, which is worse than it looks:
+# a wall tile is not rated to be walked on, and a customer who picked one here
+# because it looked right in a kitchen would be buying the wrong thing.
+NOT_FLOOR = ("wall",)
+
 
 def tiles():
     """The tiles there is a clean texture for, ready for the page to draw."""
@@ -59,6 +65,8 @@ def tiles():
         if not image:
             continue
         label, _s, _f, grade = describe_group(r.item_group)
+        if any(w in label.lower() for w in NOT_FLOOR):
+            continue
         out.append({
             "code": r.item_code,
             "name": r.web_item_name or r.item_code,
