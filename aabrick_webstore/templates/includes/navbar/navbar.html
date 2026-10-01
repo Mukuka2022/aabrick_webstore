@@ -98,7 +98,32 @@
           </li>
 
           <li><a class="aab-nav-link" href="/tile-visualiser">Visualiser</a></li>
-          <li><a class="aab-nav-link" href="/tile-calculator">Calculators</a></li>
+
+          {#
+            Calculators was a plural pointing at one of them. Both are here
+            now, which is the only way anybody finds the PVC one: it was
+            reachable from the panels block on the home page and nowhere else.
+          #}
+          <li class="aab-nav-has-panel">
+            <button type="button" class="aab-nav-link" aria-expanded="false">Calculators</button>
+            <div class="aab-nav-panel aab-nav-panel-narrow">
+              <div class="aab-nav-panel-inner">
+                <div class="aab-nav-col">
+                  <p class="aab-nav-col-head">Work out what you need</p>
+                  <a class="aab-nav-feature" href="/tile-calculator">
+                    <strong>Tile calculator</strong>
+                    <span>Measure the floor or wall and it works out the boxes.</span>
+                  </a>
+                  {# The route is spelt calculater. It is live and indexed, so
+                     it stays as it is rather than being quietly corrected. #}
+                  <a class="aab-nav-feature" href="/pvc-ceiling-calculater">
+                    <strong>PVC ceiling calculator</strong>
+                    <span>Boards, strips and trim for a ceiling, by the room.</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
           {#
             Branches and Contact under one word. They are the same question
             asked two ways, where to find us and how to reach us, and keeping
