@@ -26,6 +26,7 @@ def guides():
     return [
         frappe._dict({
             "slug": "choosing-tiles",
+            "group": "Before you buy",
             "title": "Which tile for which room",
             "nav": "Choosing tiles",
             "summary": (
@@ -36,6 +37,7 @@ def guides():
         }),
         frappe._dict({
             "slug": "tile-sizes",
+            "group": "Before you buy",
             "title": "Tile sizes explained",
             "nav": "Tile sizes",
             "summary": (
@@ -46,6 +48,7 @@ def guides():
         }),
         frappe._dict({
             "slug": "how-much-to-buy",
+            "group": "Before you buy",
             "title": "How much to buy",
             "nav": "How much to buy",
             "summary": (
@@ -55,7 +58,19 @@ def guides():
             "minutes": 3,
         }),
         frappe._dict({
+            "slug": "laying-tiles",
+            "group": "Before you buy",
+            "title": "Laying tiles",
+            "nav": "Laying tiles",
+            "summary": (
+                "Preparing the surface, choosing adhesive and grout, and the "
+                "mistakes that cost the most to put right."
+            ),
+            "minutes": 5,
+        }),
+        frappe._dict({
             "slug": "using-the-tile-calculator",
+            "group": "Using the calculators",
             "title": "Using the tile calculator",
             "nav": "Tile calculator, how to",
             "summary": (
@@ -66,6 +81,7 @@ def guides():
         }),
         frappe._dict({
             "slug": "using-the-ceiling-calculator",
+            "group": "Using the calculators",
             "title": "Using the PVC ceiling calculator",
             "nav": "Ceiling calculator, how to",
             "summary": (
@@ -76,6 +92,7 @@ def guides():
         }),
         frappe._dict({
             "slug": "using-the-paint-calculator",
+            "group": "Using the calculators",
             "title": "Using the paint calculator",
             "nav": "Paint calculator, how to",
             "summary": (
@@ -83,16 +100,6 @@ def guides():
                 "the mistake that doubles your trips to the shop."
             ),
             "minutes": 3,
-        }),
-        frappe._dict({
-            "slug": "laying-tiles",
-            "title": "Laying tiles",
-            "nav": "Laying tiles",
-            "summary": (
-                "Preparing the surface, choosing adhesive and grout, and the "
-                "mistakes that cost the most to put right."
-            ),
-            "minutes": 5,
         }),
     ]
 

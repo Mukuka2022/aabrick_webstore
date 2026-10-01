@@ -82,17 +82,25 @@
 
           <li class="aab-nav-has-panel">
             <button type="button" class="aab-nav-link" aria-expanded="false">Guides</button>
-            <div class="aab-nav-panel aab-nav-panel-narrow">
+            {#
+              Two columns. Seven guides in one made a panel 829px tall, which
+              ran off a laptop screen; the heading on each column is also doing
+              work that one list of seven could not, which is saying which of
+              these are about tiles and which are about the tools.
+            #}
+            <div class="aab-nav-panel aab-nav-panel-two">
               <div class="aab-nav-panel-inner">
-                <div class="aab-nav-col">
-                  <p class="aab-nav-col-head">Before you buy</p>
-                  {% for g in nav.guides %}
-                    <a class="aab-nav-feature" href="/guides/{{ g.slug }}">
-                      <strong>{{ g.title }}</strong>
-                      <span>{{ g.summary }}</span>
-                    </a>
-                  {% endfor %}
-                </div>
+                {% for grp in nav.guide_groups %}
+                  <div class="aab-nav-col">
+                    <p class="aab-nav-col-head">{{ grp.label }}</p>
+                    {% for g in grp.entries %}
+                      <a class="aab-nav-feature" href="/guides/{{ g.slug }}">
+                        <strong>{{ g.title }}</strong>
+                        <span>{{ g.summary }}</span>
+                      </a>
+                    {% endfor %}
+                  </div>
+                {% endfor %}
               </div>
             </div>
           </li>

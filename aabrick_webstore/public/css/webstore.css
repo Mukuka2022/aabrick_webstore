@@ -1616,6 +1616,13 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	overscroll-behavior: contain;
 }
 .aab-nav-panel-narrow { min-width: 420px; }
+/* Two equal columns, rather than the 1.7 to 1 the Shop panel wants for a list
+ * of ranges beside a pair of features. 640 keeps it clear of both edges of a
+ * 1366 window when centred under Guides, and of a 992 one. */
+.aab-nav-panel.aab-nav-panel-two { min-width: 640px; }
+.aab-nav-panel.aab-nav-panel-two .aab-nav-panel-inner {
+	grid-template-columns: 1fr 1fr;
+}
 .aab-nav-has-panel.is-open .aab-nav-panel { display: block; }
 .aab-nav-panel-inner { display: grid; grid-template-columns: 1fr; gap: 26px; padding: 24px 26px; }
 .aab-nav-panel:not(.aab-nav-panel-narrow) .aab-nav-panel-inner { grid-template-columns: 1.7fr 1fr; }

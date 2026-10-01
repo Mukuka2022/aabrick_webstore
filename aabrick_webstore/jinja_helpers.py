@@ -34,6 +34,7 @@ def nav_data():
         "phone_link": PHONE.replace(" ", ""),
         "ranges": _ranges(),
         "guides": _guides(),
+        "guide_groups": _guide_groups(),
         "branch_count": frappe.db.count("Branch Location") or 46,
         "year": frappe.utils.now_datetime().year,
         "is_guest": user == "Guest",
@@ -75,6 +76,31 @@ def _ranges():
             "size": size,
         }))
     return out
+
+
+def _guide_groups():
+    """The guides in the columns the navigation panel shows them in.
+
+    Separate from the flat `guides` list rather than replacing it: the footer
+    walks that one and does not want them grouped. Order follows the guides
+    themselves, so a third column would appear by adding a third group to the
+    list and nothing here would need touching.
+
+    The list of guides in a group is `entries` and not `items`, which is the
+    obvious name and a trap: these are frappe._dicts, attribute lookup finds
+    the real dict method `items` before it ever reaches the key, and the
+    template then iterates a bound method and takes the page down with it.
+    """
+    groups = []
+    for g in _guides():
+        label = g.get("group") or "Guides"
+        for existing in groups:
+            if existing.label == label:
+                existing["entries"].append(g)
+                break
+        else:
+            groups.append(frappe._dict({"label": label, "entries": [g]}))
+    return groups
 
 
 def _guides():
