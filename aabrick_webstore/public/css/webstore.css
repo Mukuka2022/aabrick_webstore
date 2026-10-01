@@ -1631,7 +1631,7 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 }
 .aab-nav-toggle span { display: block; width: 22px; height: 2px; background: var(--aab-ink); }
 
-@media (max-width: 1059.98px) {
+@media (max-width: 991.98px) {
 	.aab-nav-toggle { display: flex; }
 	.aab-nav-menu {
 		display: none; position: absolute; left: 0; right: 0; top: 100%;
@@ -2028,24 +2028,25 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 }
 .aab-nav-signup:hover { color: var(--aab-red); }
 
-/* The bar runs out of room before the words do, and adding the visualiser to
- * it took 120px the bar did not have: at 1000px it wanted 1042 and had 905, so
- * the logo was crushed out of existence. The drawer now starts at 1060 rather
- * than 992, and through the band above it the bar trims itself.
- *
- * The labels go and the icons carry it, which is what they are for. Call us
- * goes too, and loses nothing: the number is in the strip directly above it. */
-@media (min-width: 1060px) and (max-width: 1239.98px) {
+/* The bar runs out of room before the words do. Below 1180 the labels go
+ * and the icons carry it, which is what they are for, and the words sit a
+ * little closer together. Branches and Contact share one item now, which is
+ * what bought the room for the visualiser. */
+@media (min-width: 992px) and (max-width: 1179.98px) {
 	.aab-nav-account span,
 	.aab-nav-cart span { display: none; }
 	.aab-nav-signup { display: none; }
-	.aab-nav-cta { display: none; }
-	.aab-nav-link { padding-left: 10px; padding-right: 10px; }
+	/* The words keep their own padding and the space between them goes
+	 * instead: at 992, the bottom of this band, the bar needs every pixel and
+	 * cramped lettering reads worse than cramped spacing. */
+	.aab-nav-link { padding-left: 8px; padding-right: 8px; }
+	.aab-nav-list { gap: 0; }
+	.aab-nav-menu { gap: 10px; }
 }
 
 /* In the drawer there is room, so everything keeps its label and the row
  * spreads out rather than huddling in a corner. */
-@media (max-width: 1059.98px) {
+@media (max-width: 991.98px) {
 	.aab-nav-actions { flex-wrap: wrap; gap: 14px 18px; }
 	.aab-nav-account, .aab-nav-cart { font-size: 13px; }
 	.aab-nav-cta { margin-left: auto; }
@@ -2355,7 +2356,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 
 /* In the drawer there is no room beside anything, so it takes the width and
  * the panel opens underneath like the other menus do. */
-@media (max-width: 1059.98px) {
+@media (max-width: 991.98px) {
 	.aab-nav-account-wrap { width: 100%; }
 	.aab-nav-panel-account { right: auto; }
 	.aab-nav-account-list a, .aab-nav-signout {

@@ -99,8 +99,29 @@
 
           <li><a class="aab-nav-link" href="/tile-visualiser">Visualiser</a></li>
           <li><a class="aab-nav-link" href="/tile-calculator">Calculators</a></li>
-          <li><a class="aab-nav-link" href="/branches">Branches</a></li>
-          <li><a class="aab-nav-link" href="/contact">Contact</a></li>
+          {#
+            Branches and Contact under one word. They are the same question
+            asked two ways, where to find us and how to reach us, and keeping
+            them apart cost the bar two full items.
+          #}
+          <li class="aab-nav-has-panel">
+            <button type="button" class="aab-nav-link" aria-expanded="false">Contact</button>
+            <div class="aab-nav-panel aab-nav-panel-narrow">
+              <div class="aab-nav-panel-inner">
+                <div class="aab-nav-col">
+                  <p class="aab-nav-col-head">Find us</p>
+                  <a class="aab-nav-feature" href="/branches">
+                    <strong>Branches</strong>
+                    <span>{{ nav.branch_count }} across Zambia, with opening hours and directions.</span>
+                  </a>
+                  <a class="aab-nav-feature" href="/contact">
+                    <strong>Send an enquiry</strong>
+                    <span>Tell us what you are building and we will price it.</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
         </ul>
 
         <div class="aab-nav-actions">
