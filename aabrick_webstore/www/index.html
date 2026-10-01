@@ -139,8 +139,15 @@
   {% endif %}
 
   <!-- featured products ------------------------------------------------ -->
+  {#
+    One band, not two. The heading used to sit in a white section and the row
+    it introduces in the next one down, which drew a seam straight between a
+    title and the thing it was titling. The categories section above has
+    always been built this way: heading inside the container, cards full
+    width, one background behind both.
+  #}
   {% if featured %}
-  <section class="aab-section aab-section--white">
+  <section class="aab-section">
     <div class="aab-inner">
       <div class="aab-section-head">
         <div>
@@ -150,9 +157,7 @@
         <a class="aab-more" href="/all-products">View all products</a>
       </div>
     </div>
-  </section>
 
-  <section class="aab-section">
     <div class="aab-tiles">
       {% for p in featured %}
         {% include "templates/includes/product_card.html" %}

@@ -26,17 +26,26 @@
 	--aab-charcoal-soft: #33332F;
 	--aab-grey: #828282;
 	--aab-ink: #202020;
-	--aab-muted: #6E6E6B;
-	--aab-line: #E3E3E0;
+	/* The neutrals are warm. They were not, and that was the real fault: the
+	 * wash, the lines and the muted text were all flat greys sitting under a
+	 * warm red, so every warm thing added on top looked stuck on. Measured as
+	 * red minus blue, the ramp ran at 2 to 6 while the brass runs at 85.
+	 *
+	 * Lightness is held close to where it was, so nothing but the temperature
+	 * moves. The muted grey is a shade darker than a straight conversion
+	 * would make it, because the deeper wash it has to be read on came down
+	 * too, and 4.36:1 is not a contrast ratio. */
+	--aab-muted: #666258;
+	--aab-line: #E2DED5;
 	--aab-surface: #FFFFFF;
-	--aab-wash: #F6F6F4;
-	--aab-wash-deep: #ECECE8;   /* card ground, a step down from the section wash */
+	--aab-wash: #EDE9E0;        /* the page: a stone ground, not a grey one */
+	--aab-wash-deep: #E4DFD3;   /* a step down from the section wash */
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
 	/* Letterboxing a photograph that fills its box: a page head picture, a
 	 * branch shopfront. Product photography used to share this and no longer
-	 * does — see --aab-stone and the note on .aab-tile-shot. */
+	 * does — see --aab-card and the note on .aab-tile-shot. */
 	--aab-shot-ground: #2A2725;
 	--aab-oxblood: #3B1416;     /* product panels: the brand red taken right down */
 	--aab-oxblood-lit: #47191B;
@@ -57,10 +66,11 @@
 	--aab-brass-wash: #FAF5EC;  /* brass at a whisper, for a hover ground */
 	--aab-ivory: #F7F3EB;       /* on a deep red ground, pure white reads cold */
 
-	/* Behind product photography, and the edge of the card it sits in. Warm,
-	 * because every other surface on this site now is. */
-	--aab-stone: #EFEAE1;
-	--aab-stone-line: #E4DDD0;
+	/* A card, and the ground any product photograph sits on: the same value,
+	 * because they are meant to read as one surface. It is warm white rather
+	 * than white, so that on the stone page it reads as a plate laid down
+	 * rather than a hole cut out. */
+	--aab-card: #FBFAF6;
 
 	--aab-r: 0;         /* cards, panels, images */
 	--aab-r-sm: 0;      /* buttons and chips */
@@ -828,7 +838,7 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 /* The same stone as the card, so opening a product does not change the
  * surface it is presented on. */
 .aab-item-shot {
-	background: var(--aab-stone);
+	background: var(--aab-card);
 	aspect-ratio: 1 / 1;
 	display: flex; align-items: center; justify-content: center;
 	overflow: hidden;
@@ -1068,19 +1078,19 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 }
 .aab-home .aab-tiles { padding: 0 10px; }
 
-/* The card has an edge now. Flat white on a near-white wash left the cards
- * dissolving into the page, so nothing read as an object you could pick up.
- * The edge is warm, and on hover it turns brass. */
+/* No edge. The border was a patch over the wrong problem: the cards were
+ * dissolving because a white card on a flat near-white wash is a 0.08
+ * difference in lightness, and a line was being asked to do what the colour
+ * should. On the stone page the warm white card stands 0.139 clear and needs
+ * nothing drawn round it. What is left is a shadow so faint it reads as
+ * weight rather than as an outline. */
 .aab-tile {
-	background: var(--aab-surface);
+	background: var(--aab-card);
 	display: flex; flex-direction: column;
-	border: 1px solid var(--aab-stone-line);
-	transition: border-color .2s ease, box-shadow .25s ease;
+	box-shadow: 0 1px 3px rgba(74,62,48,.09);
+	transition: box-shadow .25s ease;
 }
-.aab-tile:hover {
-	border-color: var(--aab-brass);
-	box-shadow: 0 10px 26px rgba(59,20,22,.10);
-}
+.aab-tile:hover { box-shadow: 0 12px 28px rgba(59,20,22,.14); }
 
 /* A square photograph, contained rather than cropped, so a 2:1 tile strip and
  * an upright bag can share a row without either being cut.
@@ -1094,9 +1104,24 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	position: relative;
 	display: flex; align-items: center; justify-content: center;
 	aspect-ratio: 1 / 1;
-	background: var(--aab-stone);
+	/* No ground of its own: the card is one surface, and the two-tone split of
+	 * a dark photo box stacked on a pale body is what made this read as a
+	 * parts catalogue. */
+	background: transparent;
 	overflow: hidden;
 }
+
+/* The brass arrives as a rule drawn under the photograph, rather than as a
+ * box around the card. It is the one place the accent is spent here, and it
+ * only appears when the card is being looked at. */
+.aab-tile-shot::after {
+	content: "";
+	position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+	background: var(--aab-brass);
+	transform: scaleX(0); transform-origin: left center;
+	transition: transform .3s ease;
+}
+.aab-tile:hover .aab-tile-shot::after { transform: scaleX(1); }
 .aab-tile-shot img {
 	width: 100%; height: 100%;
 	object-fit: contain;
@@ -1110,7 +1135,7 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 	 * marble tile apart from the stone behind it, which is the case the dark
 	 * ground used to handle. The soft one underneath, tinted towards the
 	 * oxblood rather than neutral black, reads as a sample laid on a counter. */
-	filter: drop-shadow(0 0 1.5px rgba(90,78,64,.45))
+	filter: drop-shadow(0 0 1.5px rgba(90,78,64,.52))
 	        drop-shadow(0 7px 16px rgba(59,20,22,.16));
 	transition: transform .3s ease;
 }
@@ -1192,6 +1217,8 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 @media (prefers-reduced-motion: reduce) {
 	.aab-tile-shot img { transition: none; }
 	.aab-tile:hover .aab-tile-shot img { transform: none; }
+	/* The rule still appears, it just stops sweeping across. */
+	.aab-tile-shot::after { transition: none; }
 }
 
 /* The listing sits in the 1280px container, which supplies the side padding.
@@ -2014,7 +2041,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 }
 .cart-container .cart-table .item-thumb,
 .cart-container .cart-table img {
-	border-radius: 0; background: var(--aab-stone); object-fit: contain;
+	border-radius: 0; background: var(--aab-card); object-fit: contain;
 }
 
 /* The quantity stepper, which is the one control people actually use here. */
@@ -2296,7 +2323,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 	padding: 18px 0; border-bottom: 1px solid var(--aab-line);
 }
 .aab-gcart-shot {
-	display: block; background: var(--aab-stone);
+	display: block; background: var(--aab-card);
 	aspect-ratio: 1 / 1; overflow: hidden;
 }
 .aab-gcart-shot img { width: 100%; height: 100%; object-fit: contain; display: block; }
