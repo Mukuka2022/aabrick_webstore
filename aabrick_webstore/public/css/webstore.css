@@ -2668,6 +2668,26 @@ main.container:has(.aab-vis) .aab-vis {
 
 /* the tiles ---------------------------------------------------------- */
 
+/* One headed set per range. The heading sticks to the top of the panel as
+ * that range scrolls past, because with 228 tiles in the column you lose
+ * track of which range you are looking at within about two turns of the
+ * wheel. */
+.aab-vis-group + .aab-vis-group { margin-top: 18px; }
+.aab-vis-group-head {
+	position: sticky; top: 0; z-index: 1;
+	margin: 0 0 8px;
+	padding: 6px 0 5px;
+	background: #fff;
+	font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+	text-transform: uppercase; color: var(--aab-ink);
+	display: flex; align-items: baseline; gap: 8px;
+	border-bottom: 1px solid #ECECEC;
+}
+.aab-vis-group-head span {
+	font-weight: 500; letter-spacing: .04em; color: #9A958B;
+	font-variant-numeric: tabular-nums;
+}
+
 .aab-vis-swatches {
 	display: grid; gap: 8px;
 	grid-template-columns: repeat(3, 1fr);
@@ -2685,6 +2705,13 @@ main.container:has(.aab-vis) .aab-vis {
 	display: block; line-height: 1.2; padding: 4px 2px 0;
 	font-size: .68rem; color: #6A6A6A; letter-spacing: .02em;
 	text-align: center;
+}
+/* Both grades of a range sit under one heading now, so the swatch has to say
+ * which it is: without it the same picture appears twice at two prices. */
+.aab-vis-swatch span em {
+	font-style: normal; font-weight: 700; margin-left: 3px;
+	padding: 0 3px; border-radius: 2px;
+	background: var(--aab-brass-wash); color: var(--aab-brass-deep);
 }
 .aab-vis-swatch:hover { border-color: #C9C9C9; }
 .aab-vis-swatch.is-on { border-color: var(--aab-red); }

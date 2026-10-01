@@ -63,7 +63,7 @@
             <p class="aab-vis-panel-head">
               Tiles <span>{{ aab_tile_count }}</span>
             </p>
-            <div class="aab-vis-swatches" role="group" aria-label="Choose a tile"></div>
+            <div class="aab-vis-groups" role="group" aria-label="Choose a tile"></div>
           </div>
         </aside>
 
@@ -95,5 +95,6 @@
 
 <script type="application/json" id="aab-vis-scenes">{{ aab_scenes_json }}</script>
 <script type="application/json" id="aab-vis-tiles">{{ aab_tiles_json }}</script>
+<script type="application/json" id="aab-vis-groups">{{ aab_groups_json }}</script>
 <script src="/assets/aabrick_webstore/js/tile-visualiser.js?v={{ aab_version }}"></script>
 {% endblock %}

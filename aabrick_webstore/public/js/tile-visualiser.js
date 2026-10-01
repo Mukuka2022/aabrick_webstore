@@ -50,6 +50,7 @@
 	var PX = null;           // pixels per metre, per pixel
 	var texCache = {};
 	var SHOW_MASK = /[?&]mask=1/.test(location.search);
+	var groups = [];
 
 	function $(sel, root) { return (root || document).querySelector(sel); }
 
@@ -338,24 +339,46 @@
 			rooms.appendChild(b);
 		});
 
-		var strip = $(".aab-vis-swatches");
-		tiles.forEach(function (t) {
+		/* The picker holds 228 tiles across seven ranges. One grid of 228
+		 * is a wall of pictures nobody can navigate, so each range gets a
+		 * heading and its own grid, and both grades of a range sit under the
+		 * one heading because they are the same tile. */
+		function swatch(t) {
 			var b = el("button", "aab-vis-swatch");
 			b.type = "button";
-			b.title = t.name + " " + t.w + "x" + t.h;
+			b.title = t.name + " " + t.w + "x" + t.h
+				+ (t.grade ? " (B grade)" : "");
 			b.setAttribute("data-code", t.code);
 			var im = document.createElement("img");
-			// The small one, and only when it scrolls into view: the picker
-			// now holds the whole range rather than a couple of dozen.
+			// The small one, and only when it scrolls into view.
 			im.loading = "lazy";
 			im.src = t.thumb || t.image;
 			im.alt = t.name;
-			im.loading = "lazy";
 			b.appendChild(im);
-			b.appendChild(el("span", null, t.code));
+			var cap = el("span", null, t.code);
+			if (t.grade) {
+				// Which grade it is has to be on the swatch now that the two
+				// sit side by side, or two prices appear for one picture.
+				cap.appendChild(el("em", null, "B"));
+			}
+			b.appendChild(cap);
 			b.addEventListener("click", function () { loadTile(t); });
-			strip.appendChild(b);
-		});
+			return b;
+		}
+
+		var holder = $(".aab-vis-groups");
+		if (holder) {
+			groups.forEach(function (g) {
+				var sec = el("div", "aab-vis-group");
+				var head = el("p", "aab-vis-group-head", g.label);
+				head.appendChild(el("span", null, g.size));
+				sec.appendChild(head);
+				var grid = el("div", "aab-vis-swatches");
+				g.entries.forEach(function (t) { grid.appendChild(swatch(t)); });
+				sec.appendChild(grid);
+				holder.appendChild(sec);
+			});
+		}
 
 		var turn = $(".aab-vis-turn");
 		if (turn) {
@@ -382,6 +405,13 @@
 		try {
 			scenes = JSON.parse($("#aab-vis-scenes").textContent);
 			tiles = JSON.parse($("#aab-vis-tiles").textContent);
+			// Headings are optional: a page served before the grouping
+			// existed still has its flat list and must still draw.
+			var gjson = $("#aab-vis-groups");
+			groups = gjson ? JSON.parse(gjson.textContent) : [];
+			if (!groups.length && tiles.length) {
+				groups = [{ label: "Tiles", size: "", entries: tiles }];
+			}
 		} catch (e) {
 			return;
 		}

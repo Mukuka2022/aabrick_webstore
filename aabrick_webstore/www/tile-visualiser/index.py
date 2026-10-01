@@ -123,6 +123,10 @@ def get_context(context):
     tiles = visualiser.tiles()
     context.aab_tiles = tiles
     context.aab_tiles_json = frappe.as_json(tiles)
+    # The same tiles, in the headed sets the picker lists them under. Sent
+    # alongside the flat list rather than instead of it: the drawing code
+    # wants one tile at a time and has no interest in the headings.
+    context.aab_groups_json = frappe.as_json(visualiser.groups())
     context.aab_scenes_json = frappe.as_json(SCENES)
     context.aab_tile_count = len(tiles)
 

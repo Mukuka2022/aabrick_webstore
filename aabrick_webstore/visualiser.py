@@ -28,6 +28,18 @@ from aabrick_webstore.overrides.website_item import describe_group
 
 SIZE = re.compile(r"\((\d+)\s*[xX]\s*(\d+)\)")
 
+# The item group, pulled apart. "Glazed Porcelain Tiles (600X600) - 88XXX" and
+# "Glazed Porcelain Tiles D (600X600) - 86XXX" are the same range in two
+# grades, and the D can sit either side of the brackets.
+#
+# This reads the item group rather than describe_group's label, which spells
+# the two grades differently: the A grade comes back "Matt Porcelain Tile
+# 600x600" and the B grade "Matt Porcelain Tiles (600X600)", so grouping on
+# the label would file the same range under two headings.
+RANGE = re.compile(
+    r"^(?P<finish>.+?)\s+Tiles?\s*(?P<d1>D)?\s*"
+    r"\((?P<w>\d+)\s*[xX]\s*(?P<h>\d+)\)\s*(?P<d2>D)?\s*(?:-.*)?$")
+
 # Tiles whose cut texture is wrong even though it is clean. See the note above.
 SKIP = []
 
@@ -64,6 +76,7 @@ def tiles():
         image = textures.texture_url(r.item_code)
         if not image:
             continue
+        rng = RANGE.match((r.item_group or "").strip())
         label, _s, _f, grade = describe_group(r.item_group)
         if any(w in label.lower() for w in NOT_FLOOR):
             continue
@@ -72,6 +85,10 @@ def tiles():
             "name": r.web_item_name or r.item_code,
             "route": "/" + (r.route or ""),
             "group": label + (" (B Grade)" if grade else ""),
+            # What the picker files it under, and the B marker on the swatch.
+            "range": (rng.group("finish") if rng else label),
+            "size": ("%s \u00d7 %s" % (m.group(1), m.group(2))),
+            "grade": bool(grade),
             "image": image,
             "thumb": textures.thumb_url(r.item_code),
             "w": int(m.group(1)),
@@ -79,7 +96,39 @@ def tiles():
             "price": r.price_list_rate,
         })
 
-    # Grouped by range, and by code inside it, so the picker reads as the
-    # catalogue does rather than in whatever order the database answered.
-    out.sort(key=lambda t: (t["group"], t["code"]))
+    # Within a heading: A grade before B, then by code, so the picker reads
+    # as the catalogue does rather than in whatever order the database
+    # answered.
+    out.sort(key=lambda t: (t["range"], t["w"], t["h"], t["grade"], t["code"]))
+    return out
+
+
+def groups():
+    """The tiles in the headed sets the picker shows them in.
+
+    Biggest range first. The picker is for browsing and the two 600x600
+    porcelains are three quarters of what AABrick sells, so burying them under
+    an alphabet would be tidy and useless.
+
+    Both grades of a range sit under one heading, because they are the same
+    tile and a customer choosing a floor is choosing the look first. Which one
+    it is shows on the swatch and in the caption with the price.
+    """
+    out = []
+    for t in tiles():
+        key = (t["range"], t["w"], t["h"])
+        for g in out:
+            if g["key"] == key:
+                g["entries"].append(t)
+                break
+        else:
+            out.append({
+                "key": key,
+                "label": t["range"],
+                "size": t["size"],
+                "entries": [t],
+            })
+    out.sort(key=lambda g: (-len(g["entries"]), g["label"]))
+    for g in out:
+        g.pop("key")
     return out
