@@ -57,11 +57,19 @@ SKIP = ["86063", "86063D"]
 # so nothing else has to change.
 INCLUDE_B_GRADE = False
 
-# This lays floors, so it offers floor tiles. Widening the picker from a hand
-# written list to a query swept in 43 wall tiles, which is worse than it looks:
-# a wall tile is not rated to be walked on, and a customer who picked one here
-# because it looked right in a kitchen would be buying the wrong thing.
-NOT_FLOOR = ("wall",)
+# The catalogue files four ranges as Wall Tiles. They were kept out entirely
+# at first, which was too blunt: AABrick sells 300x600 for floors, and the
+# grouping says where a tile is usually sold rather than what it is rated for.
+#
+# So they are in, and the ones that really are wall tiles say so on the swatch.
+# A customer laying a kitchen in a tile not rated to be walked on is the thing
+# this is guarding against, and a marker guards against it while still letting
+# somebody see the tile.
+WALL = ("wall",)
+
+# Named a wall tile by the catalogue, sold for floors by AABrick. Keyed on the
+# size because that is what the trade calls it: 300x600 is the 30x60.
+FLOOR_ANYWAY = {(300, 600)}
 
 
 def tiles():
@@ -94,17 +102,24 @@ def tiles():
         label, _s, _f, grade = describe_group(r.item_group)
         if grade and not INCLUDE_B_GRADE:
             continue
-        if any(w in label.lower() for w in NOT_FLOOR):
-            continue
+        w, h = int(m.group(1)), int(m.group(2))
+        wall = (any(x in label.lower() for x in WALL)
+                and (w, h) not in FLOOR_ANYWAY
+                and (h, w) not in FLOOR_ANYWAY)
         out.append({
             "code": r.item_code,
             "name": r.web_item_name or r.item_code,
             "route": "/" + (r.route or ""),
             "group": label + (" (B Grade)" if grade else ""),
-            # What the picker files it under, and the B marker on the swatch.
-            "range": (rng.group("finish") if rng else label),
+            # What the picker files it under, and the markers on the swatch.
+            # A range the catalogue calls Wall but AABrick sells for floors is
+            # headed as both: a heading reading Wall over tiles carrying no
+            # wall warning is a contradiction a customer has to resolve.
+            "range": _range_name(rng, label, w, h),
             "size": ("%s \u00d7 %s" % (m.group(1), m.group(2))),
             "grade": bool(grade),
+            # Not rated to be walked on. The swatch says so.
+            "wall": wall,
             "image": image,
             "thumb": textures.thumb_url(r.item_code),
             "w": int(m.group(1)),
@@ -117,6 +132,14 @@ def tiles():
     # answered.
     out.sort(key=lambda t: (t["range"], t["w"], t["h"], t["grade"], t["code"]))
     return out
+
+
+def _range_name(rng, label, w, h):
+    name = rng.group("finish") if rng else label
+    if (w, h) in FLOOR_ANYWAY or (h, w) in FLOOR_ANYWAY:
+        if any(x in name.lower() for x in WALL):
+            return "Wall or floor"
+    return name
 
 
 def groups():

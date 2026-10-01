@@ -2764,6 +2764,12 @@ main.container:has(.aab-vis) .aab-vis {
 	padding: 0 3px; border-radius: 2px;
 	background: var(--aab-brass-wash); color: var(--aab-brass-deep);
 }
+/* The wall marker is a warning, not a label, so it takes the brand red
+ * rather than the brass the grade marker uses. */
+.aab-vis-swatch span em.is-wall {
+	background: var(--aab-red-wash); color: var(--aab-red-dark);
+	font-size: .92em; letter-spacing: .04em;
+}
 .aab-vis-swatch:hover { border-color: #C9C9C9; }
 .aab-vis-swatch.is-on { border-color: var(--aab-red); }
 .aab-vis-swatch.is-on span { color: var(--aab-red); font-weight: 600; }

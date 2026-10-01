@@ -310,7 +310,8 @@
 		}
 		var cap = $(".aab-vis-caption");
 		if (cap) {
-			cap.textContent = t.name + "  " + t.w + "x" + t.h + "mm"
+			cap.textContent = t.name + (t.wall ? "  wall tile" : "")
+				+ "  " + t.w + "x" + t.h + "mm"
 				+ (t.price ? "  ZK " + Number(t.price).toFixed(2) : "");
 		}
 		Array.prototype.forEach.call(
@@ -347,7 +348,8 @@
 			var b = el("button", "aab-vis-swatch");
 			b.type = "button";
 			b.title = t.name + " " + t.w + "x" + t.h
-				+ (t.grade ? " (B grade)" : "");
+				+ (t.grade ? " (B grade)" : "")
+				+ (t.wall ? " - a wall tile, not rated for floors" : "");
 			b.setAttribute("data-code", t.code);
 			var im = document.createElement("img");
 			// The small one, and only when it scrolls into view.
@@ -360,6 +362,11 @@
 				// Which grade it is has to be on the swatch now that the two
 				// sit side by side, or two prices appear for one picture.
 				cap.appendChild(el("em", null, "B"));
+			}
+			if (t.wall) {
+				// This one is a warning rather than a label: the floor it is
+				// about to be laid on is not what it is made for.
+				cap.appendChild(el("em", "is-wall", "WALL"));
 			}
 			b.appendChild(cap);
 			b.addEventListener("click", function () { loadTile(t); });
