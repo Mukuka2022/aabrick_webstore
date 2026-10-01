@@ -2668,6 +2668,46 @@ main.container:has(.aab-vis) .aab-vis {
 
 /* the tiles ---------------------------------------------------------- */
 
+/* the search over the ranges ----------------------------------------- */
+
+.aab-vis-find { position: relative; margin: 0 0 8px; }
+.aab-vis-search {
+	width: 100%; box-sizing: border-box;
+	font-family: var(--aab-body); font-size: .8rem; color: var(--aab-ink);
+	padding: 8px 26px 8px 10px;
+	border: 1px solid var(--aab-line); border-radius: 3px;
+	background: #fff;
+}
+.aab-vis-search:focus {
+	outline: 2px solid var(--aab-brass); outline-offset: -2px;
+	border-color: var(--aab-brass);
+}
+.aab-vis-search::-webkit-search-cancel-button { display: none; }
+.aab-vis-clear {
+	position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+	appearance: none; border: 0; background: none; cursor: pointer;
+	font-size: 16px; line-height: 1; color: #9A958B; padding: 2px 6px;
+}
+.aab-vis-clear:hover { color: var(--aab-red); }
+
+.aab-vis-chips {
+	display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 12px;
+}
+.aab-vis-chip {
+	appearance: none; cursor: pointer; font-family: var(--aab-body);
+	font-size: .66rem; letter-spacing: .03em;
+	padding: 4px 8px; border-radius: 2px;
+	border: 1px solid var(--aab-line); background: #fff; color: #6A6A6A;
+}
+.aab-vis-chip:hover { border-color: var(--aab-brass); color: var(--aab-ink); }
+.aab-vis-chip.is-on {
+	border-color: var(--aab-brass); background: var(--aab-brass-wash);
+	color: var(--aab-brass-deep); font-weight: 700;
+}
+.aab-vis-none {
+	margin: 12px 0; font-size: .78rem; color: var(--aab-muted);
+}
+
 /* One headed set per range. The heading sticks to the top of the panel as
  * that range scrolls past, because with 228 tiles in the column you lose
  * track of which range you are looking at within about two turns of the

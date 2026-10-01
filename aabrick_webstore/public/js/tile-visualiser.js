@@ -367,6 +367,7 @@
 		}
 
 		var holder = $(".aab-vis-groups");
+		var blocks = [];
 		if (holder) {
 			groups.forEach(function (g) {
 				var sec = el("div", "aab-vis-group");
@@ -377,6 +378,73 @@
 				g.entries.forEach(function (t) { grid.appendChild(swatch(t)); });
 				sec.appendChild(grid);
 				holder.appendChild(sec);
+				// The title as one searchable string, lower cased once here
+				// rather than on every keystroke.
+				blocks.push({
+					node: sec,
+					title: (g.label + " " + g.size).toLowerCase()
+						.replace("\u00d7", "x"),
+					count: g.entries.length
+				});
+			});
+		}
+
+		/* The search, over the range titles. Every word typed has to appear
+		 * somewhere in the title, so "matt 600" finds the matt porcelains and
+		 * the order of the words does not matter. */
+		var box = $(".aab-vis-search");
+		var clear = $(".aab-vis-clear");
+		var none = $(".aab-vis-none");
+		var counter = $(".aab-vis-count");
+
+		function filter(q) {
+			var words = q.toLowerCase().replace("\u00d7", "x")
+				.split(/\s+/).filter(Boolean);
+			var shown = 0;
+			blocks.forEach(function (b) {
+				var hit = words.every(function (w) {
+					return b.title.indexOf(w) !== -1;
+				});
+				b.node.hidden = !hit;
+				if (hit) { shown += b.count; }
+			});
+			if (none) { none.hidden = shown > 0; }
+			if (counter) { counter.textContent = shown; }
+			if (clear) { clear.hidden = !q; }
+			var chips = document.querySelectorAll(".aab-vis-chip");
+			for (var i = 0; i < chips.length; i++) {
+				chips[i].classList.toggle(
+					"is-on", chips[i].getAttribute("data-q") === q);
+			}
+		}
+
+		var chipRow = $(".aab-vis-chips");
+		if (chipRow) {
+			// One chip per range, holding the search it would type for you.
+			blocks.forEach(function (b, i) {
+				var g = groups[i];
+				var c = el("button", "aab-vis-chip", g.label + " " + g.size);
+				c.type = "button";
+				c.setAttribute("data-q", g.label + " " + g.size);
+				c.addEventListener("click", function () {
+					var q = c.getAttribute("data-q");
+					// A second click on the one already chosen puts it back.
+					if (box.value === q) { q = ""; }
+					box.value = q;
+					filter(q);
+				});
+				chipRow.appendChild(c);
+			});
+		}
+
+		if (box) {
+			box.addEventListener("input", function () { filter(box.value); });
+		}
+		if (clear) {
+			clear.addEventListener("click", function () {
+				box.value = "";
+				filter("");
+				box.focus();
 			});
 		}
 

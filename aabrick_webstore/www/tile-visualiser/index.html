@@ -61,8 +61,26 @@
         <aside class="aab-vis-panel" aria-label="Choose a tile">
           <div class="aab-vis-panel-tiles">
             <p class="aab-vis-panel-head">
-              Tiles <span>{{ aab_tile_count }}</span>
+              Tiles <span class="aab-vis-count">{{ aab_tile_count }}</span>
             </p>
+
+            {#
+              The search matches the range titles, not the tiles. A customer
+              knows the floor they want is a matt porcelain long before they
+              know a code, and the chips under it are those same titles
+              already typed out, so the whole thing can be used without
+              touching the keyboard.
+            #}
+            <div class="aab-vis-find">
+              <input type="search" class="aab-vis-search"
+                     aria-label="Search the ranges"
+                     placeholder="Search the ranges" autocomplete="off">
+              <button type="button" class="aab-vis-clear" hidden
+                      aria-label="Clear the search">&times;</button>
+            </div>
+            <div class="aab-vis-chips" role="group" aria-label="Jump to a range"></div>
+
+            <p class="aab-vis-none" hidden>No range matches that.</p>
             <div class="aab-vis-groups" role="group" aria-label="Choose a tile"></div>
           </div>
         </aside>
