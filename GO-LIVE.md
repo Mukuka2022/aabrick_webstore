@@ -303,6 +303,10 @@ bench --site SITE execute aabrick_webstore.setup_images.run
 # The Website Text settings page, seeded with the wording on the site today
 bench --site SITE execute aabrick_webstore.setup_text.run
 
+# The tick that chooses the four products on the home page. Until this runs
+# the row picks them itself, which is a working page, not a broken one.
+bench --site SITE execute aabrick_webstore.featured.run
+
 # The 46 branches: details, then put them on the site
 bench --site SITE execute aabrick_webstore.load_branches.run
 bench --site SITE execute aabrick_webstore.load_branches.publish

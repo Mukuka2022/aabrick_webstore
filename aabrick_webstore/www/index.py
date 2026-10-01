@@ -158,15 +158,54 @@ def _shape(url):
     return "square"
 
 
-def _featured():
-    """Published items with an image and a price, one per item group so the row
-    shows range rather than four near-identical tiles.
+# How many products the home page row holds. The column count is in the
+# stylesheet, under .aab-home .aab-tiles, and the two have to agree or the row
+# comes up a card short. Four, matching the four category cards above it.
+FEATURED_COUNT = 4
 
-    Four, matching the four category cards above it. The count is here and the
-    column count is in the stylesheet, so both have to move together or the row
-    comes up short.
+# Set by featured.run. Read through a column check rather than assumed, so a
+# site that has pulled the code but not yet run the script falls back to
+# choosing for itself instead of erroring on a column that is not there.
+ON_HOME = "custom_on_home"
+
+
+def _picked():
+    """The products somebody at AABrick ticked, in the order they should show.
+
+    Ordered by Ranking so the choice can be arranged, then by price. Grouped by
+    item code because a product can carry more than one Item Price on the same
+    price list, and without it one product would take two places in the row.
+
+    A left join on the price: a ticked product with no web price still belongs
+    on the page, and the card already knows how to say Price on request. The
+    photograph is required though — a card with an empty grey square in it
+    reads as a fault, not as a choice.
     """
-    rows = frappe.db.sql(
+    if not frappe.db.has_column("Website Item", ON_HOME):
+        return []
+    return frappe.db.sql(
+        """
+        SELECT wi.item_code, wi.web_item_name, wi.website_image, wi.route,
+               wi.item_group, wi.ranking, MIN(ip.price_list_rate) AS price_list_rate
+        FROM `tabWebsite Item` wi
+        LEFT JOIN `tabItem Price` ip
+          ON ip.item_code = wi.item_code AND ip.price_list = 'Web Price List'
+        WHERE wi.published = 1
+          AND wi.`{on_home}` = 1
+          AND IFNULL(wi.website_image, '') <> ''
+        GROUP BY wi.item_code
+        ORDER BY wi.ranking DESC, price_list_rate DESC
+        LIMIT {count}
+        """.format(on_home=ON_HOME, count=FEATURED_COUNT),
+        as_dict=True,
+    )
+
+
+def _auto():
+    """What the row shows when nobody has chosen: published items with an image
+    and a price, one per item group, so it reads as the spread of the catalogue
+    rather than four near-identical tiles."""
+    return frappe.db.sql(
         """
         SELECT wi.item_code, wi.web_item_name, wi.website_image, wi.route,
                wi.item_group, ip.price_list_rate
@@ -178,14 +217,26 @@ def _featured():
           AND wi.item_group NOT LIKE '%% D (%%'
         GROUP BY wi.item_group
         ORDER BY ip.price_list_rate DESC
-        LIMIT 4
+        LIMIT %s
         """,
+        FEATURED_COUNT,
         as_dict=True,
     )
+
+
+def _featured():
+    """The products on the home page: whatever was ticked, or failing that
+    whatever the catalogue suggests."""
+    rows = _picked() or _auto()
+
     from aabrick_webstore.overrides.website_item import describe_group, unit_label
 
     for r in rows:
-        r["price"] = frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
+        # A ticked product may have no web price, where the automatic pick
+        # could not: fmt_money would print ZK 0.00 and the card would offer to
+        # sell it for nothing.
+        r["price"] = (frappe.utils.fmt_money(r.price_list_rate, currency="ZMW")
+                      if r.price_list_rate else "")
         r["group_label"] = (r.item_group or "").split(" - ")[0]
         r["shape"] = _shape(r.website_image)
         # The homepage shows the same card as the shop, so it needs the same
