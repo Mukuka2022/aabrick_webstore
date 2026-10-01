@@ -411,40 +411,122 @@
 			if (none) { none.hidden = shown > 0; }
 			if (counter) { counter.textContent = shown; }
 			if (clear) { clear.hidden = !q; }
-			var chips = document.querySelectorAll(".aab-vis-chip");
-			for (var i = 0; i < chips.length; i++) {
-				chips[i].classList.toggle(
-					"is-on", chips[i].getAttribute("data-q") === q);
-			}
 		}
 
-		var chipRow = $(".aab-vis-chips");
-		if (chipRow) {
-			// One chip per range, holding the search it would type for you.
+		/* The ranges as a list under the box, each one the search it would
+		 * type for you. A dropdown rather than a row of chips: seven titles
+		 * at this width wrapped to four lines and pushed the tiles down the
+		 * panel, and the list is only wanted while somebody is choosing. */
+		var menu = $(".aab-vis-menu");
+		var options = [];
+		var active = -1;
+
+		function open() {
+			if (!menu || !options.length) { return; }
+			menu.hidden = false;
+			box.setAttribute("aria-expanded", "true");
+		}
+
+		function close() {
+			if (!menu) { return; }
+			menu.hidden = true;
+			box.setAttribute("aria-expanded", "false");
+			box.removeAttribute("aria-activedescendant");
+			active = -1;
+			options.forEach(function (o) { o.node.classList.remove("is-active"); });
+		}
+
+		function mark(i) {
+			options.forEach(function (o) { o.node.classList.remove("is-active"); });
+			var shown = options.filter(function (o) { return !o.node.hidden; });
+			if (!shown.length) { active = -1; return; }
+			if (i < 0) { i = shown.length - 1; }
+			if (i >= shown.length) { i = 0; }
+			active = i;
+			shown[i].node.classList.add("is-active");
+			box.setAttribute("aria-activedescendant", shown[i].node.id);
+			shown[i].node.scrollIntoView({ block: "nearest" });
+		}
+
+		function pick(q) {
+			box.value = q;
+			filter(q);
+			close();
+		}
+
+		if (menu) {
 			blocks.forEach(function (b, i) {
 				var g = groups[i];
-				var c = el("button", "aab-vis-chip", g.label + " " + g.size);
-				c.type = "button";
-				c.setAttribute("data-q", g.label + " " + g.size);
-				c.addEventListener("click", function () {
-					var q = c.getAttribute("data-q");
-					// A second click on the one already chosen puts it back.
-					if (box.value === q) { q = ""; }
-					box.value = q;
-					filter(q);
+				var q = g.label + " " + g.size;
+				var li = el("li", "aab-vis-option");
+				li.id = "aab-vis-opt-" + i;
+				li.setAttribute("role", "option");
+				li.setAttribute("aria-selected", "false");
+				li.appendChild(el("span", null, q));
+				li.appendChild(el("em", null, String(b.count)));
+				// mousedown, not click: the box blurs first and the menu
+				// would be gone before a click ever landed.
+				li.addEventListener("mousedown", function (e) {
+					e.preventDefault();
+					pick(q);
 				});
-				chipRow.appendChild(c);
+				menu.appendChild(li);
+				options.push({ node: li, q: q, title: b.title });
 			});
 		}
 
+		function narrowMenu(q) {
+			var words = q.toLowerCase().replace("\u00d7", "x")
+				.split(/\s+/).filter(Boolean);
+			var any = false;
+			options.forEach(function (o) {
+				var hit = words.every(function (w) {
+					return o.title.indexOf(w) !== -1;
+				});
+				o.node.hidden = !hit;
+				o.node.setAttribute("aria-selected", o.q === box.value ? "true" : "false");
+				if (hit) { any = true; }
+			});
+			return any;
+		}
+
 		if (box) {
-			box.addEventListener("input", function () { filter(box.value); });
+			box.addEventListener("input", function () {
+				filter(box.value);
+				if (narrowMenu(box.value)) { open(); } else { close(); }
+				active = -1;
+			});
+			box.addEventListener("focus", function () {
+				narrowMenu(box.value);
+				open();
+			});
+			box.addEventListener("blur", function () { close(); });
+			box.addEventListener("keydown", function (e) {
+				if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+					e.preventDefault();
+					if (menu.hidden) { narrowMenu(box.value); open(); }
+					mark(active + (e.key === "ArrowDown" ? 1 : -1));
+				} else if (e.key === "Enter") {
+					var shown = options.filter(function (o) { return !o.node.hidden; });
+					if (!menu.hidden && active >= 0 && shown[active]) {
+						e.preventDefault();
+						pick(shown[active].q);
+					} else {
+						close();
+					}
+				} else if (e.key === "Escape") {
+					close();
+				}
+			});
 		}
 		if (clear) {
-			clear.addEventListener("click", function () {
+			clear.addEventListener("mousedown", function (e) {
+				e.preventDefault();
 				box.value = "";
 				filter("");
+				narrowMenu("");
 				box.focus();
+				open();
 			});
 		}
 

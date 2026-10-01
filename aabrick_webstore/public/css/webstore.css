@@ -2690,20 +2690,31 @@ main.container:has(.aab-vis) .aab-vis {
 }
 .aab-vis-clear:hover { color: var(--aab-red); }
 
-.aab-vis-chips {
-	display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 12px;
+/* The ranges, under the box and only while it is being used. Absolute, so
+ * opening the list does not shove the tiles down the panel the way the row of
+ * chips did. */
+.aab-vis-menu {
+	position: absolute; left: 0; right: 0; top: calc(100% + 3px); z-index: 5;
+	margin: 0; padding: 4px; list-style: none;
+	background: #fff; border: 1px solid var(--aab-line); border-radius: 3px;
+	box-shadow: 0 10px 24px rgba(59,20,22,.12);
+	max-height: 254px; overflow-y: auto; overscroll-behavior: contain;
 }
-.aab-vis-chip {
-	appearance: none; cursor: pointer; font-family: var(--aab-body);
-	font-size: .66rem; letter-spacing: .03em;
-	padding: 4px 8px; border-radius: 2px;
-	border: 1px solid var(--aab-line); background: #fff; color: #6A6A6A;
+.aab-vis-option {
+	display: flex; align-items: baseline; justify-content: space-between;
+	gap: 10px; cursor: pointer;
+	padding: 7px 8px; border-radius: 2px;
+	font-size: .72rem; letter-spacing: .02em; color: var(--aab-ink);
 }
-.aab-vis-chip:hover { border-color: var(--aab-brass); color: var(--aab-ink); }
-.aab-vis-chip.is-on {
-	border-color: var(--aab-brass); background: var(--aab-brass-wash);
-	color: var(--aab-brass-deep); font-weight: 700;
+.aab-vis-option em {
+	font-style: normal; font-size: .66rem; color: #9A958B;
+	font-variant-numeric: tabular-nums;
 }
+.aab-vis-option:hover,
+.aab-vis-option.is-active {
+	background: var(--aab-brass-wash); color: var(--aab-brass-deep);
+}
+.aab-vis-option[aria-selected="true"] { font-weight: 700; }
 .aab-vis-none {
 	margin: 12px 0; font-size: .78rem; color: var(--aab-muted);
 }

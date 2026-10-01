@@ -73,12 +73,15 @@
             #}
             <div class="aab-vis-find">
               <input type="search" class="aab-vis-search"
+                     role="combobox" aria-expanded="false"
+                     aria-controls="aab-vis-menu" aria-autocomplete="list"
                      aria-label="Search the ranges"
                      placeholder="Search the ranges" autocomplete="off">
               <button type="button" class="aab-vis-clear" hidden
                       aria-label="Clear the search">&times;</button>
+              <ul class="aab-vis-menu" id="aab-vis-menu" role="listbox"
+                  aria-label="Ranges" hidden></ul>
             </div>
-            <div class="aab-vis-chips" role="group" aria-label="Jump to a range"></div>
 
             <p class="aab-vis-none" hidden>No range matches that.</p>
             <div class="aab-vis-groups" role="group" aria-label="Choose a tile"></div>
