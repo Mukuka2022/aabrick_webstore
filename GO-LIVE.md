@@ -436,14 +436,20 @@ Text** and every picture is in **Website Images**, both editable in the desk.
 
 Wanting images settles which way this should go. A picture in a guide means
 uploading a file and placing it in the middle of the prose, which is the one
-thing editing a template serves worst and a rich text field serves best. So
-the answer is a **Guide doctype**: title, summary, minutes, published, and a
-Text Editor body that takes images, with the seven existing guides migrated
-into records.
+thing editing a template serves worst and a rich text field serves best.
 
-Two things to decide first. Whether AABrick intends to keep writing guides,
-because if these seven are the set then a doctype is more machinery than the
-job needs. And who writes them, because a rich text body can be broken by a
+Use **Web Page**, which Frappe already ships and this site already has 20
+unpublished records of. It has the title, the route, a published tick, a
+`meta_description`, and `main_section` as a Text Editor that takes uploaded
+images. Three custom fields cover the rest: the reading time, the short label
+the navigation panel uses, and a tick marking a page as a guide. `guides()`
+then queries those instead of holding a hand written list, so the index, the
+navigation and the cross-links keep working as they do now.
+
+An earlier draft of this note said to build a Guide doctype. That was more
+machinery than the job needs and Web Page does nearly all of it already.
+
+One thing to decide: who writes them. A rich text body can be broken by a
 paste from Word in a way a template cannot.
 
 Until that is built, a picture in a guide needs a developer, same as the
