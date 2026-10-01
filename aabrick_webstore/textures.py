@@ -72,12 +72,77 @@ MARK_BAND = 0.26
 
 
 def _is_mark(r, g, b):
-    """Marcopolo's orange, and the red the code is sometimes printed in.
+    """Marcopolo's print: the orange lettering, and the dark red logo.
 
-    Deliberately narrow. A terracotta tile is orange all over, and a loose
-    test cuts the whole catalogue in half.
+    Two tests, because they are two different reds and one threshold cannot
+    hold both. The lettering is a bright orange around 230,120,30. The logo
+    stamped in a corner is far darker, around 143,47,51, which sat under the
+    old r > 150 and sailed through: it was still sitting in the corner of the
+    wall tile textures when Mukuka spotted it.
+
+    The dark test is kept off the terracottas and the wood grains by their
+    green channel. The logo has g around 47 and a warm wood has it around
+    118, which separates them cleanly where the red channel alone does not.
     """
-    return r > 150 and (r - b) > 85 and (r - g) > 30 and g < 200
+    if r > 150 and (r - b) > 85 and (r - g) > 30 and g < 200:
+        return True
+    return r > 110 and g < 95 and (r - g) > 60 and (r - b) > 55
+
+
+def _still_printed(im, probe=180):
+    """Marcopolo print left in a finished texture.
+
+    The cutter is told where the print is and takes the largest clean piece,
+    and that is a plan rather than a guarantee: a second stamp in another
+    corner, or a crop that had to choose between two, can leave one behind.
+    Rather than add a case each time one is found, the result is looked at.
+
+    A tight patch is print. A wide one is the tile: a terracotta or an orange
+    wood reads as ink everywhere, and the bounding box is what separates them.
+    """
+    w, h = im.size
+    s = im.resize((probe, max(1, int(probe * h / float(w)))))
+    px = s.load()
+    sw, sh = s.size
+    xs, ys, n = [], [], 0
+    for y in range(sh):
+        for x in range(sw):
+            if _is_mark(*px[x, y]):
+                n += 1
+                xs.append(x)
+                ys.append(y)
+    if not n:
+        return False
+    frac = n / float(sw * sh)
+    area = ((max(xs) - min(xs) + 1) * (max(ys) - min(ys) + 1)) / float(sw * sh)
+    return frac > 0.004 and area < 0.45
+
+
+def _is_card(im, probe=200):
+    """A product card rather than a photograph of a tile.
+
+    Some of what the catalogue carries is not a tile at all: 25400 is a white
+    sheet reading Type: Gloss wall tiles, Size: 250*400, with the logo in the
+    corner. Laid on a floor that is a room with writing across it, and no
+    cropping rescues it because there is no tile in the picture to crop to.
+
+    Nearly all white with a little hard dark text in it is the signature. A
+    pale tile is pale throughout and has grain; a card has paper and ink.
+    """
+    w, h = im.size
+    s = im.resize((probe, max(1, int(probe * h / float(w)))))
+    px = s.load()
+    sw, sh = s.size
+    pale = dark = 0
+    for y in range(sh):
+        for x in range(sw):
+            r, g, b = px[x, y]
+            if r > 232 and g > 232 and b > 232:
+                pale += 1
+            elif max(r, g, b) < 120:
+                dark += 1
+    n = float(sw * sh)
+    return (pale / n) > 0.85 and (dark / n) > 0.003
 
 
 def _mark_box(im, probe=320):
@@ -193,6 +258,8 @@ def build(code, src, redo=False, long_mm=None):
     with Image.open(src) as im:
         im = im.convert("RGB")
         w, h = im.size
+        if _is_card(im):
+            return "skipped", "a product card, not a photograph of the tile"
         mark = _mark_box(im)
         box, scale = _crop_box(w, h, mark)
         if box is None:
@@ -208,6 +275,8 @@ def build(code, src, redo=False, long_mm=None):
         if max(cw, ch) < need:
             return "skipped", ("clear piece is %dpx on its long edge, needs %d"
                                % (max(cw, ch), need))
+        if _still_printed(cut):
+            return "skipped", "print left in it after the cut"
 
         if max(cw, ch) > MAX_PX:
             k = MAX_PX / float(max(cw, ch))

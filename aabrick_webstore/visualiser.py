@@ -45,7 +45,11 @@ RANGE = re.compile(
 # still in it. It may be a knot in the wood and it may be lettering the
 # band crop did not reach; it has not been looked at, so it stays out
 # until somebody has looked.
-SKIP = ["86063", "86063D"]
+# 96006 passes the cutter's own check and fails it again once the texture
+# has been resized and written as a JPEG, which moves the colours just
+# enough either side of the line. Rather than loosen a threshold that is
+# doing its job everywhere else, this one is named.
+SKIP = ["86063", "86063D", "96006", "96006D"]
 
 # B grade is sold but not shown here. A visualiser is for choosing how a floor
 # will look, and the two grades of a range look the same: the difference is in
