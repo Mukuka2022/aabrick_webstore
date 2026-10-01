@@ -1983,16 +1983,20 @@ body:has(.aab-login) .aab-foot-main { display: none; }
  * in the row that carries a colour. A tint rather than the solid red of
  * the Call us button: two solid reds in one bar and neither of them means
  * anything. */
-.aab-nav-link--shop {
-	background: var(--aab-red-wash);
-	color: var(--aab-red);
-	padding-left: 16px; padding-right: 16px;
-}
+/* Shop is the one item that is already red rather than going red when you
+ * point at it, and that is the whole of its emphasis.
+ *
+ * It used to carry a pink block behind it as well. That was the only tinted
+ * thing in a white navigation bar and the only item whose background differed
+ * from the bar it sat in, which is what made it look stuck on rather than
+ * picked out. The narrow layout had already dropped the block and kept the red
+ * word, so this is the wide one catching up rather than a new idea.
+ *
+ * The 16px side padding goes with it. That was room for the block, and without
+ * it Shop sat two pixels wider than everything either side. */
+.aab-nav-link--shop { color: var(--aab-red); }
 .aab-nav-link--shop:hover,
-.aab-nav-has-panel.is-open > .aab-nav-link--shop {
-	background: var(--aab-red);
-	color: #fff;
-}
+.aab-nav-has-panel.is-open > .aab-nav-link--shop { color: var(--aab-red-dark); }
 
 .aab-nav-icon {
 	width: 17px; height: 17px; flex: 0 0 17px;
@@ -2032,7 +2036,6 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 	.aab-nav-actions { flex-wrap: wrap; gap: 14px 18px; }
 	.aab-nav-account, .aab-nav-cart { font-size: 13px; }
 	.aab-nav-cta { margin-left: auto; }
-	.aab-nav-link--shop { background: none; color: var(--aab-red); }
 }
 
 /* ------------------------------------------------------------------
