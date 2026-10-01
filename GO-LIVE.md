@@ -279,9 +279,18 @@ quantity in every warehouse to anyone who asks.
 
 ---
 
-## 3. Run once after the first deploy
+## 3. Run after a deploy
 
 In order. All are safe to run twice.
+
+Most are needed only once, on the first deploy. The exception is
+`setup_images.run`: run it again after any pull that adds a picture
+somebody can change, or the new fields never appear in the desk and the
+page quietly keeps the artwork that ships in the app.
+
+Nothing here covers rebuilding assets. `DEPLOY.md` section 3 already runs
+`migrate`, `bench build --app aabrick_webstore` and `clear-cache` on every
+deploy, which is what picks up a bumped `ASSET_VERSION` in `hooks.py`.
 
 ```bash
 cd ~/frappe-bench
