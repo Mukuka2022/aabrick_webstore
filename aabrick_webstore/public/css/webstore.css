@@ -24,6 +24,17 @@
 	--aab-red-wash: #FBEDED;   /* the brand red at a whisper, for a tinted ground */
 	--aab-charcoal: #2A2725;
 	--aab-charcoal-soft: #33332F;
+	--aab-charcoal-deep: #1C1B1A;
+
+	/* The brand gradient: charcoal with the red coming up behind it. It is
+	 * behind the branch call to action, behind a page heading that has no
+	 * photograph yet, and in the panel beside a form.
+	 *
+	 * The colours live here so those three cannot drift apart. The geometry
+	 * does not: a wide band wants the glow at the middle of one edge and a
+	 * tall panel wants it in a corner, so each keeps its own. */
+	--aab-glow: rgba(185,0,0,.34);
+	--aab-glow-off: rgba(185,0,0,0);
 	--aab-grey: #828282;
 	--aab-ink: #202020;
 	/* The neutrals are warm. They were not, and that was the real fault: the
@@ -722,8 +733,8 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-branch-cta {
 	background: var(--aab-charcoal);
 	background-image:
-		radial-gradient(110% 160% at 92% 50%, rgba(185,0,0,.34) 0%, rgba(185,0,0,0) 60%),
-		linear-gradient(100deg, #1C1B1A 0%, var(--aab-charcoal) 65%);
+		radial-gradient(110% 160% at 92% 50%, var(--aab-glow) 0%, var(--aab-glow-off) 60%),
+		linear-gradient(100deg, var(--aab-charcoal-deep) 0%, var(--aab-charcoal) 65%);
 	color: #fff;
 }
 .aab-branch-cta .aab-inner {
@@ -1332,9 +1343,24 @@ main.container:has(.aab-calc) .aab-calc { width: 100%; margin-left: 0; margin-ri
 .aab-chiprow .aab-chip.is-on { background: var(--aab-charcoal); border-color: var(--aab-charcoal); color: #fff; }
 .aab-calc-note { margin: 12px 0 0; font-size: 13.5px; color: var(--aab-muted); line-height: 1.55; max-width: 56ch; }
 
+/* The panel beside a form: the result on either calculator, and the contact
+ * details beside the enquiry. It was already charcoal, and now carries the
+ * same red behind it as the heading above it, so the page reads as one thing.
+ *
+ * The glow sits in the top corner rather than halfway down an edge, which is
+ * where the wide bands put it: this panel is tall and narrow, and a glow at
+ * its middle would land behind the table of numbers instead of behind the
+ * heading. The charcoal still runs top to bottom, which is the direction that
+ * suits the shape, so only the red is new.
+ *
+ * It costs nothing in legibility. The red takes the ground towards maroon
+ * rather than lighter, so the faintest thing in here, the 12.5px small print
+ * at 60% white, still reads at 5.3:1. */
 .aab-calc-result {
 	background: var(--aab-charcoal);
-	background-image: linear-gradient(160deg, #33332F 0%, #1C1C1A 100%);
+	background-image:
+		radial-gradient(135% 110% at 86% 6%, var(--aab-glow) 0%, var(--aab-glow-off) 62%),
+		linear-gradient(160deg, var(--aab-charcoal-soft) 0%, var(--aab-charcoal-deep) 100%);
 	color: #fff; padding: 26px 26px 24px;
 }
 .aab-calc-boxes { margin: 4px 0 20px; display: flex; align-items: baseline; gap: 10px; }
@@ -1700,8 +1726,8 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 .aab-page-head:not(.has-shot) {
 	background: var(--aab-charcoal);
 	background-image:
-		radial-gradient(110% 160% at 92% 50%, rgba(185,0,0,.34) 0%, rgba(185,0,0,0) 60%),
-		linear-gradient(100deg, #1C1B1A 0%, var(--aab-charcoal) 65%);
+		radial-gradient(110% 160% at 92% 50%, var(--aab-glow) 0%, var(--aab-glow-off) 60%),
+		linear-gradient(100deg, var(--aab-charcoal-deep) 0%, var(--aab-charcoal) 65%);
 	color: #fff;
 	/* More room than the white version had: at 30px this read as a tinted
 	 * strip rather than as a band. */
