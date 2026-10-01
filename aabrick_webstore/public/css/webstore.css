@@ -1595,6 +1595,15 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 .aab-nav-has-panel.is-open > .aab-nav-link { color: var(--aab-red); }
 .aab-nav-has-panel.is-open > .aab-nav-link::after { transform: rotate(-135deg); margin-top: 2px; }
 
+/* The panel is capped to what is left of the window under the bar, and
+ * scrolls past that. Guides was the one that needed it first: seven entries
+ * with a line of summary each comes to 829px, which on a 768px laptop runs
+ * 162px off the bottom of the screen with no way to reach the last two.
+ *
+ * The cap is on every panel rather than on that one, because this is a
+ * property of a dropdown and not of its contents, and Shop will grow as the
+ * ranges do. overscroll-behavior stops the page behind scrolling on when the
+ * list reaches its end. */
 .aab-nav-panel {
 	display: none;
 	position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
@@ -1602,6 +1611,9 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	border: 1px solid var(--aab-line);
 	box-shadow: 0 18px 40px rgba(28,27,26,.16);
 	min-width: 780px; z-index: 20;
+	max-height: calc(100vh - 120px);
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 .aab-nav-panel-narrow { min-width: 420px; }
 .aab-nav-has-panel.is-open .aab-nav-panel { display: block; }
@@ -1661,6 +1673,9 @@ main.container.my-4 { margin-top: 0 !important; margin-bottom: 0 !important; }
 	.aab-nav-panel {
 		position: static; transform: none; min-width: 0;
 		border: 0; box-shadow: none; background: var(--aab-wash);
+		/* The drawer itself scrolls, so the panel must not: a list that
+		 * scrolls inside a list that scrolls is unusable with a thumb. */
+		max-height: none; overflow-y: visible;
 	}
 	.aab-nav-panel-inner,
 	.aab-nav-panel:not(.aab-nav-panel-narrow) .aab-nav-panel-inner {
