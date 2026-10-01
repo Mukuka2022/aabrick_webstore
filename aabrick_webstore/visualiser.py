@@ -67,9 +67,14 @@ INCLUDE_B_GRADE = False
 # somebody see the tile.
 WALL = ("wall",)
 
-# Named a wall tile by the catalogue, sold for floors by AABrick. Keyed on the
-# size because that is what the trade calls it: 300x600 is the 30x60.
-FLOOR_ANYWAY = {(300, 600)}
+# Named a wall tile by the catalogue, but it goes on floors. Keyed on the size
+# because that is what the trade calls it: 300x600 is the 30x60.
+#
+# 300x300 is here on Mukuka's word that customers lay it in bathrooms, which
+# is worth taking seriously and is not the same thing as a rating. If Marcopolo
+# publishes a slip or wear rating for these, that should decide it rather than
+# what is already happening, and a bathroom floor is where slip matters most.
+FLOOR_ANYWAY = {(300, 600), (300, 300)}
 
 
 def tiles():

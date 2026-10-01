@@ -455,6 +455,24 @@ paste from Word in a way a template cannot.
 Until that is built, a picture in a guide needs a developer, same as the
 words.
 
+**The visualiser is to do walls as well.** Said on 2026-10-01. It lays
+floors today: every room carries a traced floor polygon and the engine
+projects onto a ground plane. A wall is the same arithmetic against a
+vertical plane, so the work is tracing the walls in each room and giving a
+scene more than one surface to choose between, not rewriting the engine.
+
+It matters more than it sounds for the catalogue. 33 of the tiles in the
+picker are wall tiles being shown on a floor, and the 250x400 carries a
+warning saying so. Once walls work, those stop being an awkward case and
+become the point.
+
+**300x300 is shown as a floor tile on AABrick's word, not on a rating.**
+Mukuka has seen customers lay it in bathrooms, so it no longer carries the
+wall warning. If Marcopolo publishes a slip or wear rating for it, that
+should decide the question instead: a bathroom floor is exactly where slip
+resistance matters. 250x400 still carries the warning, there being no such
+observation about it.
+
 **Two possible data faults, not touched.** Tile 96000 shows
 `/files/56111.jpg` while 56111 shows `/files/Black.jpg`; that pair looks
 shifted by a row, which would mean both show the wrong tile. And Chinsali's
