@@ -426,6 +426,29 @@ Zamtan each have two listings. Twenty-one of the 46 branches have no listing
 at all, six of them in Lusaka. Five listings — Mwinilunga, Chama, Kasempa,
 Zamtan, Lusaka Chachacha Road — have no branch in the worksheet.
 
+**Guides are code, and Mukuka wants pictures in them.** Asked on
+2026-10-01. The seven guides are Jinja templates under
+`aabrick_webstore/www/guides/<slug>/index.html`, with their titles, summaries
+and reading times in the `guides()` list in `www/guides/index.py`. Nothing
+about them can be changed without a developer, a commit and a pull, which is
+out of step with the rest of the site: the home page wording is in **Website
+Text** and every picture is in **Website Images**, both editable in the desk.
+
+Wanting images settles which way this should go. A picture in a guide means
+uploading a file and placing it in the middle of the prose, which is the one
+thing editing a template serves worst and a rich text field serves best. So
+the answer is a **Guide doctype**: title, summary, minutes, published, and a
+Text Editor body that takes images, with the seven existing guides migrated
+into records.
+
+Two things to decide first. Whether AABrick intends to keep writing guides,
+because if these seven are the set then a doctype is more machinery than the
+job needs. And who writes them, because a rich text body can be broken by a
+paste from Word in a way a template cannot.
+
+Until that is built, a picture in a guide needs a developer, same as the
+words.
+
 **Two possible data faults, not touched.** Tile 96000 shows
 `/files/56111.jpg` while 56111 shows `/files/Black.jpg`; that pair looks
 shifted by a row, which would mean both show the wrong tile. And Chinsali's
