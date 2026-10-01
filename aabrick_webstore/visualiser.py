@@ -41,7 +41,11 @@ RANGE = re.compile(
     r"\((?P<w>\d+)\s*[xX]\s*(?P<h>\d+)\)\s*(?P<d2>D)?\s*(?:-.*)?$")
 
 # Tiles whose cut texture is wrong even though it is clean. See the note above.
-SKIP = []
+# 86063 comes out of the cutter with a tight patch of saturated orange
+# still in it. It may be a knot in the wood and it may be lettering the
+# band crop did not reach; it has not been looked at, so it stays out
+# until somebody has looked.
+SKIP = ["86063", "86063D"]
 
 # B grade is sold but not shown here. A visualiser is for choosing how a floor
 # will look, and the two grades of a range look the same: the difference is in

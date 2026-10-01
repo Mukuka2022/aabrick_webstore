@@ -40,10 +40,35 @@ THUMB_PX = 150        # the swatch in the picker, which is 78px at its biggest
 QUALITY = 82
 
 # Below this the texture is too small to hold up stretched across a room.
-MIN_PX = 420
+#
+# Measured on the long edge, not the short one. The short side was the obvious
+# test and the wrong one: a tile is photographed in its own shape, so a 600x1200
+# comes in as a strip about 860 by 430, and taking the lettering off left a
+# short side of 310 to 384 against a floor of 420. It threw out 48 of the 59
+# oblong tiles for being oblong, while a 600x600 of exactly the same quality
+# sailed through on a 590px square.
+#
+# And measured against the tile rather than as a flat number. What matters is
+# pixels per millimetre of real tile: 600px holds a 1200mm tile at half a pixel
+# per millimetre, and asking the same 600 of a 600mm tile is twice as strict as
+# it needs to be. The flat floor was quietly dropping 600mm tiles whose crops
+# came out at 568px, which is nearly a pixel per millimetre and perfectly good.
+PX_PER_MM = 0.5
+FLOOR_PX = 400        # however small the tile, below this it will not hold up
+MIN_LONG_PX = 600     # the fallback, when the tile's real size is not known
 # And below this fraction of the original, the grain is drawn far enough from
 # life that the tile stops being an honest picture of itself.
 MIN_KEEP = 0.62
+
+
+# When the lettering is printed over a tile its own colour, a warm wood or a
+# terracotta, _is_mark cannot tell the two apart and reports most of the
+# picture as lettering. That is not a reading, it is a failure, and treating it
+# as a reading threw away 25 perfectly good tiles. Past this much of the image
+# the result is discarded and the band the lettering always occupies is taken
+# off the top instead.
+MARK_RUNAWAY = 0.55
+MARK_BAND = 0.26
 
 
 def _is_mark(r, g, b):
@@ -79,8 +104,13 @@ def _mark_box(im, probe=320):
     # A handful of stray pixels is noise in the photograph, not lettering.
     if len(xs) < max(30, int(sw * sh * 0.0012)):
         return None
-    return (min(xs) / float(sw), min(ys) / float(sh),
-            (max(xs) + 1) / float(sw), (max(ys) + 1) / float(sh))
+
+    box = (min(xs) / float(sw), min(ys) / float(sh),
+           (max(xs) + 1) / float(sw), (max(ys) + 1) / float(sh))
+    if (box[2] - box[0]) * (box[3] - box[1]) > MARK_RUNAWAY:
+        # The tile is the same colour as the print. Fall back to the band.
+        return (0.0, 0.0, 1.0, MARK_BAND)
+    return box
 
 
 def _crop_box(w, h, mark):
@@ -148,8 +178,12 @@ def _safe(code):
     return re.sub(r"[^A-Za-z0-9._-]", "_", code)
 
 
-def build(code, src, redo=False):
-    """Make one texture. Returns (status, note)."""
+def build(code, src, redo=False, long_mm=None):
+    """Make one texture. Returns (status, note).
+
+    long_mm is the tile's own long edge in millimetres, which sets how many
+    pixels the texture has to keep. Without it the flat MIN_LONG_PX is used.
+    """
     from PIL import Image
 
     dst = os.path.join(_out_dir(), "%s.jpg" % _safe(code))
@@ -168,8 +202,12 @@ def build(code, src, redo=False):
 
         cut = im.crop(box)
         cw, ch = cut.size
-        if min(cw, ch) < MIN_PX:
-            return "skipped", "clear piece is only %dpx" % min(cw, ch)
+        need = MIN_LONG_PX
+        if long_mm:
+            need = max(FLOOR_PX, int(PX_PER_MM * long_mm))
+        if max(cw, ch) < need:
+            return "skipped", ("clear piece is %dpx on its long edge, needs %d"
+                               % (max(cw, ch), need))
 
         if max(cw, ch) > MAX_PX:
             k = MAX_PX / float(max(cw, ch))
@@ -200,9 +238,9 @@ def run(redo=False):
     print("  %d published tiles with a picture" % len(cands))
     tally = {}
     skipped = []
-    for code, src, _w, _h in cands:
+    for code, src, w, h in cands:
         try:
-            status, note = build(code, src, redo=redo)
+            status, note = build(code, src, redo=redo, long_mm=max(w, h))
         except Exception as e:
             status, note = "failed", str(e)[:60]
         tally[status] = tally.get(status, 0) + 1
