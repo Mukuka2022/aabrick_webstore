@@ -34,7 +34,7 @@ ROOMS = [
     # from, so the camera follows from the room rather than from a guess.
     (17, "living",         "Living room",        8.0),
     (19, "ensuite",        "Ensuite",            4.5),
-    (22, "kitchen",        "Kitchen",            5.0),
+    (23, "kitchen",        "Kitchen",            5.0),
     (18, "bathroom",       "Bathroom",           5.0),
     (13, "patio",          "Veranda",           10.0),
     # No new picture for this one, so it keeps the one it had.

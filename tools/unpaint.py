@@ -33,7 +33,7 @@ APP = "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
 # Must match walltrace.py, room for room and hint for hint.
 ROOMS = [
     (19, "ensuite",  10.0),
-    (22, "kitchen",  10.0),
+    (23, "kitchen",  85.0),
     (18, "bathroom", 10.0),
 ]
 
