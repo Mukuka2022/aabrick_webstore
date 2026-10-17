@@ -459,13 +459,18 @@ paste from Word in a way a template cannot.
 Until that is built, a picture in a guide needs a developer, same as the
 words.
 
-**The visualiser does walls, in three rooms of six.** Asked for on
-2026-10-01, built on 2026-10-17. The ensuite, the kitchen and the bathroom
-were generated with their walls painted pink as well as their floors blue,
-so those three have a traced wall and a Floor / Walls switch above the tile
-grid. Each surface keeps its own choice, because almost nobody puts the same
-tile on both. In the living room and the veranda the Walls button is
-disabled and says why.
+**The visualiser does walls, in five rooms of seven.** Asked for on
+2026-10-01, built on 2026-10-17. Two ensuites, a bathroom, a shower room
+and a kitchen were generated with their walls painted coral as well as
+their floors blue, so those five have a traced wall and a Floor / Walls
+switch above the tile grid. Each surface keeps its own choice, because
+almost nobody puts the same tile on both. In the living room and the
+veranda the Walls button is disabled and says why.
+
+The rooms were replaced wholesale on 2026-10-17: the originals went and
+nine new photographs came in, of which seven are in. The source files live
+in `Local Sites/visualiser-rooms`, which the three scripts in `tools/` read
+by name.
 
 The engine was not rewritten. A wall stands on the floor, so the floor
 outline is also the skirting, and the depth of a wall in any column is the
@@ -483,17 +488,19 @@ Two things to know before the next room:
 - **Any leftover pink is repainted off-white when the room is built.** The
   ceiling is not a wall and nobody tiles one, so it kept its pink until the
   walls around it were tiled and it began to look like a fault. Anything
-  that passes the pink test and is not under the wall mask is now neutralised
-  to its own brightness. That is `scratchpad/depink.py`, and it runs off the
-  original images, so it can be re-run safely.
+  that passes the paint test and is not under the wall mask is neutralised
+  to its own brightness. The same pass also takes the wall's light back off
+  the pale things it was thrown onto, the basins and the ceilings, which
+  otherwise read pink against a white tiled wall. That is `tools/unpaint.py`,
+  and it runs off the original photographs, so it can be re-run safely.
 
 It matters more than it sounds for the catalogue. 33 of the tiles in the
 picker are wall tiles that until now could only be shown on a floor, and
 the 250x400 carries a warning saying so. They are no longer an awkward case.
-What is still missing is the other three rooms: the living room, the veranda
-and the kitchen-and-dining have no painted walls to trace, so they need
-regenerating the way `visualiser-room-brief.md` describes, with the walls
-painted a flat saturated pink the way the floors are painted blue.
+The living room and the veranda still have no painted walls to trace, so
+they are floor only until they are regenerated the way
+`visualiser-room-brief.md` describes. The kitchen-and-dining room is gone
+altogether; no new photograph was made of it.
 
 **300x300 is shown as a floor tile on AABrick's word, not on a rating.**
 Mukuka has seen customers lay it in bathrooms, so it no longer carries the

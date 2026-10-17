@@ -22,13 +22,14 @@ from PIL import Image
 
 import keycolour
 
-SRC = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
-       "C--Users-HC-COMPUTER-STORE-Local-Sites/"
-       "6b0e1eff-4cf1-4667-ac17-775c86b627df/images")
+SRC = "/mnt/c/Users/HC COMPUTER STORE/Local Sites/visualiser-rooms"
 W = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
      "C--Users-HC-COMPUTER-STORE-Local-Sites/"
      "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls/walls.json")
-APP = "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
+APP = os.environ.get(
+    "AAB_SCENE_OUT",
+    "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
+    "/public/images")
 
 # Must match walltrace.py, room for room and hint for hint. The flag says
 # whether to take the wall's light back off the pale things in the room as
@@ -42,9 +43,13 @@ APP = "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
 # lit green, so the rule would strip the colour out of the garden. It also
 # has nothing to gain, its fixtures being beige and its ceiling white.
 ROOMS = [
-    (19, "ensuite",  10.0, True),
-    (23, "kitchen",  85.0, False),
-    (18, "bathroom", 10.0, True),
+    ("Coral and Navy Modern Bathroom.png",     "ensuite",     10.0, True),
+    ("Modern Coral and Navy Bathroom Sanctuary.png",
+     "ensuite-lit", 10.0, True),
+    ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom",    10.0, True),
+    ("Modern Coral and Navy Spa Bathroom.png", "shower-room", 10.0, True),
+    ("Natural Light Modern Pink and Blue Kitchen.png",
+     "kitchen",     10.0, True),
 ]
 
 FADE = 0.30        # below this the colour is not the paint itself
@@ -75,8 +80,8 @@ TINT = (1.000, 0.976, 0.953)
 
 walls = json.load(io.open(W, encoding="utf-8"))
 
-for n, slug, hint, lit in ROOMS:
-    im = Image.open("%s/%d.webp" % (SRC, n)).convert("RGB")
+for name, slug, hint, lit in ROOMS:
+    im = Image.open(os.path.join(SRC, name)).convert("RGB")
     w, h = im.size
     px = im.load()
 
@@ -174,7 +179,7 @@ for n, slug, hint, lit in ROOMS:
                 min(255, int(b + (L * TINT[2] - b) * k)))
             fixed += 1
 
-    dst = os.path.join(APP, "public/images/scene-%s.jpg" % slug)
+    dst = os.path.join(APP, "scene-%s.jpg" % slug)
     im.save(dst, "JPEG", quality=88, optimize=True, progressive=True)
     print("  %-10s hue %3.0f  sat %.2f  window %2.0f   %6d pixels repainted"
           "  (%.1f%% of the room)"

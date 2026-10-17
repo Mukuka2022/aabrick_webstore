@@ -18,27 +18,39 @@ import os
 
 from PIL import Image, ImageDraw, ImageFilter
 
-SRC = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
-       "C--Users-HC-COMPUTER-STORE-Local-Sites/"
-       "6b0e1eff-4cf1-4667-ac17-775c86b627df/images")
+SRC = "/mnt/c/Users/HC COMPUTER STORE/Local Sites/visualiser-rooms"
 OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
        "C--Users-HC-COMPUTER-STORE-Local-Sites/"
        "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/blue")
-APPIMG = ("/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
-          "/public/images")
+APPIMG = os.environ.get(
+    "AAB_SCENE_OUT",
+    "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
+    "/public/images")
 
 # file, id, label, how far back the furthest floor is in metres
 ROOMS = [
     # file, id, label, how far back the furthest floor is in metres. The
     # depths are the ones written into the prompts the rooms were generated
     # from, so the camera follows from the room rather than from a guess.
-    (17, "living",         "Living room",        8.0),
-    (19, "ensuite",        "Ensuite",            4.5),
-    (23, "kitchen",        "Kitchen",            5.0),
-    (18, "bathroom",       "Bathroom",           5.0),
-    (13, "patio",          "Veranda",           10.0),
-    # No new picture for this one, so it keeps the one it had.
-    (7,  "kitchen-dining", "Kitchen and dining", 6.0),
+    #
+    # The second kitchen that came with these, lit by strips under its wall
+    # units, is not here. The strips wash coral down the cabinet fronts, so
+    # a fifth of its wall mask landed below the worktop line, on the
+    # dishwasher and the oak, against three per cent for this one.
+    ("Coral and Navy Modern Bathroom.png",
+     "ensuite",      "Ensuite",             4.5),
+    ("Modern Coral and Navy Bathroom Sanctuary.png",
+     "ensuite-lit",  "Ensuite, lit mirror", 4.5),
+    ("Sunlit Coral and Navy Bathroom Spa.png",
+     "bathroom",     "Bathroom",            5.0),
+    ("Modern Coral and Navy Spa Bathroom.png",
+     "shower-room",  "Shower room",         5.0),
+    ("Natural Light Modern Pink and Blue Kitchen.png",
+     "kitchen",      "Kitchen",             5.0),
+    ("Modern Navy Living Room Retreat.png",
+     "living",       "Living room",         8.0),
+    ("Modern Navy Patio with Garden Views.png",
+     "patio",        "Veranda",            10.0),
 ]
 
 STEP = 5
@@ -167,8 +179,8 @@ def main():
             os.makedirs(p)
 
     scenes = []
-    for n, slug, label, depth in ROOMS:
-        src = os.path.join(SRC, "%d.webp" % n)
+    for name, slug, label, depth in ROOMS:
+        src = os.path.join(SRC, name)
         tops, (w, h) = trace(src)
         tops = thin(tops)
 

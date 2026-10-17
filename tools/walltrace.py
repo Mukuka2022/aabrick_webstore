@@ -24,9 +24,7 @@ from PIL import Image, ImageDraw, ImageFilter
 
 import keycolour
 
-SRC = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
-       "C--Users-HC-COMPUTER-STORE-Local-Sites/"
-       "6b0e1eff-4cf1-4667-ac17-775c86b627df/images")
+SRC = "/mnt/c/Users/HC COMPUTER STORE/Local Sites/visualiser-rooms"
 OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
        "C--Users-HC-COMPUTER-STORE-Local-Sites/"
        "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls")
@@ -35,9 +33,15 @@ OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
 # Pink is about 10 and green about 85; the exact figure is measured, this
 # only says which colour in the room is the paint.
 ROOMS = [
-    (19, "ensuite",  10.0),
-    (23, "kitchen",  85.0),
-    (18, "bathroom", 10.0),
+    # file, id, roughly what colour the walls were painted, in degrees of
+    # hue. These rooms are all coral, which measures out between 6 and 12.
+    # The living room and the veranda are not here: their walls were never
+    # painted, so there is nothing to trace and they are floor only.
+    ("Coral and Navy Modern Bathroom.png",           "ensuite",     10.0),
+    ("Modern Coral and Navy Bathroom Sanctuary.png", "ensuite-lit", 10.0),
+    ("Sunlit Coral and Navy Bathroom Spa.png",       "bathroom",    10.0),
+    ("Modern Coral and Navy Spa Bathroom.png",       "shower-room", 10.0),
+    ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen",   10.0),
 ]
 
 STEP = 3           # columns
@@ -193,8 +197,8 @@ def main():
     if not os.path.isdir(OUT):
         os.makedirs(OUT)
     out = {}
-    for n, slug, hint in ROOMS:
-        p = "%s/%d.webp" % (SRC, n)
+    for name, slug, hint in ROOMS:
+        p = os.path.join(SRC, name)
         cols, (w, h), found = spans(p, hint)
         if cols is None:
             print("  %-10s no paint near %.0f degrees" % (slug, hint))
