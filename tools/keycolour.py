@@ -18,7 +18,7 @@ but *less* strongly coloured than the oak tall unit beside it, 0.41 against
 0.59. Anything looking for the most strongly coloured thing, or simply for
 the biggest coloured area, found the woodwork instead.
 
-So three things are measured rather than assumed.
+So four things are measured rather than assumed.
 
 **The hue is hinted, then measured.** Whoever generated the room knows what
 colour they painted the wall, and one number from them removes the whole
@@ -62,6 +62,21 @@ HI = 1.55        # ...and at most
 SPREAD = 2.5     # how many interquartile ranges of hue count as the paint
 MIN_WIN = 10.0   # never narrower than this
 MAX_WIN = 20.0   # never wider, or the room starts getting in
+VLO = 0.35       # of the paint's own brightness, at least
+
+# That last one is what keeps the fittings out. A matte black tap in a room
+# painted strongly enough to trace does not read black, it reads dark
+# paint: the ensuite's tap measures hue 22 at saturation 0.76, which is the
+# wall's own colour, and the only thing separating them is that the tap is
+# at brightness 0.10 and the wall is at 0.75. Hue and saturation both stop
+# meaning much once a pixel is nearly black, so neither can be asked.
+#
+# The floor has to be relative, because a flat dark green wall lives at
+# 0.22 and would fail any fixed figure that excluded a tap. Against each
+# room's own paint, 0.35 clears the taps and keeps the darkest wall yet
+# traced: the coral rooms cut at 0.21 to 0.26 against walls whose lowest
+# honest twentieth sits at 0.31, and the green kitchen cuts at 0.08 against
+# 0.12.
 
 
 def hsv(r, g, b):
@@ -90,10 +105,11 @@ def apart(a, b):
 def paint(px, w, h, hint):
     """Measure the paint, given roughly what colour it is.
 
-    Sampled from a band across the upper part of the picture, which is wall
-    in every room built so far. Returns the hue it came out as, how strongly
-    coloured it is, and how far either side of that hue to still call it the
-    paint. None if the hinted colour is not in the room at all.
+    Sampled from a band across the upper part of the picture, which is
+    wall in every room built so far. Returns the hue it came out as, how
+    strongly coloured it is, how far either side of that hue to still call
+    it the paint, and how bright it is. None if the hinted colour is not in
+    the room at all.
     """
     top, bottom = int(h * 0.06), int(h * 0.40)
 
@@ -116,6 +132,9 @@ def paint(px, w, h, hint):
     sats = sorted(s for hh, s, v in sample()
                   if s > 0.20 and v > 0.08 and apart(hh, ref) < SEED)
     ref_sat = sats[len(sats) // 2]
+    vals = sorted(v for hh, s, v in sample()
+                  if s > 0.20 and v > 0.08 and apart(hh, ref) < SEED)
+    ref_val = vals[len(vals) // 2]
     lo, hi = ref_sat * LO, ref_sat * HI
 
     # and how far it drifts, now that the vivid and the dull are both out
@@ -123,16 +142,17 @@ def paint(px, w, h, hint):
                   if lo <= s <= hi and v > 0.08 and apart(hh, ref) < NEAR)
     iqr = hues[int(len(hues) * .75)] - hues[int(len(hues) * .25)]
     win = min(MAX_WIN, max(MIN_WIN, SPREAD * iqr))
-    return ref, ref_sat, win
+    return ref, ref_sat, win, ref_val
 
 
-def tester(ref, ref_sat, win):
+def tester(ref, ref_sat, win, ref_val):
     """Is this pixel the paint itself."""
     lo, hi = ref_sat * LO, ref_sat * HI
+    dark = ref_val * VLO
 
     def test(r, g, b):
         hh, s, v = hsv(r, g, b)
-        if s < lo or s > hi or v < 0.08:
+        if s < lo or s > hi or v < dark:
             return False
         return apart(hh, ref) < win
 

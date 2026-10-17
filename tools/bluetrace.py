@@ -33,24 +33,21 @@ ROOMS = [
     # depths are the ones written into the prompts the rooms were generated
     # from, so the camera follows from the room rather than from a guess.
     #
-    # The second kitchen that came with these, lit by strips under its wall
-    # units, is not here. The strips wash coral down the cabinet fronts, so
-    # a fifth of its wall mask landed below the worktop line, on the
-    # dishwasher and the oak, against three per cent for this one.
+    # Two of the nine that came in are not here. The second kitchen was lit
+    # by strips under its wall units, which wash coral down the cabinet
+    # fronts until a fifth of its wall mask lands on the dishwasher and the
+    # oak, against three per cent for this one. The second ensuite and the
+    # shower room traced perfectly well; Mukuka did not want them.
     ("Coral and Navy Modern Bathroom.png",
-     "ensuite",      "Ensuite",             4.5),
-    ("Modern Coral and Navy Bathroom Sanctuary.png",
-     "ensuite-lit",  "Ensuite, lit mirror", 4.5),
+     "ensuite",  "Ensuite",      4.5),
     ("Sunlit Coral and Navy Bathroom Spa.png",
-     "bathroom",     "Bathroom",            5.0),
-    ("Modern Coral and Navy Spa Bathroom.png",
-     "shower-room",  "Shower room",         5.0),
+     "bathroom", "Bathroom",     5.0),
     ("Natural Light Modern Pink and Blue Kitchen.png",
-     "kitchen",      "Kitchen",             5.0),
+     "kitchen",  "Kitchen",      5.0),
     ("Modern Navy Living Room Retreat.png",
-     "living",       "Living room",         8.0),
+     "living",   "Living room",  8.0),
     ("Modern Navy Patio with Garden Views.png",
-     "patio",        "Veranda",            10.0),
+     "patio",    "Veranda",     10.0),
 ]
 
 STEP = 5

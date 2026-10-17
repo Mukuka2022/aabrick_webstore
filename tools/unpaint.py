@@ -43,17 +43,14 @@ APP = os.environ.get(
 # lit green, so the rule would strip the colour out of the garden. It also
 # has nothing to gain, its fixtures being beige and its ceiling white.
 ROOMS = [
-    ("Coral and Navy Modern Bathroom.png",     "ensuite",     10.0, True),
-    ("Modern Coral and Navy Bathroom Sanctuary.png",
-     "ensuite-lit", 10.0, True),
-    ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom",    10.0, True),
-    ("Modern Coral and Navy Spa Bathroom.png", "shower-room", 10.0, True),
+    ("Coral and Navy Modern Bathroom.png",     "ensuite",  10.0, True),
+    ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom", 10.0, True),
     ("Natural Light Modern Pink and Blue Kitchen.png",
-     "kitchen",     10.0, True),
+     "kitchen", 10.0, True),
 ]
 
 FADE = 0.30        # below this the colour is not the paint itself
-GROW = 2           # pixels the keep-mask is widened by
+GROW = 0           # pixels the keep-mask is widened by, see below
 
 # What the paint threw over the rest of the room. A wall painted strongly
 # enough to trace lights everything near it: in the ensuite the wall reads
@@ -89,7 +86,7 @@ for name, slug, hint, lit in ROOMS:
     if found is None:
         print("  %-10s no paint near %.0f degrees, left alone" % (slug, hint))
         continue
-    ref, ref_sat, win = found
+    ref, ref_sat, win, ref_val = found
 
     d = walls[slug]
     step = d["step"]
@@ -118,9 +115,15 @@ for name, slug, hint, lit in ROOMS:
                 for x in range(x0, min(x0 + step, w)):
                     seen[row + x] = 1
 
-    # the walls were sampled with a slight blur, so the mask stops a pixel
-    # or two short of the true edge; grow it so a repaint cannot eat into
-    # what the tile is about to cover
+    # This used to widen the mask by a couple of pixels, from when the spans
+    # stopped short of the true edge and a repaint could eat into what the
+    # tile was about to cover. walltrace grows its own spans now, so widening
+    # again protected a ring that the tile does not reach: not tiled, and not
+    # repainted either, so the old paint showed through as a coral line along
+    # the top of every wall and down the side of every window.
+    #
+    # Nothing is lost by not widening. Repainting a pixel the tile covers
+    # costs nothing, because the tile is drawn over it.
     grown = bytearray(keep)
     span = range(-GROW, GROW + 1)
     for y in range(h):

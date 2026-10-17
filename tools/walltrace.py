@@ -37,19 +37,15 @@ ROOMS = [
     # hue. These rooms are all coral, which measures out between 6 and 12.
     # The living room and the veranda are not here: their walls were never
     # painted, so there is nothing to trace and they are floor only.
-    ("Coral and Navy Modern Bathroom.png",           "ensuite",     10.0),
-    ("Modern Coral and Navy Bathroom Sanctuary.png", "ensuite-lit", 10.0),
-    ("Sunlit Coral and Navy Bathroom Spa.png",       "bathroom",    10.0),
-    ("Modern Coral and Navy Spa Bathroom.png",       "shower-room", 10.0),
-    ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen",   10.0),
+    ("Coral and Navy Modern Bathroom.png",            "ensuite",  10.0),
+    ("Sunlit Coral and Navy Bathroom Spa.png",        "bathroom", 10.0),
+    ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen", 10.0),
 ]
 
 STEP = 3           # columns
 MIN_RUN = 14       # a span shorter than this is a reflection, not a wall
 CLOSE = 8          # a break this short is a speck, not a hole in the wall
-EDGE = 2           # pixels of blend always taken at each end of a span
-REACH = 6          # ...and up to this many while the edge is still in shadow
-DARKER = 1.6       # how much brighter than the span's own edge still counts
+EDGE = 2           # pixels of blend taken at each end of a span
 
 
 def spans(path, hint):
@@ -60,8 +56,8 @@ def spans(path, hint):
     found = keycolour.paint(px, w, h, hint)
     if found is None:
         return None, (w, h), None
-    ref, ref_sat, win = found
-    is_wall = keycolour.tester(ref, ref_sat, win)
+    ref, ref_sat, win, ref_val = found
+    is_wall = keycolour.tester(ref, ref_sat, win, ref_val)
 
     order = []
     raw = {}
@@ -88,7 +84,7 @@ def spans(path, hint):
         right = raw[order[i + 1]] if i + 1 < len(order) else None
         runs = [r for r in raw[xs]
                 if r[1] - r[0] + 1 >= MIN_RUN or joined(r, left, right)]
-        runs = merge(grow(runs, h, px, xs), 0)
+        runs = merge(grow(runs, h), 0)
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
     return cols, (w, h), (ref, ref_sat, win)
@@ -137,47 +133,29 @@ def merge(runs, gap):
     return out
 
 
-def grow(runs, h, px, x):
-    """Stretch each run over the blend at its ends.
+def grow(runs, h):
+    """Stretch each run two pixels over the blend at its ends.
 
     Where the wall meets a cabinet there is no edge, there is a ramp: a few
     pixels that are part wall and part cabinet. They are not the paint, so
     the test rightly refuses them, and the tiling then stops short and
-    leaves them showing. They are dark, and a dark green pixel still reads
-    green, so what you see is a ragged green fringe along every junction in
-    the room.
+    leaves them showing.
 
-    How wide the ramp is varies: one pixel against a bright worktop, five or
-    six up in the shadow where the wall meets the ceiling. A fixed width is
-    either mean somewhere or greedy somewhere else, so the run takes EDGE
-    pixels always and then keeps going, as far as REACH, while the pixels
-    stay dark. The span's own edge sets what dark means, because a wall in
-    shadow is dark everywhere along that edge; the first pixel appreciably
-    brighter than it is the cabinet, or the worktop, or the ceiling, and the
-    growth stops there.
+    Two pixels, and no more. An earlier version of this followed the ramp as
+    far as six pixels while the pixels stayed dark, which worked where the
+    wall meets a cabinet in shadow and failed badly where it meets a basin.
+    The test was whether a pixel was brighter than the run's own last pixel
+    by more than half again; above a basin that last pixel is sunlit wall at
+    value 0.78, so the limit came out at 1.25, which nothing can exceed. The
+    rule stopped gating anything and every run took its full six pixels,
+    straight over the rim of the basin and down its side.
+
+    Being mean here is cheap. Whatever the tile does not cover, the repaint
+    pass neutralises, and a neutralised pixel is invisible; a tile over the
+    edge of a basin is not. Conservative about what gets tiled, generous
+    about what gets taken back to off-white.
     """
-    out = []
-    for a, b in runs:
-        va = value(px[x, a])
-        vb = value(px[x, b])
-        na, nb = max(0, a - EDGE), min(h - 1, b + EDGE)
-        # from where the growth started, or the limit moves with it and the
-        # run walks the whole column looking for something bright
-        top, bot, far = na, nb, REACH - EDGE
-        y = top - 1
-        while y >= 0 and top - y <= far and value(px[x, y]) <= va * DARKER:
-            na = y
-            y -= 1
-        y = bot + 1
-        while y < h and y - bot <= far and value(px[x, y]) <= vb * DARKER:
-            nb = y
-            y += 1
-        out.append([na, nb])
-    return out
-
-
-def value(rgb):
-    return max(rgb) / 255.0
+    return [[max(0, a - EDGE), min(h - 1, b + EDGE)] for a, b in runs]
 
 
 def overlay(path, cols, dst, label):
