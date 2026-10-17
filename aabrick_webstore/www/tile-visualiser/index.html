@@ -65,6 +65,21 @@
             </p>
 
             {#
+              Which surface the next tile is for. The floor and the walls
+              each keep their own choice, because almost nobody puts the
+              same tile on both, and the grid below serves whichever is
+              selected rather than being drawn twice.
+            #}
+            <div class="aab-vis-surface" role="group"
+                 aria-label="Which surface to tile">
+              <button type="button" class="aab-vis-face is-on"
+                      data-face="floor">Floor</button>
+              <button type="button" class="aab-vis-face"
+                      data-face="wall">Walls</button>
+              <button type="button" class="aab-vis-bare" hidden>Leave bare</button>
+            </div>
+
+            {#
               The search matches the range titles, not the tiles. A customer
               knows the floor they want is a matt porcelain long before they
               know a code, and the chips under it are those same titles

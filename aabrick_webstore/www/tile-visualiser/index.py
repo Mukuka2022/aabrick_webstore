@@ -196,10 +196,19 @@ def get_context(context):
     # browser holding the old one would show the old room under a new
     # outline. The version stamp the stylesheet uses rides along with them.
     from aabrick_webstore import hooks
+    # Three of the rooms were photographed with their walls painted as well
+    # as their floors, so those can be tiled too. The spans are far bulkier
+    # than a floor outline, so they are fetched as a file rather than
+    # written into every page.
+    walled = ("ensuite", "kitchen", "bathroom")
     stamped = []
     for s in SCENES:
         s = dict(s)
         s["image"] = "%s?v=%s" % (s["image"], hooks.ASSET_VERSION)
+        if s["id"] in walled:
+            s["wallsUrl"] = (
+                "/assets/aabrick_webstore/images/walls-%s.json?v=%s"
+                % (s["id"], hooks.ASSET_VERSION))
         stamped.append(s)
     context.aab_scenes_json = frappe.as_json(stamped)
     context.aab_tile_count = len(tiles)

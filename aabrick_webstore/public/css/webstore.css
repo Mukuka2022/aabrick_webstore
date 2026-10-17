@@ -2828,3 +2828,64 @@ main.container:has(.aab-vis) .aab-vis {
 	.aab-vis-product { flex: 1 0 100%; text-align: center; }
 	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
+
+/* ---- the visualiser's surface switch ---------------------------------
+ * Floor or walls, for the one tile grid underneath. A segmented pair
+ * rather than two loose buttons, because the two are one choice.
+ */
+.aab-vis-surface {
+	display: flex;
+	gap: 6px;
+	margin: 0 0 14px;
+	align-items: center;
+}
+
+.aab-vis-face {
+	flex: 1 1 0;
+	padding: 8px 10px;
+	border: 1px solid var(--aab-line);
+	border-radius: 8px;
+	background: var(--aab-card);
+	color: var(--aab-muted);
+	font: inherit;
+	font-size: .86rem;
+	font-weight: 600;
+	letter-spacing: .02em;
+	cursor: pointer;
+	transition: background .14s ease, color .14s ease, border-color .14s ease;
+}
+
+.aab-vis-face:hover:not(:disabled) {
+	border-color: var(--aab-brass-lit);
+	color: #202020;
+}
+
+.aab-vis-face.is-on {
+	background: var(--aab-brass);
+	border-color: var(--aab-brass-deep);
+	color: #FFF;
+}
+
+.aab-vis-face:disabled {
+	opacity: .45;
+	cursor: not-allowed;
+}
+
+.aab-vis-bare {
+	flex: 0 0 auto;
+	padding: 8px 10px;
+	border: 1px dashed var(--aab-line);
+	border-radius: 8px;
+	background: transparent;
+	color: var(--aab-muted);
+	font: inherit;
+	font-size: .8rem;
+	cursor: pointer;
+}
+
+.aab-vis-bare:hover,
+.aab-vis-bare.is-on {
+	border-style: solid;
+	border-color: var(--aab-brass-lit);
+	color: #202020;
+}

@@ -39,14 +39,20 @@
 
 	var scene = null;        // the room on screen
 	var tile = null;         // the tile on the floor
+	var wallTile = null;     // the tile on the walls, null to leave them bare
+	var target = "floor";    // which surface the next swatch is picked for
 	var turned = false;      // laid on the diagonal
 	var grout = true;
 
 	var canvas, ctx, out;
 	var base = null;         // the room, untouched
-	var mask = null;         // 1 where the floor is
+	var mask = null;         // 1 where there is a surface to tile
+	var plane = null;        // 0 floor, 1 wall
 	var shade = null;        // the floor brightness, as a multiplier
-	var U = null, V = null;  // metres across and into the room, per pixel
+	// On the floor, metres across and into the room. On a wall, metres along
+	// it and up it. Two meanings, but the same two numbers: they index the
+	// tile, and the drawing loop never has to know which surface it is on.
+	var U = null, V = null;
 	var PX = null;           // pixels per metre, per pixel
 	var texCache = {};
 	var SHOW_MASK = /[?&]mask=1/.test(location.search);
@@ -90,6 +96,7 @@
 
 		var n = w * h;
 		mask = new Uint8Array(n);
+		plane = new Uint8Array(n);
 		shade = new Float32Array(n);
 		U = new Float32Array(n);
 		V = new Float32Array(n);
@@ -135,10 +142,102 @@
 			}
 		}
 
+		// ---- the walls --------------------------------------------------
+		//
+		// A wall needs no camera of its own. It stands on the floor, so the
+		// line the floor trace already found is the skirting, and the depth
+		// of the wall in any column is the depth of the floor directly below
+		// it. From that one number both wall coordinates follow: height is
+		// how far the pixel sits above the skirting, converted at that
+		// depth, and distance along the wall is the world length of the
+		// skirting walked from the left edge. A corner needs no special
+		// case, because walking the skirting turns the corner on its own.
+		//
+		// A wall is given as spans rather than as an outline, because a wall
+		// has a window punched through it and a mirror hung on it, and an
+		// outline has no way to say "not here".
+		var wsum = 0, wcount = 0;
+		var walls = s.walls;
+		if (walls && walls.cols && walls.cols.length) {
+			// the skirting, per drawn column
+			var yTop = new Int32Array(w);
+			for (x = 0; x < w; x++) {
+				yTop[x] = -1;
+				for (y = 0; y < h; y++) {
+					if (mask[y * w + x]) { yTop[x] = y; break; }
+				}
+			}
+
+			// how far along the wall each column is, in metres
+			var along = new Float32Array(w);
+			var pu = 0, pv = 0, has = false, acc = 0;
+			for (x = 0; x < w; x++) {
+				along[x] = acc;
+				var dyt = yTop[x] - yh;
+				if (yTop[x] < 0 || dyt <= 2) { has = false; continue; }
+				var cv = focal * camH / dyt;
+				var cu = (x - cx) * camH / dyt;
+				if (has) {
+					var du = cu - pu, dv = cv - pv;
+					var stp = Math.sqrt(du * du + dv * dv);
+					// A traced skirting wobbles by a pixel or two, and at the
+					// back of the room a pixel is a long way, so an unchecked
+					// walk accumulates noise as length and the tiles narrow
+					// towards the horizon. A real corner is still gradual in
+					// the picture, so this ceiling costs nothing and the
+					// wobble has nowhere to go.
+					acc += stp > 0.05 ? 0.05 : stp;
+				}
+				pu = cu; pv = cv; has = true;
+				along[x] = acc;
+			}
+
+			var kw = w / walls.size[0];
+			var wstep = walls.step;
+			walls.cols.forEach(function (col) {
+				var xa = Math.round(col[0] * kw);
+				var xb = Math.round((col[0] + wstep) * kw);
+				if (xb > w) { xb = w; }
+				var sp, xx, yy, j;
+				for (xx = xa; xx < xb; xx++) {
+					if (xx < 0) { continue; }
+					var yt = yTop[xx];
+					if (yt < 0 || yt - yh <= 2) { continue; }
+					var depth = focal * camH / (yt - yh);
+					var ppm = focal / depth;   // pixels per metre up there
+					for (sp = 1; sp + 1 < col.length; sp += 2) {
+						var ya = Math.round(col[sp] * kw);
+						var yb2 = Math.round(col[sp + 1] * kw);
+						if (yb2 >= yt) { yb2 = yt - 1; }
+						for (yy = ya; yy <= yb2; yy++) {
+							if (yy < 0) { continue; }
+							j = yy * w + xx;
+							if (mask[j]) { continue; }
+							mask[j] = 1;
+							plane[j] = 1;
+							U[j] = along[xx];
+							V[j] = (yt - yy) / ppm;
+							PX[j] = ppm;
+							var q = j * 4;
+							var WL = (0.299 * d[q] + 0.587 * d[q + 1]
+								+ 0.114 * d[q + 2]) / 255;
+							lum[j] = WL;
+							wsum += WL;
+							wcount++;
+						}
+					}
+				}
+			});
+		}
+
+		// Each surface is shaded against its own average. The walls catch
+		// far more light than the floor in every one of these rooms, so one
+		// shared average would have put the floor's shadow onto them.
 		var ref = count ? sum / count : 0.6;
+		var wref = wcount ? wsum / wcount : ref;
 		for (i = 0; i < n; i++) {
 			if (!mask[i]) { continue; }
-			var f = lum[i] / ref;
+			var f = lum[i] / (plane[i] ? wref : ref);
 			shade[i] = f < 0.25 ? 0.25 : (f > 1.7 ? 1.7 : f);
 		}
 
@@ -181,115 +280,160 @@
 
 	// ---- drawing --------------------------------------------------------
 
+	function withTex(t, done) {
+		if (!t) { return done(null); }
+		texture(t, done);
+	}
+
 	function draw() {
-		if (!base || !tile) { return; }
-		texture(tile, function (tex) {
-			if (!tex) { return; }
-			var w = canvas.width, h = canvas.height;
-			var src = base.data, dst = out.data, td = tex.data;
-			var side = tex.side;
-			var S = tile.w / 1000;          // tile size in metres
-			var Sv = tile.h / 1000;
-			var gm = GROUT_MM / 1000;   // grout, in metres
-			var ca = turned ? Math.SQRT1_2 : 1;
-			var sa = turned ? Math.SQRT1_2 : 0;
-			var avg = tex.avg;
-			var i, n = w * h;
+		if (!base) { return; }
+		withTex(tile, function (ftex) {
+			withTex(wallTile, function (wtex) {
+				paint(ftex, wtex);
+			});
+		});
+	}
 
-			dst.set(src);
+	function paint(ftex, wtex) {
+		var w = canvas.width, h = canvas.height;
+		var src = base.data, dst = out.data;
+		var gm = GROUT_MM / 1000;   // grout, in metres
+		var ca = turned ? Math.SQRT1_2 : 1;
+		var sa = turned ? Math.SQRT1_2 : 0;
+		// One entry per surface, floor first, so the loop only has to pick.
+		// A surface with no texture is one the customer left bare.
+		var TEX = [ftex, wtex];
+		var TW = [tile ? tile.w / 1000 : 0, wallTile ? wallTile.w / 1000 : 0];
+		var TH = [tile ? tile.h / 1000 : 0, wallTile ? wallTile.h / 1000 : 0];
+		var i, n = w * h;
 
-			for (i = 0; i < n; i++) {
-				if (!mask[i]) { continue; }
-				var u = U[i], v = V[i];
-				if (turned) {
-					var ur = u * ca - v * sa;
-					v = u * sa + v * ca;
-					u = ur;
+		dst.set(src);
+
+		for (i = 0; i < n; i++) {
+			if (!mask[i]) { continue; }
+			var pl = plane[i];
+			var tex = TEX[pl];
+			if (!tex) { continue; }
+			var td = tex.data, side = tex.side, avg = tex.avg;
+			var S = TW[pl], Sv = TH[pl];
+
+			var u = U[i], v = V[i];
+			// The diagonal is a floor lay. A wall tile turned forty five
+			// degrees is a different decision, and not one that was asked for.
+			if (turned && !pl) {
+				var ur = u * ca - v * sa;
+				v = u * sa + v * ca;
+				u = ur;
+			}
+			var fu = u / S, fv = v / Sv;
+			fu = fu - Math.floor(fu);
+			fv = fv - Math.floor(fv);
+
+			var tp = (((fv * side) | 0) * side + ((fu * side) | 0)) * 4;
+			var r = td[tp], g = td[tp + 1], b = td[tp + 2];
+
+			// Far enough away and a tile is smaller than a pixel, so it
+			// is drawn as its own average rather than as noise.
+			var px = S * PX[i];
+			if (px < SOFT_PX) {
+				var m = px / SOFT_PX;
+				if (m < 0) { m = 0; }
+				r = r * m + avg[0] * (1 - m);
+				g = g * m + avg[1] * (1 - m);
+				b = b * m + avg[2] * (1 - m);
+			} else if (grout) {
+				// A 1mm joint on a 600mm tile is a quarter of a pixel at
+				// the size these rooms are drawn, so it cannot be drawn
+				// narrow: nothing is thinner than a pixel. It is drawn a
+				// pixel wide and paid for in strength instead, so it
+				// reads as the hairline it is rather than as a grid
+				// pencilled over the floor. Where the tile is close
+				// enough for the joint to cover a pixel honestly, full
+				// strength returns.
+				var ppm = PX[i];
+				var gpx = gm * ppm;
+				var band = gpx > 1 ? gpx : 1;
+				var g2 = band / ppm;
+				if (fu < g2 / S || fv < g2 / Sv) {
+					var k = gpx / band;
+					if (k < GROUT_FAINT) { k = GROUT_FAINT; }
+					var d2 = 1 - (1 - GROUT_DARK) * k;
+					r *= d2; g *= d2; b *= d2;
 				}
-				var fu = u / S, fv = v / Sv;
-				fu = fu - Math.floor(fu);
-				fv = fv - Math.floor(fv);
-
-				var tp = (((fv * side) | 0) * side + ((fu * side) | 0)) * 4;
-				var r = td[tp], g = td[tp + 1], b = td[tp + 2];
-
-				// Far enough away and a tile is smaller than a pixel, so it
-				// is drawn as its own average rather than as noise.
-				var px = S * PX[i];
-				if (px < SOFT_PX) {
-					var m = px / SOFT_PX;
-					if (m < 0) { m = 0; }
-					r = r * m + avg[0] * (1 - m);
-					g = g * m + avg[1] * (1 - m);
-					b = b * m + avg[2] * (1 - m);
-				} else if (grout) {
-					// A 1mm joint on a 600mm tile is a quarter of a pixel at
-					// the size these rooms are drawn, so it cannot be drawn
-					// narrow: nothing is thinner than a pixel. It is drawn a
-					// pixel wide and paid for in strength instead, so it
-					// reads as the hairline it is rather than as a grid
-					// pencilled over the floor. Where the tile is close
-					// enough for the joint to cover a pixel honestly, full
-					// strength returns.
-					var ppm = PX[i];
-					var gpx = gm * ppm;
-					var band = gpx > 1 ? gpx : 1;
-					var g2 = band / ppm;
-					if (fu < g2 / S || fv < g2 / Sv) {
-						var k = gpx / band;
-						if (k < GROUT_FAINT) { k = GROUT_FAINT; }
-						var d2 = 1 - (1 - GROUT_DARK) * k;
-						r *= d2; g *= d2; b *= d2;
-					}
-				}
-
-				// Darker than the floor average is a shadow, and multiplying
-				// is right for it. Brighter is a reflection, and multiplying
-				// is useless for it: a black tile times anything is still
-				// black, so a polished black floor came out as a hole in the
-				// picture with every window reflection gone. Highlights are
-				// screened towards white instead, which is the one way to put
-				// light back onto a dark tile.
-				if (SHOW_MASK) {
-					// Tracing a floor by eye is guesswork until you can see
-					// what you traced. ?mask=1 paints it red.
-					var q = i * 4;
-					dst[q] = 230; dst[q + 1] = 40; dst[q + 2] = 40;
-					dst[q + 3] = 255;
-					continue;
-				}
-				var f = shade[i];
-				if (f > 1) {
-					var t = (f - 1) * HIGHLIGHT;
-					if (t > 1) { t = 1; }
-					r = r + (255 - r) * t;
-					g = g + (255 - g) * t;
-					b = b + (255 - b) * t;
-				} else {
-					r *= f; g *= f; b *= f;
-				}
-				var p = i * 4;
-				dst[p] = r > 255 ? 255 : r;
-				dst[p + 1] = g > 255 ? 255 : g;
-				dst[p + 2] = b > 255 ? 255 : b;
-				dst[p + 3] = 255;
 			}
 
-			ctx.putImageData(out, 0, 0);
-		});
+			// Darker than the surface average is a shadow, and multiplying
+			// is right for it. Brighter is a reflection, and multiplying
+			// is useless for it: a black tile times anything is still
+			// black, so a polished black floor came out as a hole in the
+			// picture with every window reflection gone. Highlights are
+			// screened towards white instead, which is the one way to put
+			// light back onto a dark tile.
+			if (SHOW_MASK) {
+				// Tracing by eye is guesswork until you can see what you
+				// traced. ?mask=1 paints the floor red and the walls blue.
+				var q = i * 4;
+				dst[q] = pl ? 40 : 230;
+				dst[q + 1] = 40;
+				dst[q + 2] = pl ? 230 : 40;
+				dst[q + 3] = 255;
+				continue;
+			}
+			var f = shade[i];
+			if (f > 1) {
+				var hi = (f - 1) * HIGHLIGHT;
+				if (hi > 1) { hi = 1; }
+				r = r + (255 - r) * hi;
+				g = g + (255 - g) * hi;
+				b = b + (255 - b) * hi;
+			} else {
+				r *= f; g *= f; b *= f;
+			}
+			var p = i * 4;
+			dst[p] = r > 255 ? 255 : r;
+			dst[p + 1] = g > 255 ? 255 : g;
+			dst[p + 2] = b > 255 ? 255 : b;
+			dst[p + 3] = 255;
+		}
+
+		ctx.putImageData(out, 0, 0);
 	}
 
 	// ---- the page -------------------------------------------------------
 
+	function wallsFor(s, done) {
+		if (s.walls !== undefined || !s.wallsUrl) { return done(); }
+		fetch(s.wallsUrl)
+			.then(function (r) { return r.ok ? r.json() : null; })
+			.then(function (j) { s.walls = j; done(); })
+			.catch(function () { s.walls = null; done(); });
+	}
+
 	function loadScene(s) {
 		scene = s;
+		// Three of the rooms were photographed with their walls painted for
+		// tracing; the rest were not, and offering Walls there would be a
+		// button that does nothing.
+		var hasWalls = !!(s.wallsUrl || (s.walls && s.walls.cols));
+		var wb = $('.aab-vis-face[data-face="wall"]');
+		if (wb) {
+			wb.disabled = !hasWalls;
+			wb.title = hasWalls ? "Tile the walls"
+				: "The walls of this room are not traced yet";
+		}
+		if (!hasWalls && target === "wall") { faceTo("floor"); }
 		var wrap = $(".aab-vis-stage");
 		if (wrap) { wrap.classList.add("is-loading"); }
 		var img = new Image();
 		img.onload = function () {
-			prepare(s, img, function () {
-				if (wrap) { wrap.classList.remove("is-loading"); }
-				draw();
+			// The wall spans are a file of their own, so a room that has
+			// them waits for both. A fetch that fails leaves the room with
+			// its floor, which is what it had before any of this.
+			wallsFor(s, function () {
+				prepare(s, img, function () {
+					if (wrap) { wrap.classList.remove("is-loading"); }
+					draw();
+				});
 			});
 		};
 		img.src = s.image;
@@ -300,25 +444,61 @@
 			});
 	}
 
+	// One picker, two surfaces. A second grid of 228 tiles alongside the
+	// first would be a wall of pictures nobody can read, so the grid stays
+	// as it is and the Floor and Walls buttons say which surface the next
+	// swatch is for. Each surface keeps its own choice, which is the point:
+	// almost nobody puts the same tile on both.
 	function loadTile(t) {
-		tile = t;
+		if (target === "wall") { wallTile = t; } else { tile = t; }
 		draw();
+		showPick();
+	}
+
+	function showPick() {
+		var onWall = target === "wall";
+		var t = onWall ? wallTile : tile;
+
 		var link = $(".aab-vis-product");
 		if (link) {
-			link.href = t.route;
-			link.textContent = "View " + t.name;
+			link.hidden = !t;
+			if (t) {
+				link.href = t.route;
+				link.textContent = "View " + t.name;
+			}
 		}
 		var cap = $(".aab-vis-caption");
 		if (cap) {
-			cap.textContent = t.name + (t.wall ? "  wall tile" : "")
-				+ "  " + t.w + "x" + t.h + "mm"
-				+ (t.price ? "  ZK " + Number(t.price).toFixed(2) : "");
+			cap.textContent = !t
+				? "Walls left as they are"
+				: (onWall ? "Walls: " : "Floor: ") + t.name
+					+ (t.wall ? "  wall tile" : "")
+					+ "  " + t.w + "x" + t.h + "mm"
+					+ (t.price ? "  ZK " + Number(t.price).toFixed(2) : "");
 		}
+		var code = t ? t.code : "";
 		Array.prototype.forEach.call(
 			document.querySelectorAll(".aab-vis-swatch"),
 			function (b) {
-				b.classList.toggle("is-on", b.getAttribute("data-code") === t.code);
+				b.classList.toggle("is-on",
+					b.getAttribute("data-code") === code);
 			});
+		var bare = $(".aab-vis-bare");
+		if (bare) {
+			bare.hidden = !onWall;
+			bare.classList.toggle("is-on", onWall && !t);
+		}
+	}
+
+	function faceTo(name) {
+		target = name;
+		Array.prototype.forEach.call(
+			document.querySelectorAll(".aab-vis-face"),
+			function (b) {
+				b.classList.toggle("is-on",
+					b.getAttribute("data-face") === name);
+			});
+		showPick();
 	}
 
 	function build() {
@@ -534,6 +714,22 @@
 				narrowMenu("");
 				box.focus();
 				open();
+			});
+		}
+
+		Array.prototype.forEach.call(
+			document.querySelectorAll(".aab-vis-face"),
+			function (b) {
+				b.addEventListener("click", function () {
+					faceTo(b.getAttribute("data-face"));
+				});
+			});
+		var bare = $(".aab-vis-bare");
+		if (bare) {
+			bare.addEventListener("click", function () {
+				wallTile = null;
+				draw();
+				showPick();
 			});
 		}
 

@@ -459,16 +459,41 @@ paste from Word in a way a template cannot.
 Until that is built, a picture in a guide needs a developer, same as the
 words.
 
-**The visualiser is to do walls as well.** Said on 2026-10-01. It lays
-floors today: every room carries a traced floor polygon and the engine
-projects onto a ground plane. A wall is the same arithmetic against a
-vertical plane, so the work is tracing the walls in each room and giving a
-scene more than one surface to choose between, not rewriting the engine.
+**The visualiser does walls, in three rooms of six.** Asked for on
+2026-10-01, built on 2026-10-17. The ensuite, the kitchen and the bathroom
+were generated with their walls painted pink as well as their floors blue,
+so those three have a traced wall and a Floor / Walls switch above the tile
+grid. Each surface keeps its own choice, because almost nobody puts the same
+tile on both. In the living room and the veranda the Walls button is
+disabled and says why.
+
+The engine was not rewritten. A wall stands on the floor, so the floor
+outline is also the skirting, and the depth of a wall in any column is the
+depth of the floor directly below it. Height up the wall and distance along
+it come from that one number, they go into the same two arrays the floor
+uses, and the drawing loop never learns there are two kinds of surface.
+
+Two things to know before the next room:
+
+- **The kitchen's walls are about 600mm too close.** The splashback is
+  behind the cabinets, so the nearest floor in that column is the kickboard
+  rather than the wall itself, and the tiles there are drawn that much
+  large. It is invisible unless you measure it, and it would only be worth
+  fixing with a per-wall depth offset.
+- **Any leftover pink is repainted off-white when the room is built.** The
+  ceiling is not a wall and nobody tiles one, so it kept its pink until the
+  walls around it were tiled and it began to look like a fault. Anything
+  that passes the pink test and is not under the wall mask is now neutralised
+  to its own brightness. That is `scratchpad/depink.py`, and it runs off the
+  original images, so it can be re-run safely.
 
 It matters more than it sounds for the catalogue. 33 of the tiles in the
-picker are wall tiles being shown on a floor, and the 250x400 carries a
-warning saying so. Once walls work, those stop being an awkward case and
-become the point.
+picker are wall tiles that until now could only be shown on a floor, and
+the 250x400 carries a warning saying so. They are no longer an awkward case.
+What is still missing is the other three rooms: the living room, the veranda
+and the kitchen-and-dining have no painted walls to trace, so they need
+regenerating the way `visualiser-room-brief.md` describes, with the walls
+painted a flat saturated pink the way the floors are painted blue.
 
 **300x300 is shown as a floor tile on AABrick's word, not on a rating.**
 Mukuka has seen customers lay it in bathrooms, so it no longer carries the
