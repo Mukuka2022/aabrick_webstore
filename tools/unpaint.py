@@ -1,4 +1,4 @@
-"""Take the paint off everything that is not going to be tiled.
+"""Take the paint, and the light it threw, off everything not being tiled.
 
 The wall colour was only ever a tracing key, the way the blue was on the
 floors. The floor disappears under a tile and so, now, does the wall; but
@@ -30,21 +30,52 @@ W = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
      "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls/walls.json")
 APP = "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
 
-# Must match walltrace.py, room for room and hint for hint.
+# Must match walltrace.py, room for room and hint for hint. The flag says
+# whether to take the wall's light back off the pale things in the room as
+# well as the paint itself, and it is a room's own answer rather than
+# something measured, because colour cannot settle it.
+#
+# In the two pink rooms the paint has plainly stained the porcelain and
+# nothing outside the windows is pink, so the rule has a clear run. The
+# green kitchen is the opposite: the garden through its window is the same
+# green as the wall, and no threshold tells a sunlit palm from a worktop
+# lit green, so the rule would strip the colour out of the garden. It also
+# has nothing to gain, its fixtures being beige and its ceiling white.
 ROOMS = [
-    (19, "ensuite",  10.0),
-    (23, "kitchen",  85.0),
-    (18, "bathroom", 10.0),
+    (19, "ensuite",  10.0, True),
+    (23, "kitchen",  85.0, False),
+    (18, "bathroom", 10.0, True),
 ]
 
-FADE = 0.30        # below this the colour is only bounced light, and stays
+FADE = 0.30        # below this the colour is not the paint itself
 GROW = 2           # pixels the keep-mask is widened by
+
+# What the paint threw over the rest of the room. A wall painted strongly
+# enough to trace lights everything near it: in the ensuite the wall reads
+# saturation 0.65 and the basin 0.17, the vanity top 0.15, the ceiling 0.19.
+# None of that is paint, so the pass above leaves it, and against a white
+# tiled wall every one of them reads pink.
+#
+# Saturation is what separates it, not hue. The vanity top sits at 22
+# degrees and the oak front it stands on at 24, so no hue window can tell
+# those two apart; their saturations are 0.15 and 0.73. So the rule is pale
+# and bright: a surface that is barely coloured and catching the light is
+# porcelain or paintwork wearing the wall's colour, and a surface that is
+# strongly coloured is itself. Plants at 0.91 and oak at 0.73 are excluded
+# by the same number that includes the basin.
+LIT_CAP = 0.35     # more strongly coloured than this and it is its own colour
+LIT_SOFT = 0.26    # ...below this the tint comes out whole, and eases between
+LIT_VAL = 0.55     # bounced light shows on pale bright surfaces, not in shade
+LIT_WIN = 22.0     # degrees; wider than the paint's own, the tint drifts
+#                    more, but measured: every surface this is meant to
+#                    reach lies within 17 degrees of the paint, and the
+#                    greenery outside the windows sits at 48
 # the warm off-white the rooms were asked for, as a tint
 TINT = (1.000, 0.976, 0.953)
 
 walls = json.load(io.open(W, encoding="utf-8"))
 
-for n, slug, hint in ROOMS:
+for n, slug, hint, lit in ROOMS:
     im = Image.open("%s/%d.webp" % (SRC, n)).convert("RGB")
     w, h = im.size
     px = im.load()
@@ -58,6 +89,7 @@ for n, slug, hint in ROOMS:
     d = walls[slug]
     step = d["step"]
     keep = bytearray(w * h)          # 1 where a tile will go anyway
+    seen = bytearray(w * h)          # 1 where you are seeing past the wall
     for col in d["cols"]:
         x0 = col[0]
         for i in range(1, len(col), 2):
@@ -65,6 +97,21 @@ for n, slug, hint in ROOMS:
                 row = y * w
                 for x in range(x0, min(x0 + step, w)):
                     keep[row + x] = 1
+        # A gap with wall above it and wall below it is a hole in the wall:
+        # a window, a mirror, a niche. What shows there is not a surface the
+        # paint has lit, it is whatever is on the far side, and a garden has
+        # pale sunlit leaves in it like anything else. Colour will not
+        # settle that, so the geometry does.
+        #
+        # This only covers a hole the wall closes over, which is every
+        # window in the two rooms the rule runs in. A window that runs down
+        # to a worktop has no wall beneath it and is not caught; the kitchen
+        # has one, which is part of why the rule is off there.
+        for i in range(2, len(col) - 2, 2):
+            for y in range(col[i] + 1, min(col[i + 1], h)):
+                row = y * w
+                for x in range(x0, min(x0 + step, w)):
+                    seen[row + x] = 1
 
     # the walls were sampled with a slight blur, so the mask stops a pixel
     # or two short of the true edge; grow it so a repaint cannot eat into
@@ -97,19 +144,29 @@ for n, slug, hint in ROOMS:
                 continue
             r, g, b = px[x, y]
             hh, ss, vv = keycolour.hsv(r, g, b)
-            if ss < FADE or ss > ceiling or vv < 0.10:
+            if vv < 0.10:
                 continue
-            if keycolour.apart(hh, ref) >= win:
+            off = keycolour.apart(hh, ref)
+
+            # the paint itself, wherever the mask did not reach it. A ramp
+            # rather than a cut, so there is no seam where a ceiling meets a
+            # wall and the ramp runs out.
+            k = 0.0
+            if off < win and FADE <= ss <= ceiling:
+                k = (ss - FADE) / (full - FADE) if full > FADE else 1.0
+                if k > 1.0:
+                    k = 1.0
+
+            # and the light it threw on everything pale near it
+            if (lit and not seen[row + x] and off < LIT_WIN
+                    and ss < LIT_CAP and vv > LIT_VAL):
+                glow = (1.0 if ss <= LIT_SOFT
+                        else (LIT_CAP - ss) / (LIT_CAP - LIT_SOFT))
+                if glow > k:
+                    k = glow
+
+            if k <= 0.0:
                 continue
-            # A ceiling is paler than the wall below it but the same colour,
-            # so a single cut either leaves it or starts taking the warm
-            # light off the porcelain. It is a ramp instead: full strength
-            # at wall paint, nothing at all by the time the colour is only
-            # the light bouncing around the room, and no seam where a
-            # ceiling meets a wall.
-            k = (ss - FADE) / (full - FADE) if full > FADE else 1.0
-            if k > 1.0:
-                k = 1.0
             L = 0.299 * r + 0.587 * g + 0.114 * b
             px[x, y] = (
                 min(255, int(r + (L * TINT[0] - r) * k)),
