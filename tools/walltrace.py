@@ -84,7 +84,8 @@ def spans(path, hint):
         right = raw[order[i + 1]] if i + 1 < len(order) else None
         runs = [r for r in raw[xs]
                 if r[1] - r[0] + 1 >= MIN_RUN or joined(r, left, right)]
-        runs = merge(grow(runs, h), 0)
+        runs = merge(grow(runs, h, px, xs,
+                          ref_val * keycolour.VLO), 0)
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
     return cols, (w, h), (ref, ref_sat, win)
@@ -133,29 +134,43 @@ def merge(runs, gap):
     return out
 
 
-def grow(runs, h):
-    """Stretch each run two pixels over the blend at its ends.
+def grow(runs, h, px, x, dark):
+    """Stretch each run over the blend at its ends, where there is one.
 
-    Where the wall meets a cabinet there is no edge, there is a ramp: a few
-    pixels that are part wall and part cabinet. They are not the paint, so
-    the test rightly refuses them, and the tiling then stops short and
-    leaves them showing.
+    Where the wall meets a cabinet there is no edge, there is a ramp: three
+    or four pixels that are part wall and part cabinet. They are not the
+    paint, so the test rightly refuses them, and the tiling then stops short
+    and leaves them showing as a fringe along the junction.
 
-    Two pixels, and no more. An earlier version of this followed the ramp as
-    far as six pixels while the pixels stayed dark, which worked where the
-    wall meets a cabinet in shadow and failed badly where it meets a basin.
-    The test was whether a pixel was brighter than the run's own last pixel
-    by more than half again; above a basin that last pixel is sunlit wall at
-    value 0.78, so the limit came out at 1.25, which nothing can exceed. The
-    rule stopped gating anything and every run took its full six pixels,
-    straight over the rim of the basin and down its side.
+    Where the wall meets a black window frame there is no ramp at all. The
+    wall ends at one row and the frame starts at the next, measured in all
+    three rooms: zero pixels in between. Growing into that puts two pixels
+    of tile along the top and bottom of every window, on a crisp black edge
+    where it shows, and covers nothing that needed covering.
 
-    Being mean here is cheap. Whatever the tile does not cover, the repaint
-    pass neutralises, and a neutralised pixel is invisible; a tile over the
-    edge of a basin is not. Conservative about what gets tiled, generous
-    about what gets taken back to off-white.
+    So the growth stops at the first pixel that is plainly not wall, which
+    is the same brightness floor the test itself uses: a frame, a tap, a
+    black fitting. A blend pixel against a cabinet is dark but not that
+    dark, and is still taken.
+
+    Being mean here is cheap either way. Whatever the tile does not cover,
+    the repaint pass neutralises, and a neutralised pixel is invisible.
     """
-    return [[max(0, a - EDGE), min(h - 1, b + EDGE)] for a, b in runs]
+    out = []
+    for a, b in runs:
+        na, nb = a, b
+        for i in range(1, EDGE + 1):
+            y = a - i
+            if y < 0 or max(px[x, y]) / 255.0 < dark:
+                break
+            na = y
+        for i in range(1, EDGE + 1):
+            y = b + i
+            if y >= h or max(px[x, y]) / 255.0 < dark:
+                break
+            nb = y
+        out.append([na, nb])
+    return out
 
 
 def overlay(path, cols, dst, label):
