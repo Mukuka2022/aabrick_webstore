@@ -9,10 +9,19 @@ first undoing the last run.
 |---|---|
 | `bluetrace.py` | Finds the floor, where the floor was painted flat blue, and writes the outline and the camera into the page. |
 | `walltrace.py` | Finds the walls, where the walls were painted flat pink, and writes them as spans beside the room photograph. |
-| `depink.py` | Repaints whatever pink is left over, which is the ceiling and a few rims, as off-white. Run it last: it needs the wall mask to know what to leave alone. |
+| `unpaint.py` | Repaints whatever wall colour is left over, which is a few rims and the wall reflected in a mirror, as off-white. Run it last: it needs the wall mask to know what to leave alone. |
+
+`keycolour.py` holds the part the two wall scripts share: given roughly what
+colour a surface was painted, measure what it actually came out as and hand
+back a test for it.
 
 They all want `SRC` pointed at wherever the generated images are, and
-`ROOMS` listing the ones to do.
+`ROOMS` listing the ones to do. For the two wall scripts each room also
+gives roughly what colour its walls were painted, in degrees of hue: pink is
+about 10 and green about 85. That hint is a family, not the answer; the
+exact hue, how strongly coloured it is, and how far it drifts across the
+wall are all still measured. See the comment at the top of `keycolour.py`
+for why guessing it unaided does not work.
 
 ## Why a key colour at all
 
@@ -32,18 +41,18 @@ floor wants painting blue.
 
 ## What separates paint from furniture
 
-Not the same test twice. For the floor it is **hue**: the veranda has half
-its floor in the shade of its own roof and half in full sun, and as colours
-those are far enough apart that a test anchored on one throws the other
-away. Their hue is the same to within a couple of degrees, because sunlight
-changes how bright and how strong a blue is and not which blue it is.
+For the floor it is **hue**: the veranda has half its floor in the shade of
+its own roof and half in full sun, and as colours those are far enough apart
+that a test anchored on one throws the other away. Their hue is the same to
+within a couple of degrees, because sunlight changes how bright and how
+strong a blue is and not which blue it is.
 
-For the walls hue is not enough on its own, because the pink paint throws
-pink light over the whole room: in the ensuite the wall measures 9 degrees
-and the toilet measures 12. What the paint has and the porcelain has not is
-**strength of colour**, around 0.6 against 0.25. And the one strongly
-coloured thing that is not wall, the oak vanity, sits 17 degrees away in
-hue. Neither test holds alone; together they are clean.
+The walls are harder, and the two colours used so far fail in opposite
+directions. The full argument is at the top of `keycolour.py`; the short
+version is that pink is *more* strongly coloured than the room but barely
+different in hue, green is *less* strongly coloured than the woodwork but
+far from it in hue, and a flat green wall drifts sixteen degrees across
+itself where a pink one holds to two.
 
 ## Checking the result
 

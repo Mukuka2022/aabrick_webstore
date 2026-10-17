@@ -24,7 +24,7 @@ W = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
      "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls/walls.json")
 APP = "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
 
-ROOMS = [(19, "ensuite"), (20, "kitchen"), (18, "bathroom")]
+ROOMS = [(14, "ensuite"), (15, "kitchen"), (16, "bathroom")]
 HUE, SAT = 10.0, 0.72
 FADE = 0.30        # below this the pink is only bounced light, and stays
 # the warm off-white the rooms were asked for, as a tint
