@@ -27,7 +27,7 @@ OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
        "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls")
 
 # Only the rooms whose walls were painted. The others have no key to trace.
-ROOMS = [(14, "ensuite"), (15, "kitchen"), (16, "bathroom")]
+ROOMS = [(19, "ensuite"), (20, "kitchen"), (18, "bathroom")]
 
 STEP = 3           # columns
 HUE = 10.0         # degrees either side of the wall's own hue

@@ -33,9 +33,9 @@ ROOMS = [
     # depths are the ones written into the prompts the rooms were generated
     # from, so the camera follows from the room rather than from a guess.
     (17, "living",         "Living room",        8.0),
-    (14, "ensuite",        "Ensuite",            4.5),
-    (15, "kitchen",        "Kitchen",            5.0),
-    (16, "bathroom",       "Bathroom",           5.0),
+    (19, "ensuite",        "Ensuite",            4.5),
+    (20, "kitchen",        "Kitchen",            5.0),
+    (18, "bathroom",       "Bathroom",           5.0),
     (13, "patio",          "Veranda",           10.0),
     # No new picture for this one, so it keeps the one it had.
     (7,  "kitchen-dining", "Kitchen and dining", 6.0),
