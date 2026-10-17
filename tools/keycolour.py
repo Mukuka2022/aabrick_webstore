@@ -26,6 +26,19 @@ class of failure where the tool confidently measures the wrong object. The
 hint is only a family; the exact hue is still found inside it, and both pink
 rooms land where they always did.
 
+The hint needs a short leash. A warm room puts its woodwork and its
+cabinetry close enough to a pink wall to be in the same wide family: the
+kitchen has its wall at 7 degrees, its oak at 25 and its cabinet doors at
+29, and the doors cover so much of the picture that at twenty-five degrees
+they simply outvoted the wall. So the paint is looked for within NEAR of
+the hint, which the paint itself has never needed more than a few degrees
+of.
+
+The same leash has to hold when the drift is measured, or the measurement
+eats itself: let the oak into the sample and the spread it adds widens the
+window until the window admits the oak. That is exactly what happened here
+before the leash was shortened, and the kitchen tiled its tall unit.
+
 **Saturation is bounded on both sides.** The lower bound keeps out what is
 merely lit by the paint; the upper bound keeps out things that happen to
 share the hue but are far more vivid, which is how the houseplants stay out
@@ -42,7 +55,7 @@ into patches. So the window comes from the spread of the paint itself.
 
 from collections import Counter
 
-FAMILY = 25.0    # degrees around the hint that count as the hinted colour
+NEAR = 12.0      # degrees from the hint the paint may be found at
 SEED = 10.0      # degrees used to get a first fix before the spread is known
 LO = 0.62        # of the paint's own saturation, at least
 HI = 1.55        # ...and at most
@@ -91,7 +104,7 @@ def paint(px, w, h, hint):
 
     votes = Counter()
     for hh, s, v in sample():
-        if s > 0.20 and v > 0.08 and apart(hh, hint) < FAMILY:
+        if s > 0.20 and v > 0.08 and apart(hh, hint) < NEAR:
             votes[round(hh)] += 1
     if sum(votes.values()) < 500:
         return None
@@ -107,7 +120,7 @@ def paint(px, w, h, hint):
 
     # and how far it drifts, now that the vivid and the dull are both out
     hues = sorted(hh for hh, s, v in sample()
-                  if lo <= s <= hi and v > 0.08 and apart(hh, ref) < FAMILY)
+                  if lo <= s <= hi and v > 0.08 and apart(hh, ref) < NEAR)
     iqr = hues[int(len(hues) * .75)] - hues[int(len(hues) * .25)]
     win = min(MAX_WIN, max(MIN_WIN, SPREAD * iqr))
     return ref, ref_sat, win

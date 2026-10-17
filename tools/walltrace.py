@@ -36,7 +36,7 @@ OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
 # only says which colour in the room is the paint.
 ROOMS = [
     (19, "ensuite",  10.0),
-    (21, "kitchen",  85.0),
+    (22, "kitchen",  10.0),
     (18, "bathroom", 10.0),
 ]
 
