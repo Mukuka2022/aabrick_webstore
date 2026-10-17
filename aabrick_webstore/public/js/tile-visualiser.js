@@ -166,6 +166,34 @@
 				for (y = 0; y < h; y++) {
 					if (mask[y * w + x]) { yTop[x] = y; break; }
 				}
+				if (yTop[x] >= 0 && yTop[x] - yh <= 2) { yTop[x] = -1; }
+			}
+
+			// Something standing on the floor can hide the skirting all the
+			// way to the bottom of the frame. The toilet and the plant beside
+			// it take the last dozen columns of the ensuite that way, and a
+			// column with no skirting has no depth, so it was left bare and a
+			// strip of the old paint showed down the edge of the picture.
+			//
+			// A wall does not change depth abruptly behind the thing standing
+			// in front of it, so the nearest column that can still see its
+			// skirting is a good enough stand-in. A continuous wall at very
+			// slightly the wrong depth beats an honest gap.
+			var lend = new Int32Array(w);
+			var away = new Int32Array(w);
+			var last = -1, gap = 0;
+			for (x = 0; x < w; x++) {
+				if (yTop[x] >= 0) { last = yTop[x]; gap = 0; } else { gap++; }
+				lend[x] = last;
+				away[x] = last < 0 ? w : gap;
+			}
+			last = -1; gap = 0;
+			for (x = w - 1; x >= 0; x--) {
+				if (yTop[x] >= 0) { last = yTop[x]; gap = 0; } else { gap++; }
+				if (last >= 0 && gap < away[x]) { lend[x] = last; }
+			}
+			for (x = 0; x < w; x++) {
+				if (yTop[x] < 0) { yTop[x] = lend[x]; }
 			}
 
 			// how far along the wall each column is, in metres
