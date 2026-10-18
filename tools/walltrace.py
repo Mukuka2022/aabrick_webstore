@@ -52,6 +52,15 @@ STEP = 1           # columns. One, not three: the mask is built in blocks
 MIN_RUN = 14       # a span shorter than this is a reflection, not a wall
 CLOSE = 8          # a break this short is a speck, not a hole in the wall
 EDGE = 2           # pixels of blend taken at each end of a span
+
+# The growth is for the blend, and a blend lies between the wall and the
+# thing beside it. Where the thing beside it is much brighter than the
+# paint there is no blend worth taking: the rim of the ensuite's toilet
+# reads 0.85 to 0.93 against paint at 0.63, and the two pixels taken there
+# are tile drawn on the toilet, which under a dark tile is a smudge along
+# its edge. Measured the other way, the blend against a cabinet is 0.65 to
+# 0.75, below the bar, and is still taken.
+GLARE = 1.25       # times the paint's own brightness
 ISLAND = 400       # a patch of mask smaller than this is not a wall
 PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
@@ -87,6 +96,7 @@ REVEAL_WIN = 10.0  # degrees from the paint's own hue
 REVEAL_SAT = 0.15  # at least this much colour, or it is porcelain
 REVEAL_VAL = 0.78  # and this bright, or it is a shadow
 REVEAL_WIDE = 60   # a reveal is a return of the wall, so it is narrow
+REVEAL_MOST = 0.6  # ...and most of it has to read that way, not its average
 
 # The island sweep in tidy() runs before the sides are straightened and
 # grown, and those passes make pieces of their own: a sliver of the
@@ -133,8 +143,8 @@ def spans(path, hint):
         right = raw[order[i + 1]] if i + 1 < len(order) else None
         runs = [r for r in raw[xs]
                 if r[1] - r[0] + 1 >= MIN_RUN or joined(r, left, right)]
-        runs = merge(grow(runs, h, px, xs,
-                          ref_val * keycolour.VLO), 0)
+        runs = merge(grow(runs, h, px, xs, ref_val * keycolour.VLO,
+                          ref_val * GLARE), 0)
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
     cols = tidy(cols, w, h, px, ref, ref_sat * keycolour.LO)
@@ -146,7 +156,8 @@ def spans(path, hint):
     # the paint and still leaves a line the eye can follow.
     cols = upright(cols, w, h)
     cols = sliver(cols, w, h)
-    cols = widen(cols, w, h, px, ref_val * keycolour.VLO)
+    cols = widen(cols, w, h, px, ref_val * keycolour.VLO,
+                 ref_val * GLARE)
     cols = upright(cols, w, h)
     cols = despeck(cols, w, h)
     return cols, (w, h), (ref, ref_sat, win)
@@ -249,7 +260,7 @@ def upright(cols, w, h):
     return ascols(out, w, h)
 
 
-def widen(cols, w, h, px, dark):
+def widen(cols, w, h, px, dark, glare):
     """Stretch each row over the blend at its sides, as grow() does its ends.
 
     The reasoning is grow()'s exactly, turned ninety degrees. A wall does
@@ -273,7 +284,8 @@ def widen(cols, w, h, px, dark):
                     j = i + side * k
                     if j < 0 or j >= w or grid[row + j]:
                         break
-                    if max(px[j, y]) / 255.0 < dark:
+                    v = max(px[j, y]) / 255.0
+                    if v < dark or v > glare:
                         break
                     out[row + j] = 1
     return ascols(out, w, h)
@@ -338,23 +350,22 @@ def despeck(cols, w, h):
 def lit(cells, w, px, ref, floor):
     """Is this hole the paint with the light taken out of it.
 
-    Averaged over the hole rather than tested pixel by pixel, because a
-    reveal is a gradient: the pixel nearest the glass is gone altogether
-    and the one nearest the wall is nearly paint.
+    Counted pixel by pixel, not averaged. Averaging was the first attempt
+    and it filled the lit rim of the ensuite's toilet: the rim carries
+    almost no colour, saturation 0.08 to 0.12, but the shadow line between
+    it and the wall carries a great deal, and the two averaged out in the
+    middle of the band a reveal sits in. A reveal is washed-out paint all
+    the way along, so most of it reads that way on its own.
     """
-    off = sat = val = 0.0
+    good = 0
     n = 0
-    for c in cells[::7]:
+    for c in cells[::3]:
         hh, ss, vv = keycolour.hsv(*px[c % w, c // w])
-        off += keycolour.apart(hh, ref)
-        sat += ss
-        val += vv
         n += 1
-    if not n:
-        return False
-    off, sat, val = off / n, sat / n, val / n
-    return (off < REVEAL_WIN and REVEAL_SAT <= sat < floor
-            and val >= REVEAL_VAL)
+        if (keycolour.apart(hh, ref) < REVEAL_WIN and ss >= REVEAL_SAT
+                and ss < floor and vv >= REVEAL_VAL):
+            good += 1
+    return bool(n) and good >= n * REVEAL_MOST
 
 
 def tidy(cols, w, h, px, ref, floor):
@@ -438,7 +449,7 @@ def merge(runs, gap):
     return out
 
 
-def grow(runs, h, px, x, dark):
+def grow(runs, h, px, x, dark, glare):
     """Stretch each run over the blend at its ends, where there is one.
 
     Where the wall meets a cabinet there is no edge, there is a ramp: three
@@ -465,12 +476,18 @@ def grow(runs, h, px, x, dark):
         na, nb = a, b
         for i in range(1, EDGE + 1):
             y = a - i
-            if y < 0 or max(px[x, y]) / 255.0 < dark:
+            if y < 0:
+                break
+            v = max(px[x, y]) / 255.0
+            if v < dark or v > glare:
                 break
             na = y
         for i in range(1, EDGE + 1):
             y = b + i
-            if y >= h or max(px[x, y]) / 255.0 < dark:
+            if y >= h:
+                break
+            v = max(px[x, y]) / 255.0
+            if v < dark or v > glare:
                 break
             nb = y
         out.append([na, nb])
