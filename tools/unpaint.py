@@ -36,12 +36,20 @@ APP = os.environ.get(
 # well as the paint itself, and it is a room's own answer rather than
 # something measured, because colour cannot settle it.
 #
-# In the two pink rooms the paint has plainly stained the porcelain and
-# nothing outside the windows is pink, so the rule has a clear run. The
-# green kitchen is the opposite: the garden through its window is the same
-# green as the wall, and no threshold tells a sunlit palm from a worktop
-# lit green, so the rule would strip the colour out of the garden. It also
-# has nothing to gain, its fixtures being beige and its ceiling white.
+# In these three coral rooms the paint has plainly stained the porcelain
+# and the ceilings, and the greenery outside every window sits 46 degrees
+# away in hue, so the rule has a clear run. A room whose view shares its
+# wall's colour is the opposite case, and the green kitchen was one: the
+# garden through its window was the same green as the wall, and no
+# threshold tells a sunlit palm from a worktop lit green. Such a room gets
+# False here, and that judgement is the whole reason this is a flag.
+#
+# There was a geometric guard here as well, which skipped any gap the wall
+# closed over, on the grounds that what shows through a hole in a wall is
+# not a surface the paint has lit. It went, because it cannot tell a mirror
+# from a window. A mirror is a hole by that definition, but what it shows
+# is the room, coral walls and all, and leaving it alone left a pale coral
+# patch in the top corner of the bathroom with tiled wall all around it.
 ROOMS = [
     ("Coral and Navy Modern Bathroom.png",     "ensuite",  10.0, True),
     ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom", 10.0, True),
@@ -91,7 +99,6 @@ for name, slug, hint, lit in ROOMS:
     d = walls[slug]
     step = d["step"]
     keep = bytearray(w * h)          # 1 where a tile will go anyway
-    seen = bytearray(w * h)          # 1 where you are seeing past the wall
     for col in d["cols"]:
         x0 = col[0]
         for i in range(1, len(col), 2):
@@ -99,21 +106,6 @@ for name, slug, hint, lit in ROOMS:
                 row = y * w
                 for x in range(x0, min(x0 + step, w)):
                     keep[row + x] = 1
-        # A gap with wall above it and wall below it is a hole in the wall:
-        # a window, a mirror, a niche. What shows there is not a surface the
-        # paint has lit, it is whatever is on the far side, and a garden has
-        # pale sunlit leaves in it like anything else. Colour will not
-        # settle that, so the geometry does.
-        #
-        # This only covers a hole the wall closes over, which is every
-        # window in the two rooms the rule runs in. A window that runs down
-        # to a worktop has no wall beneath it and is not caught; the kitchen
-        # has one, which is part of why the rule is off there.
-        for i in range(2, len(col) - 2, 2):
-            for y in range(col[i] + 1, min(col[i + 1], h)):
-                row = y * w
-                for x in range(x0, min(x0 + step, w)):
-                    seen[row + x] = 1
 
     # This used to widen the mask by a couple of pixels, from when the spans
     # stopped short of the true edge and a repaint could eat into what the
@@ -166,8 +158,7 @@ for name, slug, hint, lit in ROOMS:
                     k = 1.0
 
             # and the light it threw on everything pale near it
-            if (lit and not seen[row + x] and off < LIT_WIN
-                    and ss < LIT_CAP and vv > LIT_VAL):
+            if lit and off < LIT_WIN and ss < LIT_CAP and vv > LIT_VAL:
                 glow = (1.0 if ss <= LIT_SOFT
                         else (LIT_CAP - ss) / (LIT_CAP - LIT_SOFT))
                 if glow > k:

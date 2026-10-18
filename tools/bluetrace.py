@@ -51,6 +51,8 @@ ROOMS = [
 ]
 
 STEP = 5
+SPIKE = 15         # columns either side that a column is judged against
+SLO = 0.40         # of the floor's own saturation, at least. See blue_test.
 GRACE = 10         # pixels of not-blue the walk may cross before giving up.
                    # It has to cross something: a glossy floor reflects the
                    # pink vanity above it and that reflection is genuinely
@@ -76,7 +78,7 @@ def hsv(r, g, b):
     return h, s, v
 
 
-def blue_test(ref_hue):
+def blue_test(ref_hue, ref_sat=None):
     """Is this the painted floor, in sun, in shade, or under a lamp.
 
     Hue, not colour. The veranda is the case that forces it: the near half is
@@ -88,10 +90,24 @@ def blue_test(ref_hue):
 
     A saturation floor keeps the white walls out, since white has no hue to
     compare, and a value floor keeps the noise in the black of a window out.
+
+    That saturation floor has to be relative to the floor's own blue. Fixed
+    at 0.12 it let the veranda climb its own doors: the floor is painted at
+    saturation 0.70, the glass returns a washed-out version of it, and the
+    near-neutral darks in the door frames measure 0.14 to 0.23, which clears
+    a fixed 0.12 easily. The walk went up through the threshold, found blue
+    all the way, and the tiling climbed the glass with it.
+
+    Against each room's own floor there is room between the two. Honest
+    floor never falls below 0.53 of its reference in any of these rooms, and
+    0.38 on the veranda where half of it is in the shade of its own roof;
+    the reflections sit at 0.20 to 0.33. SLO is set at 0.40.
     """
+    weak = 0.12 if ref_sat is None else ref_sat * SLO
+
     def test(r, g, b):
         h, s, v = hsv(r, g, b)
-        if s < 0.12 or v < 0.05:
+        if s < weak or v < 0.05:
             return False
         d = abs(h - ref_hue)
         if d > 180:
@@ -113,7 +129,8 @@ def trace(path):
         for x in range(int(w * 0.35), int(w * 0.65), 4):
             r, g, b = px[x, y]
             rs += r; gs += g; bs += b; n += 1
-    is_blue = blue_test(hsv(rs / n, gs / n, bs / n)[0])
+    fh, fs, fv = hsv(rs / n, gs / n, bs / n)
+    is_blue = blue_test(fh, fs)
 
     tops = []
     for x in range(0, w, STEP):
@@ -139,6 +156,34 @@ def trace(path):
                     break
         tops.append((xs, top))
     return tops, (w, h)
+
+
+def despike(tops):
+    """Pull back a column that has climbed far above its neighbours.
+
+    A glossy floor reflects, and a reflection of a blue floor is as blue as
+    the floor. Where the veranda meets its sliding doors the walk up each
+    column finds blue in the glass and keeps going, so the outline throws
+    spikes a hundred and fifty pixels up into the doors, one to three
+    columns wide, and the tiling climbs the glass with it.
+
+    The error only ever goes one way. A column can be wrong by reaching too
+    far back, never by stopping too early, because stopping early is what
+    an object standing on the floor genuinely looks like. So this only ever
+    pulls a column back towards its neighbours and never pushes one out:
+    a spike is flattened, a sofa still occludes what it occludes, and a
+    real step like the base of a column, which is sustained across many
+    columns rather than one, carries the median with it and survives.
+    """
+    ys = [y for _, y in tops]
+    n = len(ys)
+    half = SPIKE // 2
+    out = []
+    for i in range(n):
+        a, b = max(0, i - half), min(n, i + half + 1)
+        mid = sorted(ys[a:b])[(b - a) // 2]
+        out.append((tops[i][0], max(ys[i], mid)))
+    return out
 
 
 def thin(points, tol=1.6):
@@ -179,6 +224,10 @@ def main():
     for name, slug, label, depth in ROOMS:
         src = os.path.join(SRC, name)
         tops, (w, h) = trace(src)
+        raw = tops
+        tops = despike(tops)
+        moved = sum(1 for a, b in zip(raw, tops) if a[1] != b[1])
+        worst = max([b[1] - a[1] for a, b in zip(raw, tops)] or [0])
         tops = thin(tops)
 
         dst = os.path.join(APPIMG, "scene-%s.jpg" % slug)
@@ -206,11 +255,22 @@ def main():
                 % (label, len(pts), top, horizon))
         empty = sum(1 for _, y in tops if y >= h - 1)
         print("  %-16s %dx%d  %3d points  top %4d  horizon %4d  %d empty"
-              % (slug, w, h, len(pts), top, horizon, empty))
+              "   %d columns pulled back, worst %d px"
+              % (slug, w, h, len(pts), top, horizon, empty,
+                 moved, worst))
 
     with io.open(os.path.join(OUT, "scenes.json"), "w", encoding="utf-8") as f:
         json.dump(scenes, f)
     print("traced off the blue")
+    # This has just written every scene image out again from its original
+    # photograph, which throws away whatever unpaint.py did to them. That is
+    # fine when the three run in order and a trap when they do not: run
+    # bluetrace alone to re-do a floor and the rooms quietly go back to
+    # wearing their tracing paint, with coral ceilings and coral basins, and
+    # nothing anywhere says so.
+    print("")
+    print("  the scenes are back to their original paint. Run walltrace.py")
+    print("  and then unpaint.py, or the rooms ship with it still on them.")
 
 
 main()
