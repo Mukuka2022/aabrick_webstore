@@ -51,12 +51,10 @@ APP = os.environ.get(
 # is the room, coral walls and all, and leaving it alone left a pale coral
 # patch in the top corner of the bathroom with tiled wall all around it.
 ROOMS = [
-    ("Coral and Navy Modern Bathroom.png",     "ensuite",  10.0, True),
-    ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom", 10.0, True),
-    ("Natural Light Modern Pink and Blue Kitchen.png",
-     "kitchen", 10.0, True),
-    ("kitchen-tall-units.webp",   "kitchen-tall",    5.0, True),
-    ("kitchen-and-dining.webp",   "kitchen-dining", 10.0, True),
+    ("Coral and Navy Modern Bathroom.png",      "ensuite",   10.0, True),
+    ("Sunlit Coral and Navy Bathroom Spa.png",  "bathroom",  10.0, True),
+    ("kitchen-tall-units.webp",                 "kitchen",    5.0, True),
+    ("kitchen-and-dining.webp", "kitchen-dining", 10.0, True),
 ]
 
 FADE = 0.30        # below this the colour is not the paint itself

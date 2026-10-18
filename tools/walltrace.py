@@ -34,14 +34,14 @@ OUT = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
 # only says which colour in the room is the paint.
 ROOMS = [
     # file, id, roughly what colour the walls were painted, in degrees of
-    # hue. These rooms are all coral, which measures out between 6 and 12.
-    # The living room and the veranda are not here: their walls were never
-    # painted, so there is nothing to trace and they are floor only.
-    ("Coral and Navy Modern Bathroom.png",            "ensuite",  10.0),
-    ("Sunlit Coral and Navy Bathroom Spa.png",        "bathroom", 10.0),
-    ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen", 10.0),
-    ("kitchen-tall-units.webp",   "kitchen-tall",    5.0),
-    ("kitchen-and-dining.webp",   "kitchen-dining", 10.0),
+    # hue. The bathrooms and the dining room are coral, about 10; the
+    # kitchen is a deep red, about 5. The living room and the veranda are
+    # not here: their walls were never painted, so there is nothing to
+    # trace and they are floor only.
+    ("Coral and Navy Modern Bathroom.png",      "ensuite",        10.0),
+    ("Sunlit Coral and Navy Bathroom Spa.png",  "bathroom",       10.0),
+    ("kitchen-tall-units.webp",                 "kitchen",         5.0),
+    ("kitchen-and-dining.webp",                 "kitchen-dining", 10.0),
 ]
 
 STEP = 1           # columns. One, not three: the mask is built in blocks

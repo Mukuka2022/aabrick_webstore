@@ -29,29 +29,31 @@ APPIMG = os.environ.get(
 
 # file, id, label, how far back the furthest floor is in metres
 ROOMS = [
-    # file, id, label, how far back the furthest floor is in metres. The
-    # depths are the ones written into the prompts the rooms were generated
-    # from, so the camera follows from the room rather than from a guess.
+    # file, id, label, how far back the furthest floor is in metres.
     #
-    # Two of the nine that came in are not here. The second kitchen was lit
-    # by strips under its wall units, which wash coral down the cabinet
-    # fronts until a fifth of its wall mask lands on the dishwasher and the
-    # oak, against three per cent for this one. The second ensuite and the
-    # shower room traced perfectly well; Mukuka did not want them.
+    # The depths are measured rather than stated now. With the lens settled
+    # the horizon can be read off the picture, from where the feet of the
+    # two side walls meet, and the depth follows from it. The kitchen that
+    # was here before measured 5.0 against the 5.0 it had been asked for,
+    # which is the check on that.
+    #
+    # The coral kitchen that was here is gone. It had about 150mm of wall
+    # showing between the top of its units and the ceiling, which is a slice
+    # of a tile rather than a tile, and no trace can make that look laid.
+    # This one's units run to the ceiling, so the wall it does show is worth
+    # tiling.
     ("Coral and Navy Modern Bathroom.png",
      "ensuite",  "Ensuite",      4.5),
     ("Sunlit Coral and Navy Bathroom Spa.png",
      "bathroom", "Bathroom",     5.0),
-    ("Natural Light Modern Pink and Blue Kitchen.png",
-     "kitchen",  "Kitchen",      5.0),
+    ("kitchen-tall-units.webp",
+     "kitchen",  "Kitchen",      5.5),
+    ("kitchen-and-dining.webp",
+     "kitchen-dining", "Kitchen and dining", 6.0),
     ("Modern Navy Living Room Retreat.png",
      "living",   "Living room",  8.0),
     ("Modern Navy Patio with Garden Views.png",
      "patio",    "Veranda",     10.0),
-    ("kitchen-tall-units.webp",
-     "kitchen-tall", "Kitchen, tall units", 5.5),
-    ("kitchen-and-dining.webp",
-     "kitchen-dining", "Kitchen and dining", 6.0),
 ]
 
 STEP = 5
