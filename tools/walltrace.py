@@ -61,11 +61,30 @@ EDGE = 2           # pixels of blend taken at each end of a span
 # its edge. Measured the other way, the blend against a cabinet is 0.65 to
 # 0.75, below the bar, and is still taken.
 GLARE = 1.25       # times the paint's own brightness
+
+# What the paint lights is not the paint. The shadowed end of a kitchen
+# cabinet reads 0.33 to 0.35 of the paint's own saturation and the folds
+# of a towel 0.31 to 0.39, both inside a test that asks for 0.31, and the
+# mask grew tongues onto both. The trouble is that wall washed out by the
+# sun lands in the same band: beside the bathroom's window it reads 0.31
+# to 0.34, and a plain saturation floor that excludes the cabinet takes
+# forty pixels of that wall with it.
+#
+# What separates them is the light. The washed-out wall is bright, 0.78 to
+# 0.82; the cabinet's end and the towel's folds are 0.33 to 0.65, lit by
+# the wall rather than by the window. So a pixel that is not bright has to
+# carry more of the paint's colour to count as the paint.
+FIRM = 0.72        # of the paint's saturation, for a pixel that is not
+#                    lit. Eight tenths was tried first and took a patch
+#                    of the bathroom's own wall with it, sixteen by
+#                    forty-nine pixels at 0.45 against a floor of 0.46.
+LIT = 0.78         # ...and this is what counts as lit
 ISLAND = 400       # a patch of mask smaller than this is not a wall
 PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
 WANDER = 10        # ...and the most a column may be moved while doing it
 UPRIGHT = 7        # rows of mask a column is judged over, sideways
+FLAT = 7           # ...and columns it is judged over, up and down
 # A wall seen as a band narrower than this cannot show a tile; it shows a
 # line. Three was enough to drop a strip two pixels wide in the kitchen's
 # corner, and it leaves the fingers the mask grows into the folds of the
@@ -116,7 +135,7 @@ def spans(path, hint):
     if found is None:
         return None, (w, h), None
     ref, ref_sat, win, ref_val = found
-    is_wall = keycolour.tester(ref, ref_sat, win, ref_val)
+    is_wall = keycolour.tester(ref, ref_sat, win, ref_val, FIRM, LIT)
 
     order = []
     raw = {}
@@ -159,6 +178,7 @@ def spans(path, hint):
     cols = widen(cols, w, h, px, ref_val * keycolour.VLO,
                  ref_val * GLARE)
     cols = upright(cols, w, h)
+    cols = flatten(cols, w, h)
     cols = despeck(cols, w, h)
     return cols, (w, h), (ref, ref_sat, win)
 
@@ -328,6 +348,39 @@ def blobs(grid, nc, h, want):
                         cells.append(a)
         out.append((cells, x1 - x0 + 1, y1 - y0 + 1, edge))
     return out
+
+
+def flatten(cols, w, h):
+    """Take the wobble out of the edges that run across the picture.
+
+    straighten() smooths the top of the first span and the bottom of the
+    last, which are the wall's own outer edges, and nothing has ever
+    touched the ones in between. In a kitchen the wall shows above the
+    cabinets and again below them, so every column has two spans and the
+    long boundary along the underside of a cabinet is an inside end: the
+    shadow there takes just enough of the wall's colour to pass the test
+    in some columns and not in others, and the line comes out chewed.
+    Measured on the kitchen, that boundary disagrees with its neighbours
+    by three pixels or more four times as often as the outer edge that is
+    straightened.
+
+    A median across the row does for a flat edge what upright() does for
+    an upright one, and for the same reason: a median leaves a straight
+    edge and a sloping one where they are, and only moves a column that
+    disagrees with the columns beside it.
+    """
+    grid = asgrid(cols, w, h)
+    half = FLAT // 2
+    out = bytearray(grid)
+    for y in range(h):
+        row = y * w
+        for x in range(w):
+            a, b = max(0, x - half), min(w, x + half + 1)
+            n = 0
+            for xx in range(a, b):
+                n += grid[row + xx]
+            out[row + x] = 1 if n * 2 > (b - a) else 0
+    return ascols(out, w, h)
 
 
 def despeck(cols, w, h):

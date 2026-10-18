@@ -155,14 +155,24 @@ def paint(px, w, h, hint):
     return ref, ref_sat, win, ref_val
 
 
-def tester(ref, ref_sat, win, ref_val):
-    """Is this pixel the paint itself."""
+def tester(ref, ref_sat, win, ref_val, firm=None, lit=None):
+    """Is this pixel the paint itself.
+
+    firm and lit, when given, add a second floor for the pixels that are
+    not catching the light. See FIRM in walltrace.py: a surface the paint
+    has merely lit, a cabinet's shadowed end or the fold of a towel, lands
+    in the same saturation band as wall that the sun has washed out, and
+    only its brightness tells them apart.
+    """
     lo, hi = ref_sat * LO, ref_sat * HI
     dark = ref_val * VLO
+    strict = None if firm is None else ref_sat * firm
 
     def test(r, g, b):
         hh, s, v = hsv(r, g, b)
         if s < lo or s > hi or v < dark:
+            return False
+        if strict is not None and v < lit and s < strict:
             return False
         return apart(hh, ref) < win
 
