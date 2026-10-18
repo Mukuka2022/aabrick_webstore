@@ -937,6 +937,136 @@
 		}
 	}
 
+	// ---- the room, opened larger ---------------------------------------
+	//
+	// A picture of the canvas, taken when it opens, rather than a second
+	// canvas: nothing has to be drawn twice and the browser does the
+	// scaling.
+	//
+	// One step, about two and a bit times whatever the picture is showing
+	// at, which is the same jump on a phone as on a desk. Never less than
+	// the canvas's own pixels, because up to there the enlargement is free
+	// and exact, and never more than twice them, because past that there
+	// is nothing further in the file to show.
+	var STEP = 2.2;
+
+	function zoomWidth(fitted) {
+		var w = fitted * STEP;
+		if (w < canvas.width) { w = canvas.width; }
+		if (w > canvas.width * 2) { w = canvas.width * 2; }
+		return Math.round(w);
+	}
+
+	function zoomer() {
+		var box = $(".aab-vis-zoom");
+		var stage = $(".aab-vis-stage");
+		var img = $(".aab-vis-zoom-img");
+		var hint = $(".aab-vis-zoom-hint");
+		var shut = $(".aab-vis-zoom-close");
+		var scroll = $(".aab-vis-zoom-scroll");
+		if (!box || !stage || !img || !scroll) { return; }
+
+		var big = false;
+
+		var touch = !(window.matchMedia
+			&& window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+		var tap = touch ? "Tap" : "Click";
+
+		function say() {
+			if (!hint) { return; }
+			hint.textContent = big
+				? (touch ? "Drag to look around. Tap the room to stand back."
+					: "Drag to look around. Click the room to stand back.")
+				: tap + " the room to look closer.";
+		}
+
+		function fit() {
+			big = false;
+			box.classList.remove("is-big");
+			img.style.width = "";
+			img.style.height = "";
+			say();
+		}
+
+		// Zoom about the point that was clicked, so the thing being looked
+		// at stays under the finger rather than jumping to the middle.
+		function closer(e) {
+			var r = img.getBoundingClientRect();
+			var fx = r.width ? (e.clientX - r.left) / r.width : 0.5;
+			var fy = r.height ? (e.clientY - r.top) / r.height : 0.5;
+			big = true;
+			box.classList.add("is-big");
+			img.style.width = zoomWidth(r.width) + "px";
+			img.style.height = "auto";
+			say();
+			var sw = scroll.clientWidth, sh = scroll.clientHeight;
+			scroll.scrollLeft = fx * img.offsetWidth - sw / 2;
+			scroll.scrollTop = fy * img.offsetHeight - sh / 2;
+		}
+
+		function open() {
+			if (!canvas.width) { return; }
+			img.src = canvas.toDataURL("image/jpeg", 0.92);
+			box.hidden = false;
+			document.documentElement.classList.add("aab-vis-locked");
+			fit();
+			if (shut) { shut.focus(); }
+		}
+
+		function close() {
+			box.hidden = true;
+			document.documentElement.classList.remove("aab-vis-locked");
+			img.removeAttribute("src");
+			stage.focus();
+		}
+
+		stage.addEventListener("click", open);
+		stage.addEventListener("keydown", function (e) {
+			if (e.key === "Enter" || e.key === " ") {
+				e.preventDefault();
+				open();
+			}
+		});
+		img.addEventListener("click", function (e) {
+			e.stopPropagation();
+			if (big) { fit(); } else { closer(e); }
+		});
+		if (shut) { shut.addEventListener("click", close); }
+		// Anywhere off the picture closes it, which is what everyone tries.
+		box.addEventListener("click", function (e) {
+			if (e.target === box || e.target === scroll) { close(); }
+		});
+		document.addEventListener("keydown", function (e) {
+			if (!box.hidden && e.key === "Escape") { close(); }
+		});
+
+		// Dragging to look around. Touch scrolls the container on its own,
+		// so this is for a mouse.
+		var from = null;
+		img.addEventListener("mousedown", function (e) {
+			if (!big) { return; }
+			e.preventDefault();
+			from = {
+				x: e.clientX, y: e.clientY,
+				l: scroll.scrollLeft, t: scroll.scrollTop
+			};
+			box.classList.add("is-dragging");
+		});
+		window.addEventListener("mousemove", function (e) {
+			if (!from) { return; }
+			scroll.scrollLeft = from.l - (e.clientX - from.x);
+			scroll.scrollTop = from.t - (e.clientY - from.y);
+		});
+		window.addEventListener("mouseup", function (e) {
+			if (!from) { return; }
+			var moved = Math.abs(e.clientX - from.x) + Math.abs(e.clientY - from.y);
+			from = null;
+			box.classList.remove("is-dragging");
+			// A drag is not a click, or looking around would stand you back.
+			if (moved > 4) { e.stopPropagation(); }
+		}, true);
+	}
+
 	function start() {
 		var host = $("#aab-visualiser");
 		if (!host) { return; }
@@ -959,6 +1089,7 @@
 		ctx = canvas.getContext("2d", { willReadFrequently: true });
 
 		build();
+		zoomer();
 		loadTile(tiles[0]);
 		loadScene(scenes[0]);
 	}

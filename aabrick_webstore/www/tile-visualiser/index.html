@@ -42,10 +42,17 @@
         </aside>
 
         <div class="aab-vis-main">
-          <div class="aab-vis-stage">
+          {#
+            The picture opens larger when it is clicked. On a phone the
+            room is a couple of hundred pixels across and a 600mm tile in
+            it is about eight, which is not enough to judge a pattern by.
+          #}
+          <div class="aab-vis-stage" role="button" tabindex="0"
+               aria-label="Open the room larger">
             <canvas class="aab-vis-canvas" width="900" height="600"
                     aria-label="The chosen tile, laid on the floor of the chosen room"></canvas>
             <p class="aab-vis-loading">Drawing the room</p>
+            <span class="aab-vis-open" aria-hidden="true"></span>
           </div>
 
           <div class="aab-vis-bar">
@@ -60,6 +67,15 @@
 
         <aside class="aab-vis-panel" aria-label="Choose a tile">
           <div class="aab-vis-panel-tiles">
+
+            {#
+              The head of the panel does not scroll with the tiles. With
+              173 of them the surface switch and the search were a long
+              way back up the column by the time you had found something,
+              and whether a tile is going on the floor or the wall is the
+              question you change most often.
+            #}
+            <div class="aab-vis-panel-top">
             <p class="aab-vis-panel-head">
               Tiles <span class="aab-vis-count">{{ aab_tile_count }}</span>
             </p>
@@ -98,8 +114,13 @@
                   aria-label="Ranges" hidden></ul>
             </div>
 
-            <p class="aab-vis-none" hidden>No range matches that.</p>
-            <div class="aab-vis-groups" role="group" aria-label="Choose a tile"></div>
+            </div>
+
+            <div class="aab-vis-panel-list">
+              <p class="aab-vis-none" hidden>No range matches that.</p>
+              <div class="aab-vis-groups" role="group"
+                   aria-label="Choose a tile"></div>
+            </div>
           </div>
         </aside>
 
@@ -126,6 +147,20 @@
       </div>
     </div>
   </section>
+
+  {#
+    The enlarged room. It is a picture of the canvas taken when it opens,
+    rather than a second canvas, so nothing has to be drawn twice and the
+    browser does the scaling.
+  #}
+  <div class="aab-vis-zoom" hidden>
+    <div class="aab-vis-zoom-scroll">
+      <img class="aab-vis-zoom-img" alt="The room, enlarged">
+    </div>
+    <p class="aab-vis-zoom-hint"></p>
+    <button type="button" class="aab-vis-zoom-close"
+            aria-label="Close the enlarged room">&times;</button>
+  </div>
 
 </div>
 
