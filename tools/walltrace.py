@@ -57,7 +57,44 @@ PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
 WANDER = 10        # ...and the most a column may be moved while doing it
 UPRIGHT = 7        # rows of mask a column is judged over, sideways
-THIN = 3           # a row of mask narrower than this is not a wall
+# A wall seen as a band narrower than this cannot show a tile; it shows a
+# line. Three was enough to drop a strip two pixels wide in the kitchen's
+# corner, and it leaves the fingers the mask grows into the folds of the
+# ensuite's towel, where the shadow takes enough of the wall's colour to
+# pass the test: five to nine pixels across, against the seventeen of the
+# genuine wall beside them.
+#
+# A saturation floor was tried first and is the wrong instrument. The
+# fingers read 0.31 to 0.39 of the paint's own saturation and the wall
+# beside them 0.51, so a floor at 0.40 separates them here, and in the
+# bathroom it takes out forty pixels of sunlit wall along the side of the
+# window, which is the same brightness washing out the same colour.
+THIN = 10          # a row of mask narrower than this is not a wall
+
+# A hole in the wall that is the paint with the light taken out of it: the
+# reveal, the return of the wall into a window, which faces the sun and
+# washes out past what the colour test will accept. Measured on the three
+# rooms that have one, they read 3.5, 5.8 and 9.3 degrees from the paint's
+# own hue, saturation 0.22 to 0.30 against a test wanting 0.33 or more, and
+# brightness 0.87 to 0.93. Everything else enclosed by wall in these rooms
+# is a long way from one of those: the windows themselves sit 59 to 80
+# degrees away in hue, being greenery; the black frames and the shadow
+# behind a screen are at brightness 0.05 to 0.33; the toilet roll is at
+# saturation 0.08. The cream towel, which caught every earlier attempt at
+# this, fails twice over: it hangs against a door, so it is not enclosed by
+# wall at all, and it sits 25 degrees away in hue.
+REVEAL_WIN = 10.0  # degrees from the paint's own hue
+REVEAL_SAT = 0.15  # at least this much colour, or it is porcelain
+REVEAL_VAL = 0.78  # and this bright, or it is a shadow
+REVEAL_WIDE = 60   # a reveal is a return of the wall, so it is narrow
+
+# The island sweep in tidy() runs before the sides are straightened and
+# grown, and those passes make pieces of their own: a sliver of the
+# ensuite's towel, 13 by 81, and specks five and seven pixels across in the
+# bathroom. The gap in the measurements is wide. Every piece that is wall
+# in these rooms is 3,647 cells or more; every piece that is not is 701 or
+# fewer.
+SPECK = 1500       # a piece of mask smaller than this is not a wall
 
 
 def spans(path, hint):
@@ -100,7 +137,7 @@ def spans(path, hint):
                           ref_val * keycolour.VLO), 0)
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
-    cols = tidy(cols, h)
+    cols = tidy(cols, w, h, px, ref, ref_sat * keycolour.LO)
     cols = straighten(cols, h)
     # Straighten, grow, straighten. Growing a ragged side leaves it ragged
     # and two pixels further out, and growth stops at a different pixel in
@@ -111,6 +148,7 @@ def spans(path, hint):
     cols = sliver(cols, w, h)
     cols = widen(cols, w, h, px, ref_val * keycolour.VLO)
     cols = upright(cols, w, h)
+    cols = despeck(cols, w, h)
     return cols, (w, h), (ref, ref_sat, win)
 
 
@@ -280,7 +318,46 @@ def blobs(grid, nc, h, want):
     return out
 
 
-def tidy(cols, h):
+def despeck(cols, w, h):
+    """Sweep the pieces the straightening and the growing leave behind.
+
+    tidy() does this once, before the sides are touched, and the sides make
+    new pieces: a sliver of a towel, where the shadow in its folds takes
+    enough of the wall's colour to pass, and a speck of five pixels where a
+    column was straightened away from its neighbours. Looked at as a mask
+    rather than as columns, both are obvious.
+    """
+    grid = asgrid(cols, w, h)
+    for cells, bw, bh, _ in blobs(grid, w, h, 1):
+        if len(cells) < SPECK:
+            for c in cells:
+                grid[c] = 0
+    return ascols(grid, w, h)
+
+
+def lit(cells, w, px, ref, floor):
+    """Is this hole the paint with the light taken out of it.
+
+    Averaged over the hole rather than tested pixel by pixel, because a
+    reveal is a gradient: the pixel nearest the glass is gone altogether
+    and the one nearest the wall is nearly paint.
+    """
+    off = sat = val = 0.0
+    n = 0
+    for c in cells[::7]:
+        hh, ss, vv = keycolour.hsv(*px[c % w, c // w])
+        off += keycolour.apart(hh, ref)
+        sat += ss
+        val += vv
+        n += 1
+    if not n:
+        return False
+    off, sat, val = off / n, sat / n, val / n
+    return (off < REVEAL_WIN and REVEAL_SAT <= sat < floor
+            and val >= REVEAL_VAL)
+
+
+def tidy(cols, w, h, px, ref, floor):
     """Take the specks out of the mask and fill the pinholes in it.
 
     Everything above this point works a column at a time, which cannot see
@@ -297,41 +374,25 @@ def tidy(cols, h):
     keeps the towel and the reveals as holes: they are narrow, but they are
     long.
     """
-    xs = [c[0] for c in cols]
-    nc = len(xs)
-    if not nc:
+    if not cols:
         return cols
-    grid = bytearray(nc * h)
-    for i, col in enumerate(cols):
-        for k in range(1, len(col), 2):
-            for y in range(col[k], min(col[k + 1] + 1, h)):
-                grid[y * nc + i] = 1
+    grid = asgrid(cols, w, h)
 
-    for cells, bw, bh, _ in blobs(grid, nc, h, 1):
+    for cells, bw, bh, _ in blobs(grid, w, h, 1):
         if len(cells) < ISLAND:
             for c in cells:
                 grid[c] = 0
-    for cells, bw, bh, edge in blobs(grid, nc, h, 0):
-        if not edge and bw <= PINHOLE and bh <= PINHOLE:
+    for cells, bw, bh, edge in blobs(grid, w, h, 0):
+        if edge:
+            continue
+        if bw <= PINHOLE and bh <= PINHOLE:
+            for c in cells:
+                grid[c] = 1
+        elif min(bw, bh) <= REVEAL_WIDE and lit(cells, w, px, ref, floor):
             for c in cells:
                 grid[c] = 1
 
-    out = []
-    for i, x in enumerate(xs):
-        runs = []
-        y0 = None
-        for y in range(h):
-            if grid[y * nc + i]:
-                if y0 is None:
-                    y0 = y
-            elif y0 is not None:
-                runs.append([y0, y - 1])
-                y0 = None
-        if y0 is not None:
-            runs.append([y0, h - 1])
-        if runs:
-            out.append([x] + [v for r in runs for v in r])
-    return out
+    return ascols(grid, w, h)
 
 
 def joined(run, left, right):
