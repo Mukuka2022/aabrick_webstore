@@ -48,6 +48,10 @@ ROOMS = [
      "living",   "Living room",  8.0),
     ("Modern Navy Patio with Garden Views.png",
      "patio",    "Veranda",     10.0),
+    ("kitchen-tall-units.webp",
+     "kitchen-tall", "Kitchen, tall units", 5.5),
+    ("kitchen-and-dining.webp",
+     "kitchen-dining", "Kitchen and dining", 6.0),
 ]
 
 STEP = 5

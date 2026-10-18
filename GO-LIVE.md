@@ -460,17 +460,26 @@ Until that is built, a picture in a guide needs a developer, same as the
 words.
 
 **The visualiser does walls, in five rooms of seven.** Asked for on
-2026-10-01, built on 2026-10-17. Two ensuites, a bathroom, a shower room
-and a kitchen were generated with their walls painted coral as well as
-their floors blue, so those five have a traced wall and a Floor / Walls
+2026-10-01, built on 2026-10-17. The ensuite, the bathroom, two kitchens
+and the kitchen-and-dining room were generated with their walls painted as
+well as their floors, so those five have a traced wall and a Floor / Walls
 switch above the tile grid. Each surface keeps its own choice, because
 almost nobody puts the same tile on both. In the living room and the
 veranda the Walls button is disabled and says why.
 
-The rooms were replaced wholesale on 2026-10-17: the originals went and
-nine new photographs came in, of which seven are in. The source files live
-in `Local Sites/visualiser-rooms`, which the three scripts in `tools/` read
-by name.
+The rooms were replaced wholesale on 2026-10-17 and added to on the 18th.
+The source files live in `Local Sites/visualiser-rooms`, which the three
+scripts in `tools/` read by name.
+
+**A wall seen as a narrow band does not tile well, and cannot be made to.**
+The first kitchen has about 150mm of wall showing between the top of its
+units and the ceiling, which is twenty-five pixels in the picture where an
+800mm tile is a hundred and fifty. What shows there is a slice of one tile
+rather than any tiles, and a slice of stone reads as a smear however well
+it is traced: the mask over that strip is continuous and sits within 4 per
+cent of the paint. The kitchen with units running to the ceiling has no
+such strip and is the better room to show. Ask for full-height units, or
+for enough wall above them to fit a tile in.
 
 The engine was not rewritten. A wall stands on the floor, so the floor
 outline is also the skirting, and the depth of a wall in any column is the

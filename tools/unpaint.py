@@ -55,6 +55,8 @@ ROOMS = [
     ("Sunlit Coral and Navy Bathroom Spa.png", "bathroom", 10.0, True),
     ("Natural Light Modern Pink and Blue Kitchen.png",
      "kitchen", 10.0, True),
+    ("kitchen-tall-units.webp",   "kitchen-tall",    5.0, True),
+    ("kitchen-and-dining.webp",   "kitchen-dining", 10.0, True),
 ]
 
 FADE = 0.30        # below this the colour is not the paint itself

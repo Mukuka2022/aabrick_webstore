@@ -40,6 +40,8 @@ ROOMS = [
     ("Coral and Navy Modern Bathroom.png",            "ensuite",  10.0),
     ("Sunlit Coral and Navy Bathroom Spa.png",        "bathroom", 10.0),
     ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen", 10.0),
+    ("kitchen-tall-units.webp",   "kitchen-tall",    5.0),
+    ("kitchen-and-dining.webp",   "kitchen-dining", 10.0),
 ]
 
 STEP = 1           # columns. One, not three: the mask is built in blocks

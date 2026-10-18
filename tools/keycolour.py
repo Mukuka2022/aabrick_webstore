@@ -61,7 +61,17 @@ LO = 0.62        # of the paint's own saturation, at least
 HI = 1.55        # ...and at most
 SPREAD = 2.5     # how many interquartile ranges of hue count as the paint
 MIN_WIN = 10.0   # never narrower than this
-MAX_WIN = 20.0   # never wider, or the room starts getting in
+MAX_WIN = 14.0   # never wider, or the room starts getting in
+
+# That ceiling was 20, set for a green kitchen that is no longer in the
+# set. The deep red kitchen is what brought it down. Red drifts, so its
+# window opened to the ceiling, and its oak column stands 21 degrees away
+# from it: near enough that the grain's own variation reached across and
+# the trace tiled part of the woodwork. Swept against a patch that is
+# certainly wall and a patch that is certainly oak, the window keeps the
+# same 68 per cent of the wall anywhere between 10 and 20 degrees, while
+# the oak it takes falls from 5.7 per cent at 20 to 0.3 at 14. The width
+# was buying nothing and costing the oak.
 VLO = 0.35       # of the paint's own brightness, at least
 
 # That last one is what keeps the fittings out. A matte black tap in a room
