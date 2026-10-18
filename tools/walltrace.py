@@ -46,6 +46,8 @@ STEP = 3           # columns
 MIN_RUN = 14       # a span shorter than this is a reflection, not a wall
 CLOSE = 8          # a break this short is a speck, not a hole in the wall
 EDGE = 2           # pixels of blend taken at each end of a span
+ISLAND = 400       # a patch of mask smaller than this is not a wall
+PINHOLE = 12       # a hole no wider and no taller than this is not a window
 
 
 def spans(path, hint):
@@ -88,7 +90,101 @@ def spans(path, hint):
                           ref_val * keycolour.VLO), 0)
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
+    cols = tidy(cols, h)
     return cols, (w, h), (ref, ref_sat, win)
+
+
+def blobs(grid, nc, h, want):
+    """Every 4-connected patch of `want`, as (cells, width, height, edge)."""
+    from collections import deque
+    seen = bytearray(nc * h)
+    out = []
+    for start in range(nc * h):
+        if seen[start] or grid[start] != want:
+            continue
+        q = deque([start])
+        seen[start] = 1
+        cells = [start]
+        x0 = x1 = start % nc
+        y0 = y1 = start // nc
+        edge = False
+        while q:
+            p = q.popleft()
+            cx, cy = p % nc, p // nc
+            if cx == 0 or cx == nc - 1 or cy == 0 or cy == h - 1:
+                edge = True
+            if cx < x0:
+                x0 = cx
+            if cx > x1:
+                x1 = cx
+            if cy < y0:
+                y0 = cy
+            if cy > y1:
+                y1 = cy
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                ax, ay = cx + dx, cy + dy
+                if 0 <= ax < nc and 0 <= ay < h:
+                    a = ay * nc + ax
+                    if not seen[a] and grid[a] == want:
+                        seen[a] = 1
+                        q.append(a)
+                        cells.append(a)
+        out.append((cells, x1 - x0 + 1, y1 - y0 + 1, edge))
+    return out
+
+
+def tidy(cols, h):
+    """Take the specks out of the mask and fill the pinholes in it.
+
+    Everything above this point works a column at a time, which cannot see
+    a speck sitting on a toilet lid or a pinhole in the middle of a wall.
+    Looked at as a mask, both are obvious, and both are what shows in the
+    picture as a small patch that changes colour whenever the tile changes.
+
+    The two thresholds are not taste, they are the gap in the measurements.
+    A real wall is between fifty thousand and two hundred thousand cells;
+    everything else in these rooms is under four hundred, with nothing in
+    between. A window, a mirror or a sunlit reveal is between forty-five and
+    two hundred and thirty rows tall; the noise is twelve by twelve or less.
+    A hole has to be small in both directions to be filled, which is what
+    keeps the towel and the reveals as holes: they are narrow, but they are
+    long.
+    """
+    xs = [c[0] for c in cols]
+    nc = len(xs)
+    if not nc:
+        return cols
+    grid = bytearray(nc * h)
+    for i, col in enumerate(cols):
+        for k in range(1, len(col), 2):
+            for y in range(col[k], min(col[k + 1] + 1, h)):
+                grid[y * nc + i] = 1
+
+    for cells, bw, bh, _ in blobs(grid, nc, h, 1):
+        if len(cells) < ISLAND:
+            for c in cells:
+                grid[c] = 0
+    for cells, bw, bh, edge in blobs(grid, nc, h, 0):
+        if not edge and bw <= PINHOLE and bh <= PINHOLE:
+            for c in cells:
+                grid[c] = 1
+
+    out = []
+    for i, x in enumerate(xs):
+        runs = []
+        y0 = None
+        for y in range(h):
+            if grid[y * nc + i]:
+                if y0 is None:
+                    y0 = y
+            elif y0 is not None:
+                runs.append([y0, y - 1])
+                y0 = None
+        if y0 is not None:
+            runs.append([y0, h - 1])
+        if runs:
+            out.append([x] + [v for r in runs for v in r])
+    return out
 
 
 def joined(run, left, right):
