@@ -49,6 +49,7 @@
 	var mask = null;
 	var cov = null;         // 1 where there is a surface to tile
 	var plane = null;        // 0 floor, 1 wall
+	var rim = null;          // 1 at the blend where a span meets something
 	var shade = null;        // the floor brightness, as a multiplier
 	// On the floor, metres across and into the room. On a wall, metres along
 	// it and up it. Two meanings, but the same two numbers: they index the
@@ -98,6 +99,7 @@
 		var n = w * h;
 		mask = new Uint8Array(n);
 		plane = new Uint8Array(n);
+		rim = new Uint8Array(n);
 		shade = new Float32Array(n);
 		U = new Float32Array(n);
 		V = new Float32Array(n);
@@ -223,6 +225,22 @@
 
 			var kw = w / walls.size[0];
 			var wstep = walls.step;
+			// A span is deliberately stretched two pixels past the paint at
+			// each end, because a wall does not stop at a line where it
+			// meets a cabinet, it ramps over three or four pixels that are
+			// part wall and part cabinet. Covering them is right. Reading
+			// them as wall is not: they carry the cabinet's brightness, and
+			// against a deep red wall a pale cabinet measures three or four
+			// times the average, which the shading screens towards white.
+			// That is the bright line Mukuka saw along every cabinet and
+			// worktop. These rows may still darken, which is what a junction
+			// usually does, but they may not be read as a reflection.
+			// Two pixels of the photograph, plus the row the rounding can
+			// leave behind: a span end at source row 422 lands at canvas
+			// row 321, while the blend itself drew into rows 319 and 320,
+			// and a band of two rows then marks the wrong two. That one
+			// row was the last streak left along the worktop.
+			var band = Math.ceil(2 * kw) + 1;
 			walls.cols.forEach(function (col) {
 				var xa = Math.round(col[0] * kw);
 				var xb = Math.round((col[0] + wstep) * kw);
@@ -244,6 +262,9 @@
 							if (mask[j]) { continue; }
 							mask[j] = 1;
 							plane[j] = 1;
+							if (yy - ya < band || yb2 - yy < band) {
+								rim[j] = 1;
+							}
 							U[j] = along[xx];
 							V[j] = (yt - yy) / ppm;
 							PX[j] = ppm;
@@ -268,6 +289,61 @@
 			if (!mask[i]) { continue; }
 			var f = lum[i] / (plane[i] ? wref : ref);
 			shade[i] = f < 0.25 ? 0.25 : (f > 1.7 ? 1.7 : f);
+		}
+
+		// The junction band carries no light of its own. Those pixels are
+		// part wall and part cabinet, so whatever they measure is a mixture
+		// of the two, and against a deep red wall the cabinet's share reads
+		// as three or four times the average: a reflection, screened
+		// towards white. That is the bright line along every cabinet and
+		// worktop. Clamping it is not enough either, because the band then
+		// sits at full brightness against a wall that is in shadow, which is
+		// a paler line in place of a white one.
+		//
+		// So the band is given the shading of the wall just inside it, which
+		// is the nearest honest reading of the light falling there. The tile
+		// still covers the ramp, and the junction reads as the surface
+		// turning the corner rather than as a line drawn along it.
+		// How far the mixture runs is not fixed. Two pixels is the blend
+		// against a cabinet, but where a wall meets a ceiling the ceiling
+		// catches the wall's colour and fades into it over four or five,
+		// and all of it passes the colour test because all of it is partly
+		// the paint. So the band is followed inward for as long as it stays
+		// above the wall's own average, which is the only part that can be
+		// screened, and never further than six pixels.
+		var reach = 6;
+		while (reach-- > 0) {
+			var edge = [];
+			for (i = 0; i < n; i++) {
+				if (rim[i] || !plane[i] || lum[i] <= wref * 1.15) { continue; }
+				if ((i >= w && rim[i - w]) || (i + w < n && rim[i + w])) {
+					edge.push(i);
+				}
+			}
+			if (!edge.length) { break; }
+			for (var e = 0; e < edge.length; e++) { rim[edge[e]] = 1; }
+		}
+
+		for (x = 0; x < w; x++) {
+			for (y = 0; y < h; y++) {
+				i = y * w + x;
+				if (!rim[i]) { continue; }
+				var up = -1, dn = -1, du = 0, dd = 0, step;
+				for (step = 1; step <= 12; step++) {
+					var a = i - step * w, b2 = i + step * w;
+					if (up < 0 && y - step >= 0 && mask[a] && !rim[a]) {
+						up = a; du = step;
+					}
+					if (dn < 0 && y + step < h && mask[b2] && !rim[b2]) {
+						dn = b2; dd = step;
+					}
+				}
+				// whichever side of the band the wall is on, nearest first
+				var from = up >= 0 && dn >= 0
+					? (du < dd ? up : dn)
+					: (up >= 0 ? up : dn);
+				if (from >= 0) { shade[i] = shade[from]; }
+			}
 		}
 
 		// A mask is all or nothing, so wherever its edge runs at a shallow

@@ -487,7 +487,7 @@ depth of the floor directly below it. Height up the wall and distance along
 it come from that one number, they go into the same two arrays the floor
 uses, and the drawing loop never learns there are two kinds of surface.
 
-Two things to know before the next room:
+Three things to know before the next room:
 
 - **The lens is measured now, not assumed, and it was badly wrong.** Every
   room is scaled by one number: the field of view across the frame fixes
@@ -515,6 +515,29 @@ Two things to know before the next room:
   the pale things it was thrown onto, the basins and the ceilings, which
   otherwise read pink against a white tiled wall. That is `tools/unpaint.py`,
   and it runs off the original photographs, so it can be re-run safely.
+- **A surface never ends at a line, and the mixture is not the surface.**
+  Where a wall meets a cabinet there are three or four pixels that are part
+  wall and part cabinet; where it meets a ceiling the ceiling catches the
+  wall's colour and fades into it over five. All of it passes the paint
+  test, because all of it is partly the paint, and the mask is right to
+  cover it: an uncovered ramp is a fringe of old paint along every junction.
+  What is wrong is reading it as the surface. Those pixels carry the
+  cabinet's brightness, and shading measures every pixel against its own
+  surface's average, so against a deep red wall a pale cabinet measures
+  three or four times that average. Anything above the average is screened
+  towards white rather than multiplied, which is the only way to put a
+  reflection onto a dark tile, so a pale tile in that band went to pure
+  white: the bright line along every cabinet and worktop.
+  The band is now followed inward for as long as it stays above the wall's
+  own average, up to six pixels, and given the shading of the wall just
+  inside it. Clamping it to the average is not enough: the band then sits
+  unshaded against a wall that is in shadow, which is a paler line in place
+  of a white one. Two details earned their keep. The blend is measured in
+  the pixels of the photograph and the canvas is a different size, so the
+  band has to allow a row for the rounding, which was the last streak left
+  along the worktop. And the same screening is what made the floor's white
+  line, from a different cause: there the outline itself had drifted onto
+  the bath.
 
 It matters more than it sounds for the catalogue. 33 of the tiles in the
 picker are wall tiles that until now could only be shown on a floor, and
