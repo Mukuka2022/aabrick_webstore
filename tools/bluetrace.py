@@ -42,12 +42,19 @@ ROOMS = [
     # of a tile rather than a tile, and no trace can make that look laid.
     # This one's units run to the ceiling, so the wall it does show is worth
     # tiling.
-    ("Coral and Navy Modern Bathroom.png",
-     "ensuite",  "Ensuite",      4.5),
+    ("ensuite-long.webp",
+     "ensuite",  "Ensuite",      5.5),
     ("Sunlit Coral and Navy Bathroom Spa.png",
      "bathroom", "Bathroom",     5.0),
-    ("kitchen-tall-units.webp",
+    ("bathroom-family.webp",
+     "bathroom-family", "Family bathroom", 5.0),
+    ("kitchen-galley.webp",
      "kitchen",  "Kitchen",      5.5),
+    # No painted walls: the hallway's are an off-white the tracer has
+    # nothing to find in, so it is a floor only, like the living room and
+    # the veranda.
+    ("hallway.webp",
+     "hallway",  "Hallway",      8.0),
     ("kitchen-and-dining.webp",
      "kitchen-dining", "Kitchen and dining", 6.0),
     ("Modern Navy Living Room Retreat.png",
@@ -87,6 +94,16 @@ SLO = 0.40         # of the floor's own saturation, at least. See blue_test.
 # 870 puts them past three.
 HALF_FOV = 0.778
 GRACE = 10         # pixels of not-blue the walk may cross before giving up.
+
+# ...except where the floor itself says otherwise. How much of a break the
+# walk has to cross is a fact about the floor in that photograph, not about
+# floors: a polished one reflects whatever stands on it, and the reflection
+# is genuinely not blue. The hallway's doors and table legs break it for 40
+# and 71 pixels with floor above and below, which notched the outline at
+# every door. The veranda is the opposite case and is why this is not one
+# number: give it more and the walk steps over the threshold rail of the
+# sliding door and climbs the glass.
+PATIENCE = {"hallway": 80}
                    # It has to cross something: a glossy floor reflects the
                    # pink vanity above it and that reflection is genuinely
                    # not blue. Swept against every room, 10 moves no floor
@@ -149,7 +166,7 @@ def blue_test(ref_hue, ref_sat=None):
     return test
 
 
-def trace(path):
+def trace(path, grace=GRACE):
     with Image.open(path) as raw:
         im = raw.convert("RGB")
     w, h = im.size
@@ -185,7 +202,7 @@ def trace(path):
                 miss = 0
             else:
                 miss += 1
-                if miss > GRACE:
+                if miss > grace:
                     break
         tops.append((xs, top))
     return tops, (w, h)
@@ -289,7 +306,7 @@ def main():
     scenes = []
     for name, slug, label, depth in ROOMS:
         src = os.path.join(SRC, name)
-        tops, (w, h) = trace(src)
+        tops, (w, h) = trace(src, PATIENCE.get(slug, GRACE))
         raw = tops
         tops = despike(tops)
         moved = sum(1 for a, b in zip(raw, tops) if a[1] != b[1])

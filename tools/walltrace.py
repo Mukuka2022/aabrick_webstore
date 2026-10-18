@@ -38,9 +38,10 @@ ROOMS = [
     # kitchen is a deep red, about 5. The living room and the veranda are
     # not here: their walls were never painted, so there is nothing to
     # trace and they are floor only.
-    ("Coral and Navy Modern Bathroom.png",      "ensuite",        10.0),
+    ("ensuite-long.webp",                       "ensuite",        10.0),
     ("Sunlit Coral and Navy Bathroom Spa.png",  "bathroom",       10.0),
-    ("kitchen-tall-units.webp",                 "kitchen",         5.0),
+    ("bathroom-family.webp",            "bathroom-family",        10.0),
+    ("kitchen-galley.webp",                     "kitchen",        10.0),
     ("kitchen-and-dining.webp",                 "kitchen-dining", 10.0),
 ]
 

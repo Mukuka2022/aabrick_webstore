@@ -459,7 +459,7 @@ paste from Word in a way a template cannot.
 Until that is built, a picture in a guide needs a developer, same as the
 words.
 
-**The visualiser does walls, in four rooms of six.** Asked for on
+**The visualiser does walls, in five rooms of eight.** Asked for on
 2026-10-01, built on 2026-10-17. The ensuite, the bathroom, the kitchen
 and the kitchen-and-dining room were generated with their walls painted as
 well as their floors, so those four have a traced wall and a Floor / Walls
@@ -589,10 +589,22 @@ Five things to know before the next room:
 It matters more than it sounds for the catalogue. 33 of the tiles in the
 picker are wall tiles that until now could only be shown on a floor, and
 the 250x400 carries a warning saying so. They are no longer an awkward case.
-The living room and the veranda still have no painted walls to trace, so
-they are floor only until they are regenerated the way
-`visualiser-room-brief.md` describes. The kitchen-and-dining room is gone
-altogether; no new photograph was made of it.
+The living room, the veranda and the hallway have no painted walls to
+trace, so they are floor only until they are regenerated the way
+`visualiser-room-brief.md` describes.
+
+The rooms are eight now. The ensuite and the kitchen were replaced with
+better photographs of the same two rooms, and a family bathroom and a
+hallway were added, which is the first room in the set with no coral in
+it at all. The hallway needed one thing of its own: its floor is polished
+and reflects the doors and the table legs standing on it, which breaks the
+blue for 40 and 71 pixels with floor above and below, and the walk up each
+column gave up at the first break and notched the outline at every door.
+How far a walk may cross is a fact about the floor in the photograph
+rather than about floors, so it is a per-room number now (`PATIENCE` in
+`tools/bluetrace.py`). It cannot simply be raised for everyone: give the
+veranda the same patience and the walk steps over the threshold rail of
+the sliding door and climbs the glass.
 
 **300x300 is shown as a floor tile on AABrick's word, not on a rating.**
 Mukuka has seen customers lay it in bathrooms, so it no longer carries the

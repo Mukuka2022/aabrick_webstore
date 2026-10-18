@@ -2524,6 +2524,15 @@ main.container:has(.aab-vis) .aab-vis {
 	width: 100%; margin-left: 0; margin-right: 0;
 }
 
+/* The page carries no visible title: it is a tool, and the rooms and the
+ * tiles say what it is sooner than a heading does. The heading is still
+ * there for a screen reader and for search. */
+.aab-vis-title {
+	position: absolute; width: 1px; height: 1px;
+	margin: -1px; padding: 0; border: 0;
+	clip: rect(0 0 0 0); clip-path: inset(50%);
+	overflow: hidden; white-space: nowrap;
+}
 .aab-vis-head { padding: 28px 0 6px; }
 .aab-vis-head h1 {
 	font-family: var(--aab-display);
@@ -2552,6 +2561,7 @@ main.container:has(.aab-vis) .aab-vis {
 /* Rooms down one side, tiles down the other, the floor in the middle.
  * The two things being chosen are different questions and they stop
  * competing for the same column when they are kept apart. */
+.aab-vis-band { padding-top: 22px; }
 .aab-vis-layout {
 	display: grid;
 	grid-template-columns: 186px minmax(0, 1fr) 320px;
@@ -2867,8 +2877,12 @@ main.container:has(.aab-vis) .aab-vis {
 	 * column with its own scroll. Here the page is the scroll and the top
 	 * of it is taken, so they would stand on top of the switch. */
 	.aab-vis-group-head { position: static; }
-	.aab-vis-side { max-height: none; overflow-y: visible; order: 2; }
-	.aab-vis-main { order: 1; }
+	/* The rooms first, then the room, then the tiles. Which room you are
+	 * standing in is the first choice anyone makes, and it was below the
+	 * picture it changes; the tiles are the long scroll and belong last. */
+	.aab-vis-side { max-height: none; overflow-y: visible; order: 1; }
+	.aab-vis-main { order: 2; }
+	.aab-vis-panel:not(.aab-vis-side) { order: 3; }
 	/* Stacked, a column of rooms would be a long scroll before the tiles,
 	 * so they go back to a row under the floor. */
 	.aab-vis-rooms { grid-template-columns: repeat(4, 1fr); }

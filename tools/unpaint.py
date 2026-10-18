@@ -54,10 +54,13 @@ APP = os.environ.get(
 # is the room, coral walls and all, and leaving it alone left a pale coral
 # patch in the top corner of the bathroom with tiled wall all around it.
 ROOMS = [
-    ("Coral and Navy Modern Bathroom.png",      "ensuite",   10.0, True),
+    ("ensuite-long.webp",                       "ensuite",   10.0, True),
     ("Sunlit Coral and Navy Bathroom Spa.png",  "bathroom",  10.0, True),
-    ("kitchen-tall-units.webp",                 "kitchen",    5.0, True),
+    ("bathroom-family.webp",            "bathroom-family",   10.0, True),
+    ("kitchen-galley.webp",                     "kitchen",   10.0, True),
     ("kitchen-and-dining.webp", "kitchen-dining", 10.0, True),
+    # Off-white walls, nothing painted, nothing to take off but the floor.
+    ("hallway.webp",                            "hallway",   None, False),
     # No painted walls, so nothing to measure and nothing to leave
     # alone; they are here for the floor pass below.
     ("Modern Navy Living Room Retreat.png",     "living",   None, False),
