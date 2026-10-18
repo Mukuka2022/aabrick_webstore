@@ -46,7 +46,8 @@
 
 	var canvas, ctx, out;
 	var base = null;         // the room, untouched
-	var mask = null;         // 1 where there is a surface to tile
+	var mask = null;
+	var cov = null;         // 1 where there is a surface to tile
 	var plane = null;        // 0 floor, 1 wall
 	var shade = null;        // the floor brightness, as a multiplier
 	// On the floor, metres across and into the room. On a wall, metres along
@@ -269,6 +270,37 @@
 			shade[i] = f < 0.25 ? 0.25 : (f > 1.7 ? 1.7 : f);
 		}
 
+		// A mask is all or nothing, so wherever its edge runs at a shallow
+		// angle it lands on the pixel grid as a staircase. That is what
+		// makes a tiled wall look chewed along the top where it meets the
+		// ceiling: the trace is right to within a pixel, and the eye
+		// follows the steps anyway.
+		//
+		// So the edge gets a pixel of softness. Coverage is how much of a
+		// pixel's own neighbourhood is inside the mask, which is 1 well
+		// inside it and somewhere between 0 and 1 along the edge, and the
+		// tile is mixed with the photograph in that proportion. A straight
+		// edge loses nothing it had; a stepped one stops reading as steps.
+		cov = new Float32Array(n);
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				i = y * w + x;
+				if (!mask[i]) { continue; }
+				var hit = 0, seen = 0;
+				for (var dy = -1; dy <= 1; dy++) {
+					var yy = y + dy;
+					if (yy < 0 || yy >= h) { continue; }
+					for (var dx = -1; dx <= 1; dx++) {
+						var xx = x + dx;
+						if (xx < 0 || xx >= w) { continue; }
+						seen++;
+						if (mask[yy * w + xx]) { hit++; }
+					}
+				}
+				cov[i] = seen ? hit / seen : 1;
+			}
+		}
+
 		done();
 	}
 
@@ -418,6 +450,12 @@
 				r *= f; g *= f; b *= f;
 			}
 			var p = i * 4;
+			var a = cov[i];
+			if (a < 1) {
+				r = r * a + src[p] * (1 - a);
+				g = g * a + src[p + 1] * (1 - a);
+				b = b * a + src[p + 2] * (1 - a);
+			}
 			dst[p] = r > 255 ? 255 : r;
 			dst[p + 1] = g > 255 ? 255 : g;
 			dst[p + 2] = b > 255 ? 255 : b;
