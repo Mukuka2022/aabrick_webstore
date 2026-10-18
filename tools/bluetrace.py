@@ -214,21 +214,52 @@ def despike(tops):
     return out
 
 
-def thin(points, tol=1.6):
+def thin(points, tol=1.5):
+    """Drop a point that the line already passes through, and no other.
+
+    The old version compared each point with the one kept before it and the
+    one after it, which is a local test: every point could sit within the
+    tolerance of its own neighbours while the line as a whole wandered far
+    from the outline. Over a long smooth curve, which is exactly what the
+    foot of a bath is, it drifted five or six pixels above the floor. Those
+    pixels are not floor, they are the bath, and they are brighter than the
+    floor is, so the shading read them as a highlight and screened the tile
+    to white: a bright line along the foot of every curved thing standing on
+    the floor.
+
+    This measures each point against the chord it would be dropped in
+    favour of, and keeps the worst offender until nothing is further out
+    than the tolerance. The line then stays within tol of every point it
+    replaced, which is what the tolerance was always supposed to mean.
+    """
     if len(points) < 3:
-        return points
-    keep = [points[0]]
-    for i in range(1, len(points) - 1):
-        ax, ay = keep[-1]
-        bx, by = points[i]
-        cx, cy = points[i + 1]
-        dx, dy = cx - ax, cy - ay
+        return list(points)
+
+    keep = [False] * len(points)
+    keep[0] = keep[-1] = True
+    stack = [(0, len(points) - 1)]
+    while stack:
+        a, b = stack.pop()
+        if b <= a + 1:
+            continue
+        ax, ay = points[a]
+        bx, by = points[b]
+        dx, dy = bx - ax, by - ay
         n = (dx * dx + dy * dy) ** 0.5
-        d = abs(dy * bx - dx * by + cx * ay - cy * ax) / n if n else 0
-        if d > tol:
-            keep.append(points[i])
-    keep.append(points[-1])
-    return keep
+        worst, at = -1.0, -1
+        for i in range(a + 1, b):
+            px, py = points[i]
+            if n:
+                d = abs(dy * px - dx * py + bx * ay - by * ax) / n
+            else:
+                d = ((px - ax) ** 2 + (py - ay) ** 2) ** 0.5
+            if d > worst:
+                worst, at = d, i
+        if worst > tol:
+            keep[at] = True
+            stack.append((a, at))
+            stack.append((at, b))
+    return [p for p, k in zip(points, keep) if k]
 
 
 def overlay(path, tops, size, dst, label):
