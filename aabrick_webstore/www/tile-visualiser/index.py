@@ -49,7 +49,7 @@ SCENES = [
     # degree field of view across the frame.
         {"id": "ensuite", "label": "Ensuite",
          "image": "/assets/aabrick_webstore/images/scene-ensuite.jpg",
-         "horizon": 118, "cx": 724, "focal": 1463, "height": 1.45,
+         "horizon": 289, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [0, 1085], [1447, 1085], [1445, 1085], [1425, 1085],
             [1420, 882], [1410, 859], [1405, 856], [1215, 855],
@@ -62,7 +62,7 @@ SCENES = [
         ]},
         {"id": "bathroom", "label": "Bathroom",
          "image": "/assets/aabrick_webstore/images/scene-bathroom.jpg",
-         "horizon": 93, "cx": 723, "focal": 1462, "height": 1.45,
+         "horizon": 247, "cx": 723, "focal": 930, "height": 1.45,
          "floor": [
             [0, 1086], [1446, 1086], [1445, 832], [1420, 814],
             [1405, 779], [1255, 775], [1225, 756], [1180, 621],
@@ -74,7 +74,7 @@ SCENES = [
         ]},
         {"id": "kitchen", "label": "Kitchen",
          "image": "/assets/aabrick_webstore/images/scene-kitchen.jpg",
-         "horizon": 88, "cx": 723, "focal": 1462, "height": 1.45,
+         "horizon": 242, "cx": 723, "focal": 930, "height": 1.45,
          "floor": [
             [0, 1086], [1446, 1086], [1445, 763], [1410, 737],
             [1395, 736], [1390, 726], [1380, 726], [1375, 706],
@@ -84,7 +84,7 @@ SCENES = [
         ]},
         {"id": "living", "label": "Living room",
          "image": "/assets/aabrick_webstore/images/scene-living.jpg",
-         "horizon": 213, "cx": 724, "focal": 1463, "height": 1.45,
+         "horizon": 309, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [0, 1085], [1447, 1085], [1445, 647], [1105, 490],
             [1045, 490], [1035, 483], [945, 480], [940, 524],
@@ -97,7 +97,7 @@ SCENES = [
         ]},
         {"id": "patio", "label": "Veranda",
          "image": "/assets/aabrick_webstore/images/scene-patio.jpg",
-         "horizon": 272, "cx": 724, "focal": 1463, "height": 1.45,
+         "horizon": 349, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [0, 1085], [1447, 1085], [1445, 674], [1275, 599],
             [1165, 599], [1120, 577], [1115, 541], [1015, 493],

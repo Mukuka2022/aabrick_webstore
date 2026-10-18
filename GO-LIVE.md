@@ -480,11 +480,24 @@ uses, and the drawing loop never learns there are two kinds of surface.
 
 Two things to know before the next room:
 
-- **The kitchen's walls are about 600mm too close.** The splashback is
-  behind the cabinets, so the nearest floor in that column is the kickboard
-  rather than the wall itself, and the tiles there are drawn that much
-  large. It is invisible unless you measure it, and it would only be worth
-  fixing with a per-wall depth offset.
+- **The lens is measured now, not assumed, and it was badly wrong.** Every
+  room is scaled by one number: the field of view across the frame fixes
+  the horizon, the horizon fixes how many pixels a metre is worth, and that
+  fixes how big a tile is drawn, on floors and walls alike. It had been set
+  to 53 degrees as an assumption. These rooms are rendered at about 76, and
+  the error drew every tile some 1.7 times too large. The kitchen's back
+  wall came out 2.31 metres wide against the 4 it was asked for, and its
+  ceiling 1.61 metres above the floor; a 600mm joint fell below a pixel, so
+  a tiled wall read as one stretched slab with no joints in it anywhere.
+  Two measurements fixed it and agree: the feet of the left and right walls
+  are parallel in the room, so in the picture they meet on the horizon, and
+  fitting those puts the lens between 845 and 927; and at 930 the three
+  indoor rooms come out with ceilings of 2.75 to 2.85 metres, where 1462
+  had them at 1.75. Checked afterwards by turning the grout on and
+  measuring the joints: 113, 114, 114 pixels apart against 113 expected for
+  an 800mm tile.
+  If a future set of rooms comes from a different generator, this is the
+  first thing to check, and `HALF_FOV` in `tools/bluetrace.py` is the knob.
 - **Any leftover pink is repainted off-white when the room is built.** The
   ceiling is not a wall and nobody tiles one, so it kept its pink until the
   walls around it were tiled and it began to look like a fault. Anything

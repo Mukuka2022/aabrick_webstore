@@ -53,6 +53,28 @@ ROOMS = [
 STEP = 5
 SPIKE = 15         # columns either side that a column is judged against
 SLO = 0.40         # of the floor's own saturation, at least. See blue_test.
+
+# The lens. This is the tangent of half the field of view across the frame,
+# and everything in the room is scaled by it: it fixes the horizon, the
+# horizon fixes how many pixels a metre is worth, and that fixes how big a
+# tile is drawn, on the floor and on the walls alike.
+#
+# It was 0.49495, a 53 degree lens, and it was an assumption rather than a
+# measurement. These rooms are rendered far wider than that, and the error
+# showed up as tiles about 1.7 times too large: the kitchen's back wall came
+# out 2.31 metres wide against the 4 it was asked for, its ceiling 1.61
+# metres above the floor, and the joints fell below a pixel so a tiled wall
+# read as one stretched slab.
+#
+# 0.778 is a 76 degree lens, and it comes from two measurements that agree.
+# The feet of the left and right walls are parallel in the room, so in the
+# picture they meet on the horizon; fitting them to the upper edge of the
+# floor outline, and ignoring whatever stands in front of them, puts the
+# kitchen's lens at 927, the veranda's at 873 and the bathroom's at 845.
+# And at 930 the three indoor rooms come out with ceilings of 2.75 to 2.85
+# metres above the floor, where 1462 had them at 1.75 and anything below
+# 870 puts them past three.
+HALF_FOV = 0.778
 GRACE = 10         # pixels of not-blue the walk may cross before giving up.
                    # It has to cross something: a glossy floor reflects the
                    # pink vanity above it and that reflection is genuinely
@@ -235,7 +257,7 @@ def main():
             raw.convert("RGB").save(dst, "JPEG", quality=88, optimize=True,
                                     progressive=True)
 
-        focal = int(round(w / (2 * 0.49495)))
+        focal = int(round(w / (2 * HALF_FOV)))
         height = 1.45
         top = min(y for _, y in tops if y < h - 1)
         horizon = int(round(top - focal * height / depth))
