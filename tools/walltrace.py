@@ -56,6 +56,7 @@ PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
 WANDER = 10        # ...and the most a column may be moved while doing it
 UPRIGHT = 7        # rows of mask a column is judged over, sideways
+THIN = 3           # a row of mask narrower than this is not a wall
 
 
 def spans(path, hint):
@@ -105,30 +106,38 @@ def spans(path, hint):
     # each row, so it ravels a straight side again by a pixel. Doing it on
     # both sides of the growth keeps the mask within two or three pixels of
     # the paint and still leaves a line the eye can follow.
-    cols = upright(cols, h)
+    cols = upright(cols, w, h)
+    cols = sliver(cols, w, h)
     cols = widen(cols, w, h, px, ref_val * keycolour.VLO)
-    cols = upright(cols, h)
+    cols = upright(cols, w, h)
     return cols, (w, h), (ref, ref_sat, win)
 
 
-def asgrid(cols, h):
-    xs = [c[0] for c in cols]
-    grid = bytearray(len(xs) * h)
-    nc = len(xs)
-    for i, col in enumerate(cols):
+def asgrid(cols, w, h):
+    """The mask as one cell per pixel of the picture.
+
+    Every column of the picture, not only the ones that carry a span. A
+    column with no wall in it is a gap, and anything working sideways has
+    to see it as one. Indexing by the columns that happen to have spans
+    puts two pieces of wall side by side that have a window between them,
+    which is how a strip two pixels wide survived a pass meant to drop it.
+    """
+    grid = bytearray(w * h)
+    for col in cols:
+        i = col[0]
         for k in range(1, len(col), 2):
             for y in range(max(col[k], 0), min(col[k + 1] + 1, h)):
-                grid[y * nc + i] = 1
-    return xs, nc, grid
+                grid[y * w + i] = 1
+    return grid
 
 
-def ascols(xs, nc, grid, h):
+def ascols(grid, w, h):
     out = []
-    for i, x in enumerate(xs):
+    for x in range(w):
         runs = []
         y0 = None
         for y in range(h):
-            if grid[y * nc + i]:
+            if grid[y * w + x]:
                 if y0 is None:
                     y0 = y
             elif y0 is not None:
@@ -141,7 +150,36 @@ def ascols(xs, nc, grid, h):
     return out
 
 
-def upright(cols, h):
+def sliver(cols, w, h):
+    """Drop the rows of mask that are only a pixel or two across.
+
+    MIN_RUN throws away a run too short to be a wall, measured down the
+    column, and there was never anything measuring it across. The kitchen
+    kept a strip two pixels wide and forty rows tall between the window
+    frame and the edge of the picture: a real enough piece of wall, and
+    tiled it reads as a bright line drawn down the corner, because two
+    pixels of tile cannot show that they are a wall.
+
+    This runs before the sides are grown, so a strip that survives is one
+    the photograph really does show three pixels of.
+    """
+    grid = asgrid(cols, w, h)
+    out = bytearray(grid)
+    for y in range(h):
+        row = y * w
+        run = 0
+        for i in range(w + 1):
+            if i < w and grid[row + i]:
+                run += 1
+                continue
+            if 0 < run < THIN:
+                for j in range(i - run, i):
+                    out[row + j] = 0
+            run = 0
+    return ascols(out, w, h)
+
+
+def upright(cols, w, h):
     """Take the wiggle out of the edges that run up the picture.
 
     straighten() works on the top and the bottom of the wall, which is
@@ -158,18 +196,18 @@ def upright(cols, h):
     rows is the window, so a jog has to last four rows to survive, and a
     strip of wall three rows tall is not worth tiling anyway.
     """
-    xs, nc, grid = asgrid(cols, h)
+    grid = asgrid(cols, w, h)
     half = UPRIGHT // 2
     out = bytearray(grid)
-    for i in range(nc):
+    for i in range(w):
         for y in range(h):
             a = max(0, y - half)
             b = min(h, y + half + 1)
             n = 0
             for yy in range(a, b):
-                n += grid[yy * nc + i]
-            out[y * nc + i] = 1 if n * 2 > (b - a) else 0
-    return ascols(xs, nc, out, h)
+                n += grid[yy * w + i]
+            out[y * w + i] = 1 if n * 2 > (b - a) else 0
+    return ascols(out, w, h)
 
 
 def widen(cols, w, h, px, dark):
@@ -182,25 +220,24 @@ def widen(cols, w, h, px, dark):
     line down the junction. Nothing covered them until now, because growth
     only ever ran up and down a column.
     """
-    xs, nc, grid = asgrid(cols, h)
+    grid = asgrid(cols, w, h)
     out = bytearray(grid)
     for y in range(h):
-        row = y * nc
-        for i in range(nc):
+        row = y * w
+        for i in range(w):
             if not grid[row + i]:
                 continue
-            if i and grid[row + i - 1] and i + 1 < nc and grid[row + i + 1]:
+            if i and grid[row + i - 1] and i + 1 < w and grid[row + i + 1]:
                 continue
             for side in (-1, 1):
                 for k in range(1, EDGE + 1):
                     j = i + side * k
-                    if j < 0 or j >= nc or grid[row + j]:
+                    if j < 0 or j >= w or grid[row + j]:
                         break
-                    x = xs[j]
-                    if max(px[x, y]) / 255.0 < dark:
+                    if max(px[j, y]) / 255.0 < dark:
                         break
                     out[row + j] = 1
-    return ascols(xs, nc, out, h)
+    return ascols(out, w, h)
 
 
 def blobs(grid, nc, h, want):

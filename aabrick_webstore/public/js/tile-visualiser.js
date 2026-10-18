@@ -58,6 +58,7 @@
 	var PX = null;           // pixels per metre, per pixel
 	var texCache = {};
 	var SHOW_MASK = /[?&]mask=1/.test(location.search);
+	var SHOW_RIM = /[?&]rim=1/.test(location.search);
 	var groups = [];
 
 	function $(sel, root) { return (root || document).querySelector(sel); }
@@ -318,13 +319,21 @@
 		// the paint. So the band is followed inward for as long as it stays
 		// above the wall's own average, which is the only part that can be
 		// screened, and never further than six pixels.
+		//
+		// Above the average at all, not comfortably above it. The first
+		// try asked for fifteen per cent, and the bathroom's ceiling ramp
+		// read 1.45, 1.32, 1.18, 1.13 going down and then 1.07 in the row
+		// the canvas scaling blends: just under the bar, still screened,
+		// and still a white line two rows deep. Within six pixels of a
+		// junction a reading above the surface's own average is the
+		// junction far more often than it is a reflection.
 		var reach = 6;
 		while (reach-- > 0) {
 			var edge = [];
 			for (i = 0; i < n; i++) {
 				if (rim[i] || !mask[i]) { continue; }
 				var avg = plane[i] ? wref : ref;
-				if (lum[i] <= avg * 1.15) { continue; }
+				if (lum[i] <= avg) { continue; }
 				if ((i >= w && rim[i - w]) || (i + w < n && rim[i + w])
 					|| (i > 0 && rim[i - 1]) || (i + 1 < n && rim[i + 1])) {
 					edge.push(i);
@@ -338,8 +347,13 @@
 			for (y = 0; y < h; y++) {
 				i = y * w + x;
 				if (!rim[i]) { continue; }
+				// Far enough to cross a mirror or a window and find the
+				// same wall on the other side. A strip of wall five pixels
+				// wide, which is what is left beside the bathroom mirror,
+				// is rim all the way through and has no inside of its own
+				// to ask.
 				var from = -1, step;
-				for (step = 1; step <= 12 && from < 0; step++) {
+				for (step = 1; step <= 30 && from < 0; step++) {
 					var side = [
 						y - step >= 0 ? i - step * w : -1,
 						y + step < h ? i + step * w : -1,
@@ -355,7 +369,14 @@
 						}
 					}
 				}
-				if (from >= 0) { shade[i] = shade[from]; }
+				if (from >= 0) {
+					shade[i] = shade[from];
+				} else if (shade[i] > 1) {
+					// Nothing to ask at all. Then at least do not invent a
+					// reflection: the surface's own average is as much as
+					// a junction may claim.
+					shade[i] = 1;
+				}
 			}
 		}
 
@@ -518,6 +539,15 @@
 			// picture with every window reflection gone. Highlights are
 			// screened towards white instead, which is the one way to put
 			// light back onto a dark tile.
+			if (SHOW_RIM) {
+				// The junction band, the same way ?mask=1 shows the mask.
+				var qr = i * 4;
+				dst[qr] = rim[i] ? 40 : 200;
+				dst[qr + 1] = rim[i] ? 230 : 200;
+				dst[qr + 2] = rim[i] ? 40 : 200;
+				dst[qr + 3] = 255;
+				continue;
+			}
 			if (SHOW_MASK) {
 				// Tracing by eye is guesswork until you can see what you
 				// traced. ?mask=1 paints the floor red and the walls blue.

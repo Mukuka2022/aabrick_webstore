@@ -26,6 +26,9 @@ SRC = "/mnt/c/Users/HC COMPUTER STORE/Local Sites/visualiser-rooms"
 W = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
      "C--Users-HC-COMPUTER-STORE-Local-Sites/"
      "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/walls/walls.json")
+B = ("/mnt/c/Users/HCCOMP~1/AppData/Local/Temp/claude/"
+     "C--Users-HC-COMPUTER-STORE-Local-Sites/"
+     "6b0e1eff-4cf1-4667-ac17-775c86b627df/scratchpad/blue/scenes.json")
 APP = os.environ.get(
     "AAB_SCENE_OUT",
     "/home/frappe/frappe-bench/apps/aabrick_webstore/aabrick_webstore"
@@ -55,7 +58,29 @@ ROOMS = [
     ("Sunlit Coral and Navy Bathroom Spa.png",  "bathroom",  10.0, True),
     ("kitchen-tall-units.webp",                 "kitchen",    5.0, True),
     ("kitchen-and-dining.webp", "kitchen-dining", 10.0, True),
+    # No painted walls, so nothing to measure and nothing to leave
+    # alone; they are here for the floor pass below.
+    ("Modern Navy Living Room Retreat.png",     "living",   None, False),
+    ("Modern Navy Patio with Garden Views.png", "patio",    None, False),
 ]
+
+# The floor is a tracing colour as much as the wall is, and until now
+# nothing took it off. Wherever the tile does not reach the blue it
+# stays blue: the reflection of the floor in a glass door, the shower
+# tray behind its screen, a pixel of the floor's own edge above the
+# outline. The tracer is right to stop at a reflection, because a
+# reflection is not a floor and tiling it would run the tile up the
+# door; but the blue has to go.
+#
+# What keeps this off the sky, which is the same colour, is distance.
+# A reflection of the floor lies against the floor. Sixty pixels above
+# the outline reaches the skirting, the foot of a door and the glass
+# directly above the floor; the sky in these rooms is hundreds of
+# pixels higher, and the one piece of glass that comes near the floor
+# is the one showing the floor.
+BLUE_NEAR = 60     # pixels above the floor outline this may reach
+BLUE_WIN = 12.0    # degrees from the floor's own hue
+BLUE_SAT = 0.40    # ...and this much colour, which the sky has not got
 
 FADE = 0.30        # below this the colour is not the paint itself
 GROW = 0           # pixels the keep-mask is widened by, see below
@@ -84,28 +109,58 @@ LIT_WIN = 22.0     # degrees; wider than the paint's own, the tint drifts
 TINT = (1.000, 0.976, 0.953)
 
 walls = json.load(io.open(W, encoding="utf-8"))
+floors = {s["id"]: s for s in json.load(io.open(B, encoding="utf-8"))}
+
+
+def skirting(pts, w, h):
+    """The floor outline as one y per column, as the engine fills it."""
+    top = [-1] * w
+    for i in range(2, len(pts) - 1):
+        a, b = pts[i], pts[i + 1]
+        x0, x1 = min(a[0], b[0]), max(a[0], b[0])
+        for x in range(x0, min(x1 + 1, w)):
+            k = 0.0 if x1 == x0 else (x - x0) / float(x1 - x0)
+            y = (a[1] + (b[1] - a[1]) * k if a[0] <= b[0]
+                 else b[1] + (a[1] - b[1]) * k)
+            y = int(round(y))
+            if top[x] < 0 or y < top[x]:
+                top[x] = y
+    return top
+
+
+def floor_hue(px, w, h):
+    """The floor's own colour, measured where it is all there is."""
+    rs = gs = bs = n = 0
+    for y in range(int(h * 0.92), h, 2):
+        for x in range(int(w * 0.35), int(w * 0.65), 4):
+            r, g, b = px[x, y]
+            rs += r
+            gs += g
+            bs += b
+            n += 1
+    return keycolour.hsv(rs / n, gs / n, bs / n)[0]
 
 for name, slug, hint, lit in ROOMS:
     im = Image.open(os.path.join(SRC, name)).convert("RGB")
     w, h = im.size
     px = im.load()
 
-    found = keycolour.paint(px, w, h, hint)
-    if found is None:
+    found = keycolour.paint(px, w, h, hint) if hint is not None else None
+    if hint is not None and found is None:
         print("  %-10s no paint near %.0f degrees, left alone" % (slug, hint))
         continue
-    ref, ref_sat, win, ref_val = found
 
-    d = walls[slug]
-    step = d["step"]
     keep = bytearray(w * h)          # 1 where a tile will go anyway
-    for col in d["cols"]:
-        x0 = col[0]
-        for i in range(1, len(col), 2):
-            for y in range(col[i], min(col[i + 1] + 1, h)):
-                row = y * w
-                for x in range(x0, min(x0 + step, w)):
-                    keep[row + x] = 1
+    d = walls.get(slug)
+    if d:
+        step = d["step"]
+        for col in d["cols"]:
+            x0 = col[0]
+            for i in range(1, len(col), 2):
+                for y in range(col[i], min(col[i + 1] + 1, h)):
+                    row = y * w
+                    for x in range(x0, min(x0 + step, w)):
+                        keep[row + x] = 1
 
     # This used to widen the mask by a couple of pixels, from when the spans
     # stopped short of the true edge and a repaint could eat into what the
@@ -133,11 +188,12 @@ for name, slug, hint, lit in ROOMS:
                     if 0 <= xx < w:
                         grown[r2 + xx] = 1
 
-    full = ref_sat * keycolour.LO    # by here it is paint, not bounced light
-    ceiling = ref_sat * keycolour.HI  # past here it is something else entirely
-
     fixed = 0
-    for y in range(h):
+    if found:
+      ref, ref_sat, win, ref_val = found
+      full = ref_sat * keycolour.LO   # by here it is paint, not light
+      ceiling = ref_sat * keycolour.HI  # past here it is something else
+      for y in range(h):
         row = y * w
         for x in range(w):
             if grown[row + x]:
@@ -173,6 +229,41 @@ for name, slug, hint, lit in ROOMS:
                 min(255, int(b + (L * TINT[2] - b) * k)))
             fixed += 1
 
+    # and the floor's own blue, close above the line where the tile
+    # stops
+    blued = 0
+    s = floors.get(slug)
+    if s:
+        top = skirting(s["floor"], w, h)
+        fh = floor_hue(px, w, h)
+        for x in range(w):
+            t2 = top[x]
+            if t2 < 0:
+                continue
+            # From two pixels below the outline, not from one above it.
+            # The topmost row of the polygon is on the boundary, which the
+            # engine's inside test does not always take, so a blue pixel
+            # sitting exactly on the line was covered by neither the tile
+            # nor the repaint. Repainting a pixel the tile does cover is
+            # free, because the tile is drawn over it.
+            for up in range(-2, BLUE_NEAR + 1):
+                y = t2 - up
+                if y >= h:
+                    continue
+                if y < 0:
+                    break
+                r, g, b = px[x, y]
+                hh, ss, vv = keycolour.hsv(r, g, b)
+                if (vv < 0.10 or ss < BLUE_SAT
+                        or keycolour.apart(hh, fh) >= BLUE_WIN):
+                    continue
+                L = 0.299 * r + 0.587 * g + 0.114 * b
+                px[x, y] = (
+                    min(255, int(L * TINT[0])),
+                    min(255, int(L * TINT[1])),
+                    min(255, int(L * TINT[2])))
+                blued += 1
+
     dst = os.path.join(APP, "scene-%s.jpg" % slug)
     # Colour at full resolution, not half. Every pixel under the mask
     # keeps its paint, because a tile is drawn over it, and a JPEG stores
@@ -184,8 +275,13 @@ for name, slug, hint, lit in ROOMS:
     # a fifth of the file and ends it.
     im.save(dst, "JPEG", quality=88, subsampling=0, optimize=True,
             progressive=True)
-    print("  %-10s hue %3.0f  sat %.2f  window %2.0f   %6d pixels repainted"
-          "  (%.1f%% of the room)"
-          % (slug, ref, ref_sat, win, fixed, 100.0 * fixed / (w * h)))
+    if found:
+        print("  %-10s hue %3.0f  sat %.2f  window %2.0f   %6d wall"
+              " pixels repainted (%.1f%%), %4d of the floor's blue"
+              % (slug, ref, ref_sat, win, fixed,
+                 100.0 * fixed / (w * h), blued))
+    else:
+        print("  %-10s no painted walls, %4d of the floor's blue"
+              " repainted" % (slug, blued))
 
 print("leftover paint repainted")

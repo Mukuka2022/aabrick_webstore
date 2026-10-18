@@ -487,7 +487,7 @@ depth of the floor directly below it. Height up the wall and distance along
 it come from that one number, they go into the same two arrays the floor
 uses, and the drawing loop never learns there are two kinds of surface.
 
-Four things to know before the next room:
+Five things to know before the next room:
 
 - **The lens is measured now, not assumed, and it was badly wrong.** Every
   room is scaled by one number: the field of view across the frame fixes
@@ -555,6 +555,36 @@ Four things to know before the next room:
   A third to three fifths of the pale pixels touching the mask came back
   out of the file more coloured than they went in. Both tools now save
   with `subsampling=0`, which costs about a fifth of the file.
+- **The floor is a tracing colour too, and nothing used to take it off.**
+  unpaint repainted whatever was left of the walls and never touched what
+  was left of the floors, because the floors are covered by a tile. They
+  are not covered everywhere: the reflection of a blue floor in a glass
+  door is not a floor, so the tracer is right to stop at it, and it was
+  still blue against a white tiled floor. The living room and the veranda
+  showed it worst. It is repainted now, within sixty pixels of the floor
+  outline, which is what keeps it off the sky: the sky is the same colour
+  and hundreds of pixels higher, and the only glass that comes near the
+  floor is the glass showing the floor.
+  The outline itself was half the problem. Simplifying it with an even
+  tolerance let it sink below the floor's edge in a quarter of the
+  columns, leaving a fringe of blue the tile could not reach, and the two
+  sides are not the same mistake: above the floor the line covers a pixel
+  of something else, which the junction band shades as floor and which
+  nobody sees, while below it the blue shows. The tolerance is one-sided
+  now, 1.5 pixels up and 0.5 down, and the edge is sampled every second
+  column rather than every fifth, since interpolating across four columns
+  of a wavy edge is itself a pixel out. Blue left above the outline: 713
+  pixels down to 210 in the living room, 557 down to 257 in the veranda,
+  and what remains is repainted.
+  Two smaller things came out of the same sweep. A wall two pixels wide is
+  not a wall: the kitchen kept a strip that size beside the window frame
+  and tiled it as a bright line down the corner, so a row of mask narrower
+  than three pixels is dropped before the sides are grown. And the
+  sideways passes were laid out on the columns that carry a span rather
+  than on the picture's own columns, which puts two pieces of wall side by
+  side that have a window between them; that is why the strip survived the
+  pass written to drop it. `?rim=1` paints the junction band the way
+  `?mask=1` paints the mask, and it is what found both.
 
 It matters more than it sounds for the catalogue. 33 of the tiles in the
 picker are wall tiles that until now could only be shown on a floor, and

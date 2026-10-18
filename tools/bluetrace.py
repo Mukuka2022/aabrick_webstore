@@ -56,7 +56,12 @@ ROOMS = [
      "patio",    "Veranda",     10.0),
 ]
 
-STEP = 5
+STEP = 2           # columns between samples of the floor's edge. Five
+#                    left the line to interpolate across four columns
+#                    of a sloping or wavy edge, which is a pixel or
+#                    two out in the middle, and below the edge for
+#                    half of them: a fringe of the floor's own blue
+#                    that nothing repaints
 SPIKE = 15         # columns either side that a column is judged against
 SLO = 0.40         # of the floor's own saturation, at least. See blue_test.
 
@@ -214,23 +219,28 @@ def despike(tops):
     return out
 
 
-def thin(points, tol=1.5):
-    """Drop a point that the line already passes through, and no other.
+def thin(points, hi=1.5, lo=0.5):
+    """Drop a point the line already passes through, and no other.
 
-    The old version compared each point with the one kept before it and the
-    one after it, which is a local test: every point could sit within the
-    tolerance of its own neighbours while the line as a whole wandered far
-    from the outline. Over a long smooth curve, which is exactly what the
-    foot of a bath is, it drifted five or six pixels above the floor. Those
-    pixels are not floor, they are the bath, and they are brighter than the
-    floor is, so the shading read them as a highlight and screened the tile
-    to white: a bright line along the foot of every curved thing standing on
-    the floor.
+    Measured against the chord the point would be dropped in favour of,
+    not against its neighbours. The old version compared each point with
+    the one kept before it and the one after it, which is a local test:
+    every point could sit within the tolerance of its own neighbours while
+    the line as a whole wandered far from the outline. Over a long smooth
+    curve, which is exactly what the foot of a bath is, it drifted five or
+    six pixels above the floor, onto the bath, which is brighter than the
+    floor is, so the shading read it as a highlight and screened the tile
+    to white.
 
-    This measures each point against the chord it would be dropped in
-    favour of, and keeps the worst offender until nothing is further out
-    than the tolerance. The line then stays within tol of every point it
-    replaced, which is what the tolerance was always supposed to mean.
+    The tolerance is one-sided, because the two sides are not the same
+    mistake. Above the floor the line covers something that is not floor,
+    and a pixel or so of that is cheap: the engine treats the edge of a
+    mask as a junction and shades it as the surface inside, so it does not
+    flare. Below the floor it leaves the floor's own tracing blue showing,
+    and nothing anywhere repaints that, the way unpaint repaints what is
+    left of the walls. On the living room and the veranda the line sat
+    below the floor in a quarter of the columns and left a blue fringe
+    along the skirting.
     """
     if len(points) < 3:
         return list(points)
@@ -244,18 +254,15 @@ def thin(points, tol=1.5):
             continue
         ax, ay = points[a]
         bx, by = points[b]
-        dx, dy = bx - ax, by - ay
-        n = (dx * dx + dy * dy) ** 0.5
-        worst, at = -1.0, -1
+        worst, at = 0.0, -1
         for i in range(a + 1, b):
-            px, py = points[i]
-            if n:
-                d = abs(dy * px - dx * py + bx * ay - by * ax) / n
-            else:
-                d = ((px - ax) ** 2 + (py - ay) ** 2) ** 0.5
+            x, y = points[i]
+            t = 0.0 if bx == ax else (x - ax) / float(bx - ax)
+            err = (ay + (by - ay) * t) - y   # + the line is below the floor
+            d = err / lo if err > 0 else -err / hi
             if d > worst:
                 worst, at = d, i
-        if worst > tol:
+        if worst > 1.0:
             keep[at] = True
             stack.append((a, at))
             stack.append((at, b))
