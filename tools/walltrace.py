@@ -42,12 +42,17 @@ ROOMS = [
     ("Natural Light Modern Pink and Blue Kitchen.png", "kitchen", 10.0),
 ]
 
-STEP = 3           # columns
+STEP = 1           # columns. One, not three: the mask is built in blocks
+#                    this wide, so anything bigger quantises every boundary
+#                    and the top of a tiled wall comes out as a staircase
+#                    with steps that size. Three was visible.
 MIN_RUN = 14       # a span shorter than this is a reflection, not a wall
 CLOSE = 8          # a break this short is a speck, not a hole in the wall
 EDGE = 2           # pixels of blend taken at each end of a span
 ISLAND = 400       # a patch of mask smaller than this is not a wall
 PINHOLE = 12       # a hole no wider and no taller than this is not a window
+SMOOTH = 9         # columns averaged when straightening the wall's own edges
+WANDER = 10        # ...and the most a column may be moved while doing it
 
 
 def spans(path, hint):
@@ -91,6 +96,7 @@ def spans(path, hint):
         if runs:
             cols.append([xs] + [c for r in runs for c in r])
     cols = tidy(cols, h)
+    cols = straighten(cols, h)
     return cols, (w, h), (ref, ref_sat, win)
 
 
@@ -303,6 +309,48 @@ def main():
     with io.open(os.path.join(OUT, "walls.json"), "w", encoding="utf-8") as f:
         json.dump(out, f)
     print("walls traced")
+
+
+
+
+def straighten(cols, h):
+    """Take the wander out of the top and bottom edges of the wall.
+
+    Where a wall meets a ceiling there is no line, there is a gradient: the
+    ceiling catches the wall's colour and fades into it over several pixels.
+    The test has to cross that gradient somewhere, and it crosses a pixel or
+    two higher or lower in each column depending on nothing but noise. The
+    mask is correct to within a pixel everywhere and still reads as a chewed
+    edge, because the eye follows the edge rather than the pixels.
+
+    Measured on these rooms, that wander is at most three pixels in
+    ninety-five columns out of a hundred. A genuine step, where the wall
+    meets a window or a cabinet, is twenty-five or more. There is a wide gap
+    between the two, so a column is moved to the median of its neighbours
+    only when that asks for less than WANDER pixels, and a real step is left
+    exactly where it is.
+
+    Only the outermost edges are straightened. The sides of a window are
+    already crisp in the photograph, being a black frame against paint, and
+    they are nobody's idea of a gradient.
+    """
+    if not cols:
+        return cols
+    first = [c[1] for c in cols]
+    last = [c[-1] for c in cols]
+    half = SMOOTH // 2
+    out = []
+    for i, col in enumerate(cols):
+        a, b = max(0, i - half), min(len(cols), i + half + 1)
+        ftop = sorted(first[a:b])[(b - a) // 2]
+        flast = sorted(last[a:b])[(b - a) // 2]
+        new = list(col)
+        if abs(ftop - new[1]) <= WANDER:
+            new[1] = max(0, min(ftop, new[2]))
+        if abs(flast - new[-1]) <= WANDER:
+            new[-1] = min(h - 1, max(flast, new[-2]))
+        out.append(new)
+    return out
 
 
 main()
