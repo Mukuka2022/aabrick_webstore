@@ -291,7 +291,12 @@ def main():
 
         dst = os.path.join(APPIMG, "scene-%s.jpg" % slug)
         with Image.open(src) as raw:
-            raw.convert("RGB").save(dst, "JPEG", quality=88, optimize=True,
+            # Colour at full resolution: see the note in unpaint.py.
+            # The living room and the veranda are written here and
+            # nowhere else, and a blue floor bleeds onto what stands
+            # on it exactly as a coral wall does.
+            raw.convert("RGB").save(dst, "JPEG", quality=88,
+                                    subsampling=0, optimize=True,
                                     progressive=True)
 
         focal = int(round(w / (2 * HALF_FOV)))

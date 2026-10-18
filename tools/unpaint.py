@@ -174,7 +174,16 @@ for name, slug, hint, lit in ROOMS:
             fixed += 1
 
     dst = os.path.join(APP, "scene-%s.jpg" % slug)
-    im.save(dst, "JPEG", quality=88, optimize=True, progressive=True)
+    # Colour at full resolution, not half. Every pixel under the mask
+    # keeps its paint, because a tile is drawn over it, and a JPEG stores
+    # colour in blocks of four: a pale pixel just outside the mask is
+    # handed the strongly coloured one inside. Measured on the four rooms,
+    # a third to three fifths of the pale pixels touching the mask came
+    # back out of the file more coloured than they went in, which is the
+    # coral line down the side of the cistern. Subsampling off costs about
+    # a fifth of the file and ends it.
+    im.save(dst, "JPEG", quality=88, subsampling=0, optimize=True,
+            progressive=True)
     print("  %-10s hue %3.0f  sat %.2f  window %2.0f   %6d pixels repainted"
           "  (%.1f%% of the room)"
           % (slug, ref, ref_sat, win, fixed, 100.0 * fixed / (w * h)))

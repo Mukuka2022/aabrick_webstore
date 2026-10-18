@@ -487,7 +487,7 @@ depth of the floor directly below it. Height up the wall and distance along
 it come from that one number, they go into the same two arrays the floor
 uses, and the drawing loop never learns there are two kinds of surface.
 
-Three things to know before the next room:
+Four things to know before the next room:
 
 - **The lens is measured now, not assumed, and it was badly wrong.** Every
   room is scaled by one number: the field of view across the frame fixes
@@ -538,6 +538,23 @@ Three things to know before the next room:
   along the worktop. And the same screening is what made the floor's white
   line, from a different cause: there the outline itself had drifted onto
   the bath.
+- **A mask has four sides and the tracer only ever knew about two.** Spans
+  run up and down, so the top and the bottom of each one were straightened
+  and grown and the sides were neither. Where a wall ended against the side
+  of a cistern or a cabinet the boundary was wherever the colour test
+  happened to flip in that row, and the blend beside it was covered by
+  nothing: a ragged edge with a coral line down it. The sides are now grown
+  two pixels like the ends, and straightened with a median down the column
+  on both sides of the growth, which leaves a straight edge and a sloping
+  one where they are and only moves a row that disagrees with the rows
+  around it.
+  The coral itself had a second source worth remembering: the scene files
+  are JPEGs, which store colour in blocks of four pixels, and every pixel
+  under the mask keeps its paint because a tile is drawn over it. A pale
+  pixel just outside the mask was handed the strongly coloured one inside.
+  A third to three fifths of the pale pixels touching the mask came back
+  out of the file more coloured than they went in. Both tools now save
+  with `subsampling=0`, which costs about a fifth of the file.
 
 It matters more than it sounds for the catalogue. 33 of the tiles in the
 picker are wall tiles that until now could only be shown on a floor, and

@@ -55,6 +55,7 @@ ISLAND = 400       # a patch of mask smaller than this is not a wall
 PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
 WANDER = 10        # ...and the most a column may be moved while doing it
+UPRIGHT = 7        # rows of mask a column is judged over, sideways
 
 
 def spans(path, hint):
@@ -99,7 +100,107 @@ def spans(path, hint):
             cols.append([xs] + [c for r in runs for c in r])
     cols = tidy(cols, h)
     cols = straighten(cols, h)
+    # Straighten, grow, straighten. Growing a ragged side leaves it ragged
+    # and two pixels further out, and growth stops at a different pixel in
+    # each row, so it ravels a straight side again by a pixel. Doing it on
+    # both sides of the growth keeps the mask within two or three pixels of
+    # the paint and still leaves a line the eye can follow.
+    cols = upright(cols, h)
+    cols = widen(cols, w, h, px, ref_val * keycolour.VLO)
+    cols = upright(cols, h)
     return cols, (w, h), (ref, ref_sat, win)
+
+
+def asgrid(cols, h):
+    xs = [c[0] for c in cols]
+    grid = bytearray(len(xs) * h)
+    nc = len(xs)
+    for i, col in enumerate(cols):
+        for k in range(1, len(col), 2):
+            for y in range(max(col[k], 0), min(col[k + 1] + 1, h)):
+                grid[y * nc + i] = 1
+    return xs, nc, grid
+
+
+def ascols(xs, nc, grid, h):
+    out = []
+    for i, x in enumerate(xs):
+        runs = []
+        y0 = None
+        for y in range(h):
+            if grid[y * nc + i]:
+                if y0 is None:
+                    y0 = y
+            elif y0 is not None:
+                runs.append([y0, y - 1])
+                y0 = None
+        if y0 is not None:
+            runs.append([y0, h - 1])
+        if runs:
+            out.append([x] + [v for r in runs for v in r])
+    return out
+
+
+def upright(cols, h):
+    """Take the wiggle out of the edges that run up the picture.
+
+    straighten() works on the top and the bottom of the wall, which is
+    where the gradients are, and nothing has ever touched the sides. Where
+    a wall ends against the side of a cabinet or a cistern the boundary is
+    wherever the colour test happened to flip in each row, and measured on
+    these rooms it moves a pixel or two from its neighbours in one row in
+    eight, and three or more in one in thirty. Seen as a line rather than
+    as pixels, that is a ragged edge down every upright junction.
+
+    A median down the column fixes it and costs nothing else: a median
+    leaves a straight edge and a sloping one exactly where they are, and
+    only moves a boundary that disagrees with the rows around it. Seven
+    rows is the window, so a jog has to last four rows to survive, and a
+    strip of wall three rows tall is not worth tiling anyway.
+    """
+    xs, nc, grid = asgrid(cols, h)
+    half = UPRIGHT // 2
+    out = bytearray(grid)
+    for i in range(nc):
+        for y in range(h):
+            a = max(0, y - half)
+            b = min(h, y + half + 1)
+            n = 0
+            for yy in range(a, b):
+                n += grid[yy * nc + i]
+            out[y * nc + i] = 1 if n * 2 > (b - a) else 0
+    return ascols(xs, nc, out, h)
+
+
+def widen(cols, w, h, px, dark):
+    """Stretch each row over the blend at its sides, as grow() does its ends.
+
+    The reasoning is grow()'s exactly, turned ninety degrees. A wall does
+    not stop at a line where it passes behind a cistern or a cabinet side;
+    there are two or three pixels that are part wall and part object, they
+    are not the paint so the test refuses them, and they show as a coral
+    line down the junction. Nothing covered them until now, because growth
+    only ever ran up and down a column.
+    """
+    xs, nc, grid = asgrid(cols, h)
+    out = bytearray(grid)
+    for y in range(h):
+        row = y * nc
+        for i in range(nc):
+            if not grid[row + i]:
+                continue
+            if i and grid[row + i - 1] and i + 1 < nc and grid[row + i + 1]:
+                continue
+            for side in (-1, 1):
+                for k in range(1, EDGE + 1):
+                    j = i + side * k
+                    if j < 0 or j >= nc or grid[row + j]:
+                        break
+                    x = xs[j]
+                    if max(px[x, y]) / 255.0 < dark:
+                        break
+                    out[row + j] = 1
+    return ascols(xs, nc, out, h)
 
 
 def blobs(grid, nc, h, want):
