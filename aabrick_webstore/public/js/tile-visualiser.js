@@ -56,6 +56,15 @@
 	// tile, and the drawing loop never has to know which surface it is on.
 	var U = null, V = null;
 	var PX = null;           // pixels per metre, per pixel
+	// ...and the same across the surface rather than up it. On the
+	// wall facing the camera the two are equal; on a wall running away
+	// from it they are not, and a square tile is drawn two or three
+	// times taller than it is wide. That is honest perspective, but it
+	// means each drawn pixel covers several pixels of the tile's own
+	// picture, and taking one of them makes a marble vein into a
+	// streak. Measured on the kitchen: 169 pixels per metre both ways
+	// on the back wall, 222 up against 76 across on the side one.
+	var ACROSS = null;
 	var texCache = {};
 	var SHOW_MASK = /[?&]mask=1/.test(location.search);
 	var SHOW_RIM = /[?&]rim=1/.test(location.search);
@@ -105,6 +114,7 @@
 		U = new Float32Array(n);
 		V = new Float32Array(n);
 		PX = new Float32Array(n);
+		ACROSS = new Float32Array(n);
 
 		var poly = s.floor.map(function (p) { return [p[0] * k, p[1] * k]; });
 		// A room is calibrated by eye, so the three numbers that decide how
@@ -143,6 +153,9 @@
 				// pixels, which is what says when a tile has become too
 				// small to draw honestly.
 				PX[i] = dy * dy / (focal * camH);
+				// A floor is foreshortened up the picture rather than
+				// across it, and the softening below already answers that.
+				ACROSS[i] = PX[i];
 			}
 		}
 
@@ -237,6 +250,13 @@
 					if (yt < 0 || yt - yh <= 2) { continue; }
 					var depth = focal * camH / (yt - yh);
 					var ppm = focal / depth;   // pixels per metre up there
+					// ...and along the wall, which on a side wall is a
+					// different number: it is how far the skirting walked
+					// for this one pixel of picture.
+					var walk = xx > 0 ? along[xx] - along[xx - 1] : 0;
+					if (walk < 0) { walk = -walk; }
+					var apm = walk > 1e-6 ? 1 / walk : ppm;
+					if (apm > ppm) { apm = ppm; }
 					for (sp = 1; sp + 1 < col.length; sp += 2) {
 						var ya = Math.round(col[sp] * kw);
 						var yb2 = Math.round(col[sp + 1] * kw);
@@ -250,6 +270,7 @@
 							U[j] = along[xx];
 							V[j] = (yt - yy) / ppm;
 							PX[j] = ppm;
+							ACROSS[j] = apm;
 							var q = j * 4;
 							var WL = (0.299 * d[q] + 0.587 * d[q + 1]
 								+ 0.114 * d[q + 2]) / 255;
@@ -499,12 +520,39 @@
 			fu = fu - Math.floor(fu);
 			fv = fv - Math.floor(fv);
 
-			var tp = (((fv * side) | 0) * side + ((fu * side) | 0)) * 4;
+			var ui = (fu * side) | 0, vi = (fv * side) | 0;
+			var tp = (vi * side + ui) * 4;
 			var r = td[tp], g = td[tp + 1], b = td[tp + 2];
+
+			// Where the surface is foreshortened, one pixel of picture
+			// covers several of the tile's own, and taking one of them is
+			// what turns a vein into a streak. Average them instead. The
+			// wall facing the camera asks for one sample and is untouched.
+			var spread = side / (S * ACROSS[i]);
+			if (spread > 1.4) {
+				var k2 = spread | 0;
+				if (k2 > 8) { k2 = 8; }
+				var rr = 0, gg = 0, bb = 0;
+				for (var t2 = 0; t2 < k2; t2++) {
+					var uu = ui + t2;
+					if (uu >= side) { uu -= side; }
+					var p3 = (vi * side + uu) * 4;
+					rr += td[p3];
+					gg += td[p3 + 1];
+					bb += td[p3 + 2];
+				}
+				r = rr / k2;
+				g = gg / k2;
+				b = bb / k2;
+			}
 
 			// Far enough away and a tile is smaller than a pixel, so it
 			// is drawn as its own average rather than as noise.
-			var px = S * PX[i];
+			// The tile as drawn, at its narrower of the two, because that
+			// is the one that runs out first.
+			var px = S * ACROSS[i];
+			var pxv = Sv * PX[i];
+			if (pxv < px) { px = pxv; }
 			if (px < SOFT_PX) {
 				var m = px / SOFT_PX;
 				if (m < 0) { m = 0; }

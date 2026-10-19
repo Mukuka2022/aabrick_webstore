@@ -84,7 +84,19 @@ PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
 WANDER = 10        # ...and the most a column may be moved while doing it
 UPRIGHT = 7        # rows of mask a column is judged over, sideways
-FLAT = 7           # ...and columns it is judged over, up and down
+FLAT = 11          # ...and columns it is judged over, up and down. Seven
+#                    straightened the short wobbles in the line under a
+#                    cabinet and left the long ones, which are the ones
+#                    the eye follows.
+
+# A nub is a bump on the outline rather than a piece of surface: mask
+# whose neighbourhood is mostly not mask. It cannot be swept as an island
+# because it is attached to the wall, and it is too small for any of the
+# medians to reach. There are eighty one such pixels in the kitchen, in
+# clumps of three to ten, and one of them sits on the corner of a cabinet
+# where it shows.
+NUB = 6            # the neighbourhood, either side
+NUBBY = 0.34       # mask within it, below which a pixel is a bump
 # A wall seen as a band narrower than this cannot show a tile; it shows a
 # line. Three was enough to drop a strip two pixels wide in the kitchen's
 # corner, and it leaves the fingers the mask grows into the folds of the
@@ -179,6 +191,10 @@ def spans(path, hint):
                  ref_val * GLARE)
     cols = upright(cols, w, h)
     cols = flatten(cols, w, h)
+    # Twice: taking a bump off exposes the one behind it, and a third
+    # pass found nothing left to take in any of these rooms.
+    cols = shave(cols, w, h)
+    cols = shave(cols, w, h)
     cols = despeck(cols, w, h)
     return cols, (w, h), (ref, ref_sat, win)
 
@@ -380,6 +396,42 @@ def flatten(cols, w, h):
             for xx in range(a, b):
                 n += grid[row + xx]
             out[row + x] = 1 if n * 2 > (b - a) else 0
+    return ascols(out, w, h)
+
+
+def shave(cols, w, h):
+    """Take off the pixels that stick out of the outline.
+
+    Counted over a square either side, with a summed area table so the
+    count is four lookups rather than a hundred and sixty nine. A strip of
+    wall ten pixels wide, which is the narrowest that survives THIN, fills
+    three quarters of that square and is left alone; a bump of three or
+    four pixels fills a fifth of it and goes.
+    """
+    grid = asgrid(cols, w, h)
+    wide = w + 1
+    sat = [0] * (wide * (h + 1))
+    for y in range(h):
+        run = 0
+        row = y * w
+        here = (y + 1) * wide
+        above = y * wide
+        for x in range(w):
+            run += grid[row + x]
+            sat[here + x + 1] = sat[above + x + 1] + run
+
+    def count(x0, y0, x1, y1):
+        return (sat[(y1 + 1) * wide + x1 + 1] - sat[y0 * wide + x1 + 1]
+                - sat[(y1 + 1) * wide + x0] + sat[y0 * wide + x0])
+
+    side = (2 * NUB + 1) ** 2
+    out = bytearray(grid)
+    for y in range(NUB, h - NUB):
+        for x in range(NUB, w - NUB):
+            if not grid[y * w + x]:
+                continue
+            if count(x - NUB, y - NUB, x + NUB, y + NUB) < side * NUBBY:
+                out[y * w + x] = 0
     return ascols(out, w, h)
 
 
