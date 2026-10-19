@@ -104,6 +104,23 @@ GRACE = 10         # pixels of not-blue the walk may cross before giving up.
 # number: give it more and the walk steps over the threshold rail of the
 # sliding door and climbs the glass.
 PATIENCE = {"hallway": 80}
+
+# ...and whatever the patience, the walk stops at the skirting. The
+# hallway's far window shows sky, the sky is the same hue as a navy floor
+# and passes the colour test outright, and between the two lies the window
+# sill: eighteen pixels of pale grey, well inside a patience of eighty. So
+# the walk crossed the sill, climbed the glass, and left the outline up on
+# the sill with tile standing on it.
+#
+# What it crosses and what it must not are plainly different things. The
+# reflection of a door on a polished floor, which is the reason the
+# hallway needs any patience at all, reads 0.36 to 0.42 bright and keeps
+# 0.19 to 0.23 of colour. The sill reads 0.60 to 0.72 bright and 0.00 to
+# 0.05 of colour. Nor is this one room's luck: of 29,580 samples taken
+# across the floor of each of the eight rooms, not one is both this pale
+# and this colourless.
+PALE_V = 0.55      # brighter than this...
+PALE_S = 0.12      # ...and less coloured than this is a skirting, not floor
                    # It has to cross something: a glossy floor reflects the
                    # pink vanity above it and that reflection is genuinely
                    # not blue. Swept against every room, 10 moves no floor
@@ -201,6 +218,9 @@ def trace(path, grace=GRACE):
                 top = y
                 miss = 0
             else:
+                hh, ss, vv = hsv(*px[xs, y])
+                if vv > PALE_V and ss < PALE_S:
+                    break
                 miss += 1
                 if miss > grace:
                     break
@@ -328,9 +348,10 @@ def main():
         top = min(y for _, y in tops if y < h - 1)
         horizon = int(round(top - focal * height / depth))
 
-        pts = [[0, h - 1], [w - 1, h - 1]]
+        pts = [[-2, h + 1], [w + 1, h + 1], [w + 1, int(tops[-1][1])]]
         for x, y in reversed(tops):
             pts.append([int(x), int(y)])
+        pts.append([-2, int(tops[0][1])])
 
         scenes.append({
             "id": slug, "label": label,
