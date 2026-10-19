@@ -167,12 +167,13 @@ def tester(ref, ref_sat, win, ref_val, firm=None, lit=None):
     lo, hi = ref_sat * LO, ref_sat * HI
     dark = ref_val * VLO
     strict = None if firm is None else ref_sat * firm
+    bright = None if lit is None else ref_val * lit
 
     def test(r, g, b):
         hh, s, v = hsv(r, g, b)
         if s < lo or s > hi or v < dark:
             return False
-        if strict is not None and v < lit and s < strict:
+        if strict is not None and v < bright and s < strict:
             return False
         return apart(hh, ref) < win
 

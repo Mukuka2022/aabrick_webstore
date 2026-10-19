@@ -78,7 +78,16 @@ FIRM = 0.72        # of the paint's saturation, for a pixel that is not
 #                    lit. Eight tenths was tried first and took a patch
 #                    of the bathroom's own wall with it, sixteen by
 #                    forty-nine pixels at 0.45 against a floor of 0.46.
-LIT = 0.78         # ...and this is what counts as lit
+# What counts as lit, as a multiple of the paint's own brightness rather
+# than as a number of its own. The first try was absolute, 0.78, and it
+# cut a cloud-shaped patch out of the bathroom's wall beside the window:
+# saturation 0.39 against a firm floor of 0.41 and brightness 0.76 against
+# a bar of 0.78, a hair under both. Measured against the paint instead,
+# that patch is a quarter brighter than the wall it belongs to, while the
+# cabinet's end is fifteen per cent darker and the towel's folds a third
+# darker. The light is what tells them apart, and the paint is what the
+# light should be measured against.
+LIT = 1.10         # times the paint's own brightness
 ISLAND = 400       # a patch of mask smaller than this is not a wall
 PINHOLE = 12       # a hole no wider and no taller than this is not a window
 SMOOTH = 9         # columns averaged when straightening the wall's own edges
