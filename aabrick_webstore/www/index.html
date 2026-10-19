@@ -108,6 +108,40 @@
     </div>
   </section>
 
+  <!-- the visualiser ---------------------------------------------------
+    Put here, after the panels, because the page reads as a shop, then the
+    calculators, then this: the three things a customer can do without
+    speaking to anybody. The picture is the tool's own output rather than a
+    mock-up of it, which is the whole argument the section is making.
+  -->
+  <section class="aab-section">
+    <div class="aab-inner">
+      <div class="aab-vis-promo">
+        <div class="aab-vis-promo-copy">
+          <p class="aab-eyebrow">{{ txt.vis_eyebrow }}</p>
+          <h2>{{ txt.vis_heading }}</h2>
+          <p class="aab-vis-promo-lede">{{ txt.vis_text }}</p>
+          <ul class="aab-vis-promo-points">
+            <li>Every tile in the range, on floors and on walls</li>
+            <li>Eight rooms: kitchens, bathrooms, a hallway, a veranda</li>
+            <li>Tap the room to see it full size</li>
+          </ul>
+          <a class="aab-btn aab-btn-primary" href="/tile-visualiser">
+            {{ txt.vis_button }}</a>
+        </div>
+        <figure class="aab-vis-promo-shot">
+          <a href="/tile-visualiser" aria-label="{{ txt.vis_button }}">
+            <img src="/assets/aabrick_webstore/images/visualiser-shot.jpg?v={{ aab_version }}"
+                 alt="One living room shown with a white marble tile on the
+                      left and a black marble tile on the right"
+                 width="1100" height="987" loading="lazy">
+          </a>
+          <figcaption>{{ txt.vis_caption }}</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
   <!-- homes ------------------------------------------------------------ -->
   {%- set showcase = img.shots or showcase %}
   {% if showcase %}

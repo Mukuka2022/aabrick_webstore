@@ -42,7 +42,13 @@
   "talk_eyebrow",
   "talk_heading",
   "sec_foot",
-  "footer_blurb"
+  "footer_blurb",
+  "sec_vis",
+  "vis_eyebrow",
+  "vis_heading",
+  "vis_text",
+  "vis_button",
+  "vis_caption"
  ],
  "fields": [
   {
@@ -231,13 +237,43 @@
    "fieldname": "footer_blurb",
    "fieldtype": "Small Text",
    "label": "The paragraph under the company name"
+  },
+  {
+   "fieldname": "sec_vis",
+   "fieldtype": "Section Break",
+   "label": "The tile visualiser"
+  },
+  {
+   "fieldname": "vis_eyebrow",
+   "fieldtype": "Data",
+   "label": "Small line"
+  },
+  {
+   "fieldname": "vis_heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "vis_text",
+   "fieldtype": "Small Text",
+   "label": "Paragraph"
+  },
+  {
+   "fieldname": "vis_button",
+   "fieldtype": "Data",
+   "label": "Button"
+  },
+  {
+   "fieldname": "vis_caption",
+   "fieldtype": "Data",
+   "label": "Caption under the picture"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-11 17:25:00.036345",
+ "modified": "2026-10-19 20:20:08.325456",
  "modified_by": "Administrator",
  "module": "Aabrick Webstore",
  "name": "Website Text",

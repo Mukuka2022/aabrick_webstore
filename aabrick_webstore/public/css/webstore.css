@@ -2896,6 +2896,64 @@ main.container:has(.aab-vis) .aab-vis {
 	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
 
+/* ---- the visualiser, advertised on the homepage ----------------------
+ * The picture carries this section, so it takes the larger half of the
+ * width and the copy sits beside it. Stacked on a phone, picture first:
+ * the thing being advertised is what the tool makes, not the sentence
+ * about it.
+ */
+.aab-vis-promo {
+	display: grid;
+	grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+	gap: 34px;
+	align-items: center;
+}
+.aab-vis-promo-copy h2 { margin: 0 0 12px; }
+.aab-vis-promo-lede {
+	margin: 0 0 16px;
+	color: #4A4A4A;
+	max-width: 34rem;
+}
+.aab-vis-promo-points {
+	list-style: none;
+	margin: 0 0 22px;
+	padding: 0;
+	display: grid;
+	gap: 8px;
+}
+.aab-vis-promo-points li {
+	position: relative;
+	padding-left: 24px;
+	color: #4A4A4A;
+	font-size: .95rem;
+}
+.aab-vis-promo-points li::before {
+	content: "";
+	position: absolute; left: 4px; top: .55em;
+	width: 8px; height: 8px; border-radius: 50%;
+	background: var(--aab-red);
+}
+.aab-vis-promo-shot { margin: 0; }
+.aab-vis-promo-shot a {
+	display: block;
+	border-radius: 4px;
+	overflow: hidden;
+	border: 1px solid #E2E2E2;
+}
+.aab-vis-promo-shot img {
+	display: block; width: 100%; height: auto;
+}
+.aab-vis-promo-shot figcaption {
+	margin-top: 8px;
+	font-size: .78rem; color: #6A6A6A; letter-spacing: .01em;
+}
+
+@media (max-width: 859.98px) {
+	.aab-vis-promo { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+	.aab-vis-promo-shot { order: 1; }
+	.aab-vis-promo-copy { order: 2; }
+}
+
 /* ---- the room, opened larger -----------------------------------------
  * A picture of the canvas, taken when it opens. On a phone the room is a
  * couple of hundred pixels across and a 600mm tile in it is about eight,

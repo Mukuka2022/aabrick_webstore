@@ -9,7 +9,7 @@ import os
 
 import frappe
 
-from aabrick_webstore import showcase
+from aabrick_webstore import hooks, showcase
 
 no_cache = 1
 sitemap = 1
@@ -71,6 +71,7 @@ CATEGORIES = [
 
 def get_context(context):
     context.title = "AABrick Zambia"
+    context.aab_version = hooks.ASSET_VERSION
     context.company_phone = COMPANY_PHONE
     context.whatsapp_number = ""  # set once the WhatsApp line is confirmed
 

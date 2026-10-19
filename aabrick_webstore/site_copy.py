@@ -48,6 +48,17 @@ COPY = [
      "Our tile and PVC ceiling calculators tell you how many boxes or "
      "boards to buy, before you spend anything.", None),
 
+    ("sec_vis", "The tile visualiser", None, None),
+    ("vis_eyebrow", "Small line", "See it before you buy it", None),
+    ("vis_heading", "Heading", "Try the tile in the room first", None),
+    ("vis_text", "Paragraph",
+     "Pick any tile in the range and we lay it on the floor and up the "
+     "walls of a real room, keeping the light and the shadows of the "
+     "photograph. Eight rooms, no sign-up, nothing to install.", None),
+    ("vis_button", "Button", "Open the tile visualiser", None),
+    ("vis_caption", "Caption under the picture",
+     "The same living room, two tiles from the shelf.", None),
+
     ("sec_rail", "Finished with AABrick", None, None),
     ("rail_eyebrow", "Small line", "Shop by room", None),
     ("rail_heading", "Heading", "Finished with AABrick", None),
@@ -82,6 +93,6 @@ COPY = [
 
 # Anything longer than a headline gets a box rather than a line.
 LONG = {"hero_lede", "panel_1_text", "panel_2_text", "rail_lede",
-        "branch_text", "footer_blurb"}
+        "branch_text", "footer_blurb", "vis_text"}
 
 DEFAULTS = {k: v for k, _l, v, _h in COPY if v is not None}
