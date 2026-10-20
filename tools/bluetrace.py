@@ -121,6 +121,31 @@ PATIENCE = {"hallway": 80}
 # and this colourless.
 PALE_V = 0.55      # brighter than this...
 PALE_S = 0.12      # ...and less coloured than this is a skirting, not floor
+
+# A notch is the opposite of a spike: a column that stops far short of its
+# neighbours. despike() never pushes a column out, and says why: stopping
+# early is what an object standing on the floor genuinely looks like. But
+# it is also what a shadow looks like. Beside the hallway's second door the
+# wall and the frame throw a strip of shade a hundred pixels long down the
+# floor, and the floor in it reads 0.15 to 0.22 of its own saturation
+# against a bar of 0.22. The walk gives up there and the outline notches
+# round it, which draws a dark bar standing on the tiles.
+#
+# Saturation cannot settle it: those readings are the same band the
+# veranda's reflections sit in, which is what the bar is there to exclude.
+# What settles it is walking the gap and looking at what is in it. A shadow
+# on the floor keeps the floor's hue and the floor's brightness. A skirting
+# is pale and colourless, a table leg is black, a pot is pale, a door is
+# the wrong hue; the walk stops at the first of those and the notch stays.
+NOTCH = 12         # pixels below its neighbours before a column is a notch
+NOTCH_DARK = 0.25  # ...and nothing darker than this is floor in shadow
+NOTCH_HUE = 20.0   # ...nor anything this far off the floor's own hue.
+#                    Twelve stopped the walk on its first pixel, which
+#                    read 12.8 off; the shade runs 4 to 13 off along
+#                    its length. Nothing a notch is properly made of
+#                    is anywhere near: oak and greenery are a hundred
+#                    degrees away and the pale and the dark are caught
+#                    by the other two tests.
                    # It has to cross something: a glossy floor reflects the
                    # pink vanity above it and that reflection is genuinely
                    # not blue. Swept against every room, 10 moves no floor
@@ -183,6 +208,42 @@ def blue_test(ref_hue, ref_sat=None):
     return test
 
 
+def unnotch(tops, px, ref_hue):
+    """Push a notched column back up, as far as the shade goes.
+
+    Only ever as far as its neighbours, and only through pixels that are
+    the floor with the light taken off them: the floor's hue, not pale and
+    colourless, not black. Everything a notch is properly made of stops it
+    at the first pixel.
+    """
+    ys = [y for _, y in tops]
+    n = len(ys)
+    half = SPIKE // 2
+    out = []
+    for i in range(n):
+        x, y = tops[i]
+        a, b = max(0, i - half), min(n, i + half + 1)
+        mid = sorted(ys[a:b])[(b - a) // 2]
+        if y - mid <= NOTCH:
+            out.append((x, y))
+            continue
+        top = y
+        for yy in range(y - 1, mid - 1, -1):
+            hh, ss, vv = hsv(*px[x, yy])
+            if vv < NOTCH_DARK:
+                break
+            if vv > PALE_V and ss < PALE_S:
+                break
+            d = abs(hh - ref_hue)
+            if d > 180:
+                d = 360 - d
+            if d > NOTCH_HUE:
+                break
+            top = yy
+        out.append((x, top))
+    return out
+
+
 def trace(path, grace=GRACE):
     with Image.open(path) as raw:
         im = raw.convert("RGB")
@@ -225,7 +286,7 @@ def trace(path, grace=GRACE):
                 if miss > grace:
                     break
         tops.append((xs, top))
-    return tops, (w, h)
+    return unnotch(tops, px, fh), (w, h)
 
 
 def despike(tops):

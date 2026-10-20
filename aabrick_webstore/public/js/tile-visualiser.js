@@ -27,7 +27,17 @@
 (function () {
 	"use strict";
 
-	var MAX_W = 1100;        // a room is drawn no wider than this
+	// How many pixels of room to draw. It used to be 1100 whatever the
+	// screen, which is two mistakes at once: a laptop with a 737 pixel
+	// column was drawing 1100 and showing 691 of them, and a phone with a
+	// 390 pixel column was doing the same work for a quarter of the use.
+	// Drawn from the column it sits in instead, with a third over for the
+	// enlarged view to have something to enlarge, never below a floor that
+	// keeps a small window honest, and never above what the photograph
+	// actually holds.
+	var MIN_W = 900;         // ...and never smaller than this
+	var MAX_W = 1600;        // ...nor larger, whatever the photograph holds
+	var OVER = 1.3;          // the spare the enlarged view draws on
 	var GROUT_MM = 1;        // the line between tiles
 	var GROUT_DARK = 0.82;  // how dark a joint is, at full strength
 	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
@@ -94,8 +104,18 @@
 		return hit;
 	}
 
+	function roomWidth(img) {
+		var stage = $(".aab-vis-stage");
+		var css = stage ? stage.clientWidth : 0;
+		if (!css) { css = MIN_W; }
+		var want = Math.round(css * (window.devicePixelRatio || 1) * OVER);
+		if (want < MIN_W) { want = MIN_W; }
+		if (want > MAX_W) { want = MAX_W; }
+		return Math.min(want, img.naturalWidth);
+	}
+
 	function prepare(s, img, done) {
-		var w = Math.min(MAX_W, img.naturalWidth);
+		var w = roomWidth(img);
 		var k = w / img.naturalWidth;
 		var h = Math.round(img.naturalHeight * k);
 

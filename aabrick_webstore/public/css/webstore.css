@@ -2676,10 +2676,16 @@ main.container:has(.aab-vis) .aab-vis {
 .aab-vis-stage {
 	display: flex; align-items: center; justify-content: center;
 }
+/* The room takes the width of its column and gives height back only when
+ * the window is too short for it. The ceiling used to be 100vh - 250px,
+ * which on a 768 pixel laptop is 518, and a four by three room 518 tall is
+ * 691 wide inside a column of 737: a smaller room than there was room for,
+ * with the slack showing as grey either side of it. 170 leaves the bar
+ * under the picture visible on that laptop and lets the width lead. */
 .aab-vis-canvas {
 	display: block;
 	max-width: 100%;
-	max-height: calc(100vh - 250px);
+	max-height: calc(100vh - 170px);
 	width: auto; height: auto;
 }
 .aab-vis-loading {
