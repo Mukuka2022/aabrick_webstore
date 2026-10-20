@@ -32,12 +32,21 @@
 	// column was drawing 1100 and showing 691 of them, and a phone with a
 	// 390 pixel column was doing the same work for a quarter of the use.
 	// Drawn from the column it sits in instead, with a third over for the
-	// enlarged view to have something to enlarge, never below a floor that
-	// keeps a small window honest, and never above what the photograph
-	// actually holds.
+	// enlarged view to have something to enlarge, and never below a floor
+	// that keeps a small window honest.
+	//
+	// It used to stop at the photograph's own width as well, on the
+	// reasoning that drawing more pixels than the picture holds cannot add
+	// detail. That is true of the room and false of the floor: the tile and
+	// its joints are not in the photograph, they are drawn here, and on a
+	// retina screen a 1448 pixel canvas stretched over 2300 device pixels
+	// was softening the one part of the picture we make ourselves. So the
+	// room is enlarged, which costs it nothing it had, and the floor is
+	// drawn at the pixels the screen actually has.
 	var MIN_W = 900;         // ...and never smaller than this
-	var MAX_W = 1600;        // ...nor larger, whatever the photograph holds
+	var MAX_W = 2200;        // ...nor larger, whatever the screen asks for
 	var OVER = 1.3;          // the spare the enlarged view draws on
+	var SHARPEN = 0.8;       // how hard the photograph is sharpened back up
 	var GROUT_MM = 1;        // the line between tiles
 	var GROUT_DARK = 0.82;  // how dark a joint is, at full strength
 	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
@@ -91,31 +100,18 @@
 
 	// ---- the room -------------------------------------------------------
 
-	function inside(poly, x, y) {
-		var n = poly.length, hit = false, i, j;
-		for (i = 0, j = n - 1; i < n; j = i++) {
-			var xi = poly[i][0], yi = poly[i][1];
-			var xj = poly[j][0], yj = poly[j][1];
-			if ((yi > y) !== (yj > y)
-				&& x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
-				hit = !hit;
-			}
-		}
-		return hit;
-	}
-
-	function roomWidth(img) {
+	function roomWidth() {
 		var stage = $(".aab-vis-stage");
 		var css = stage ? stage.clientWidth : 0;
 		if (!css) { css = MIN_W; }
 		var want = Math.round(css * (window.devicePixelRatio || 1) * OVER);
 		if (want < MIN_W) { want = MIN_W; }
 		if (want > MAX_W) { want = MAX_W; }
-		return Math.min(want, img.naturalWidth);
+		return want;
 	}
 
 	function prepare(s, img, done) {
-		var w = roomWidth(img);
+		var w = roomWidth();
 		var k = w / img.naturalWidth;
 		var h = Math.round(img.naturalHeight * k);
 
@@ -156,26 +152,60 @@
 		var d = base.data;
 		var x, y, i;
 
+		// The outline is filled a row at a time rather than by asking of
+		// every pixel "are you inside?". That question costs a walk of all
+		// eighty-odd sides of the polygon, and asking it a million and a
+		// half times was most of what loading a room took. A row crosses
+		// the outline in a handful of places, so find those and fill
+		// between them. A side counts where the row passes between its
+		// ends, and a pixel is inside when an odd number of crossings lie
+		// to the right of it, which is the ray test done a row at a time.
+		var cuts = new Float64Array(poly.length + 1);
+		var np = poly.length;
 		for (y = 0; y < h; y++) {
-			for (x = 0; x < w; x++) {
-				i = y * w + x;
-				var dy = y - yh;
-				if (dy <= 2 || !inside(poly, x, y)) { continue; }
-				mask[i] = 1;
-				var p = i * 4;
-				var L = (0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2]) / 255;
-				lum[i] = L;
-				sum += L;
-				count++;
-				V[i] = focal * camH / dy;
-				U[i] = (x - cx) * camH / dy;
-				// A metre of floor at this depth covers about this many
-				// pixels, which is what says when a tile has become too
-				// small to draw honestly.
-				PX[i] = dy * dy / (focal * camH);
-				// A floor is foreshortened up the picture rather than
-				// across it, and the softening below already answers that.
-				ACROSS[i] = PX[i];
+			var dy = y - yh;
+			if (dy <= 2) { continue; }
+			var cn = 0, pi, pj;
+			for (pi = 0, pj = np - 1; pi < np; pj = pi++) {
+				var yi = poly[pi][1], yj = poly[pj][1];
+				if ((yi > y) === (yj > y)) { continue; }
+				cuts[cn++] = (poly[pj][0] - poly[pi][0]) * (y - yi)
+					/ (yj - yi) + poly[pi][0];
+			}
+			if (cn < 2) { continue; }
+			cuts.subarray(0, cn).sort();
+			var V0 = focal * camH / dy;
+			// A metre of floor at this depth covers about this many pixels
+			// up the picture, which is what says when a tile has become too
+			// small to draw honestly...
+			var pxUp = dy * dy / (focal * camH);
+			// ...and this many across it, which is a different number. A
+			// metre of width at this depth covers dy / camH pixels, growing
+			// with the depth and not with its square. Taking the up-the-
+			// picture figure for both claimed the floor was two to six
+			// times more foreshortened across than it is, which averaged
+			// the tile's own pattern into mush and let the joints running
+			// away from the camera widen with distance instead of narrow.
+			var pxAcross = dy / camH;
+			for (var ci = 0; ci + 1 < cn; ci += 2) {
+				var xa = Math.ceil(cuts[ci]);
+				var xb = Math.ceil(cuts[ci + 1]) - 1;
+				if (xa < 0) { xa = 0; }
+				if (xb > w - 1) { xb = w - 1; }
+				for (x = xa; x <= xb; x++) {
+					i = y * w + x;
+					mask[i] = 1;
+					var p = i * 4;
+					var L = (0.299 * d[p] + 0.587 * d[p + 1]
+						+ 0.114 * d[p + 2]) / 255;
+					lum[i] = L;
+					sum += L;
+					count++;
+					V[i] = V0;
+					U[i] = (x - cx) * camH / dy;
+					PX[i] = pxUp;
+					ACROSS[i] = pxAcross;
+				}
 			}
 		}
 
@@ -452,7 +482,57 @@
 			}
 		}
 
+		// The rooms are 1448 pixels wide and were not crisp to begin with,
+		// and they are drawn wider than that now, so the photograph arrives
+		// soft. Sharpen it back up. Everything the room means -- the
+		// outline, the shading, the junctions -- was measured above from
+		// the pixels as they came, so this changes how the room looks and
+		// nothing about what it is.
+		sharpen(base.data, w, h, SHARPEN);
+
 		done();
+	}
+
+	// An unsharp mask: blur a copy, then push every pixel away from the
+	// blur by the amount asked for, which returns the edge that resizing
+	// and JPEG between them took off. Three taps each way is the right
+	// radius at this scale, and running the two directions one after the
+	// other makes it six reads a pixel rather than nine.
+	function sharpen(data, w, h, amount) {
+		if (!(amount > 0)) { return; }
+		var n = w * h;
+		var mid = new Uint8ClampedArray(n * 3);
+		var x, y, i, c;
+
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				i = y * w + x;
+				var xl = (x > 0 ? i - 1 : i) * 4;
+				var xr = (x < w - 1 ? i + 1 : i) * 4;
+				var pc = i * 4;
+				for (c = 0; c < 3; c++) {
+					mid[i * 3 + c] = (data[xl + c] + 2 * data[pc + c]
+						+ data[xr + c]) / 4;
+				}
+			}
+		}
+
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				i = y * w + x;
+				var yu = (y > 0 ? i - w : i) * 3;
+				var yd = (y < h - 1 ? i + w : i) * 3;
+				var q = i * 3, p = i * 4;
+				for (c = 0; c < 3; c++) {
+					var blur = (mid[yu + c] + 2 * mid[q + c]
+						+ mid[yd + c]) / 4;
+					// The picture's own array clamps and rounds, so an
+					// overshot highlight needs no minding here.
+					data[p + c] = data[p + c]
+						+ (data[p + c] - blur) * amount;
+				}
+			}
+		}
 	}
 
 	// ---- the tile -------------------------------------------------------
@@ -588,12 +668,31 @@
 				// pencilled over the floor. Where the tile is close
 				// enough for the joint to cover a pixel honestly, full
 				// strength returns.
-				var ppm = PX[i];
-				var gpx = gm * ppm;
-				var band = gpx > 1 ? gpx : 1;
-				var g2 = band / ppm;
-				if (fu < g2 / S || fv < g2 / Sv) {
-					var k = gpx / band;
+				// Each family of joints is measured along the direction
+				// it is seen in: the ones running away from the camera are
+				// squeezed across the picture, the ones running across it
+				// are squeezed up it. Measuring both up the picture drew
+				// the first family two pixels wide at the middle of the
+				// floor and six at the back of it, which is the one thing
+				// a joint never does: it is the same millimetre of grout
+				// all the way, and the far end of a room is where it
+				// disappears.
+				var pu = ACROSS[i], pv = PX[i];
+				if (turned && !pl) {
+					// A diagonal joint is seen partly across the picture
+					// and partly up it, so neither figure is its own.
+					pu = pv = Math.sqrt(pu * pv);
+				}
+				var gu = gm * pu, gv = gm * pv;
+				var bu = gu > 1 ? gu : 1, bv = gv > 1 ? gv : 1;
+				var hu = fu < (bu / pu) / S;
+				var hv = fv < (bv / pv) / Sv;
+				if (hu || hv) {
+					var ku = gu / bu, kv = gv / bv;
+					// At a corner both joints are under the pixel, and the
+					// stronger of the two is the one to draw.
+					var k = hu ? ku : kv;
+					if (hu && hv && kv > k) { k = kv; }
 					if (k < GROUT_FAINT) { k = GROUT_FAINT; }
 					var d2 = 1 - (1 - GROUT_DARK) * k;
 					r *= d2; g *= d2; b *= d2;
