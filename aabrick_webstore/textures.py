@@ -60,6 +60,35 @@ MIN_LONG_PX = 600     # the fallback, when the tile's real size is not known
 # life that the tile stops being an honest picture of itself.
 MIN_KEEP = 0.62
 
+# A texture is repeated edge to edge across a whole floor, so one row of
+# pixels left over from outside the tile is redrawn at every tile boundary
+# and the eye reads it as a line ruled across the room. 86004 was the one
+# that showed: a pure white bottom row, 85 levels above the tile's own
+# brightness, on a floor with the grout switched off.
+#
+# A leftover row and a tile's own border look alike in a single number and
+# not at all in two. The leftover is flat, because it is a sliver of the
+# paper the tile was photographed on: its standard deviation is near zero
+# where the tile's is ten or eighty. A border carries the pattern's own
+# variation, and goes deeper than a row or two.
+#
+# So: shave only a row that is both far from the tile's brightness and far
+# flatter than the tile, and never more than two. That is the asymmetry
+# worth having. Two rows off four hundred is four tenths of one per cent
+# and invisible if it was wrong; a missed burr is a line across the floor.
+# Not every leftover row is flat. Where the tile was photographed against
+# something with its own texture, or the crop clipped a shadow rather than
+# the paper, the row is as varied as the tile and only the depth gives it
+# away: it stands alone, and the row behind it is the tile. A border does
+# not do that -- 33008's black frame is 130 levels down for six rows, and
+# 33007's band fades over five. So a lone row is one that drops most of the
+# way back to the tile immediately behind it.
+BURR_ROWS = 2         # never shave more than this off any one edge
+BURR_OFF = 8.0        # levels from the body before a row is suspect
+BURR_FLAT = 0.5       # ...and this much flatter than the body, at most
+BURR_SPIKE = 20.0     # ...or this far off, if it stands alone
+BURR_ALONE = 0.4      # alone = the row behind it is this much of it, or less
+
 
 # When the lettering is printed over a tile its own colour, a warm wood or a
 # terracotta, _is_mark cannot tell the two apart and reports most of the
@@ -243,6 +272,57 @@ def _safe(code):
     return re.sub(r"[^A-Za-z0-9._-]", "_", code)
 
 
+def _deburr(im):
+    """Take any flat leftover strip off the four edges.
+
+    Walks in from each edge while the row is both markedly off the tile's
+    own brightness and markedly flatter than it, up to BURR_ROWS. Returns
+    the image cropped, or the image itself when the edges are clean.
+    """
+    from PIL import ImageStat
+
+    w, h = im.size
+    if w < 16 or h < 16:
+        return im
+
+    grey = im.convert("L")
+    body = ImageStat.Stat(grey.crop((0, int(h * 0.25), w, int(h * 0.75))))
+    mean, sd = body.mean[0], body.stddev[0]
+    flat = max(3.0, sd * BURR_FLAT)
+
+    def row(side, k):
+        if side == "top":
+            return grey.crop((0, k, w, k + 1))
+        if side == "bottom":
+            return grey.crop((0, h - 1 - k, w, h - k))
+        if side == "left":
+            return grey.crop((k, 0, k + 1, h))
+        return grey.crop((w - 1 - k, 0, w - k, h))
+
+    def off(side, k):
+        st = ImageStat.Stat(row(side, k))
+        return st.mean[0] - mean, st.stddev[0]
+
+    cut = {}
+    for side in ("top", "bottom", "left", "right"):
+        n = 0
+        while n < BURR_ROWS:
+            d, sd = off(side, n)
+            behind, _ = off(side, n + 1)
+            lone = (abs(d) >= BURR_SPIKE
+                    and abs(behind) <= abs(d) * BURR_ALONE)
+            paper = abs(d) >= BURR_OFF and sd <= flat
+            if paper or lone:
+                n += 1
+            else:
+                break
+        cut[side] = n
+
+    if not any(cut.values()):
+        return im
+    return im.crop((cut["left"], cut["top"], w - cut["right"],
+                    h - cut["bottom"]))
+
 def build(code, src, redo=False, long_mm=None):
     """Make one texture. Returns (status, note).
 
@@ -268,6 +348,7 @@ def build(code, src, redo=False, long_mm=None):
             return "skipped", "only %d%% of the picture is clear" % (scale * 100)
 
         cut = im.crop(box)
+        cut = _deburr(cut)
         cw, ch = cut.size
         need = MIN_LONG_PX
         if long_mm:
@@ -328,23 +409,32 @@ def run(redo=False):
     print("  textures are at /files/%s/" % FOLDER)
 
 
+def _stamped(name):
+    """The URL for a cut file, carrying the moment it was cut.
+
+    ASSET_VERSION covers what ships in the app, and a texture does not: it
+    is cut here, and re-cut on its own whenever somebody changes a tile's
+    photograph in the desk. Without a stamp a customer who has already seen
+    a tile keeps the old cut for as long as their browser feels like it,
+    which is how a corrected texture goes on showing the fault it was
+    corrected for. The file's own mtime is exactly the right stamp: it
+    changes when the picture changes and not otherwise.
+    """
+    path = os.path.join(frappe.get_site_path("public", "files", FOLDER), name)
+    if not os.path.exists(path):
+        return None
+    return "/files/%s/%s?v=%d" % (FOLDER, name, int(os.path.getmtime(path)))
+
+
 def texture_url(code):
     """The cleaned texture for a tile, or None if there is not one."""
-    name = "%s.jpg" % _safe(code)
-    if os.path.exists(os.path.join(frappe.get_site_path(
-            "public", "files", FOLDER), name)):
-        return "/files/%s/%s" % (FOLDER, name)
-    return None
+    return _stamped("%s.jpg" % _safe(code))
 
 
 def thumb_url(code):
     """The swatch for the picker. Falls back to the texture itself, so a set
     built before thumbnails existed still shows something."""
-    name = "%s-sm.jpg" % _safe(code)
-    if os.path.exists(os.path.join(frappe.get_site_path(
-            "public", "files", FOLDER), name)):
-        return "/files/%s/%s" % (FOLDER, name)
-    return texture_url(code)
+    return _stamped("%s-sm.jpg" % _safe(code)) or texture_url(code)
 
 
 def forget(code):
