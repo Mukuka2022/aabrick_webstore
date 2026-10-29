@@ -49,14 +49,14 @@
 	--aab-muted: #666258;
 	--aab-line: #E2DED5;
 	--aab-surface: #FFFFFF;
-	--aab-wash: #EDE9E0;        /* the page: a stone ground, not a grey one */
-	--aab-wash-deep: #E4DFD3;   /* a step down from the section wash */
-	/* The ground under a section band. It is its own token rather than the
-	 * wash because the bands are set together and the wash is not: the same
-	 * value is re-asserted on the item, category and shop pages, which
-	 * override .aab-section for reasons of their own, and all four have to
-	 * move together or those three pages keep the old ground. */
-	--aab-section-ground: #e4e4e4;
+	/* The page ground. It was #EDE9E0, a warm stone, on the reasoning that
+	 * a grey ground makes a tile shop look like a spreadsheet. AABrick
+	 * asked for the grey, so grey it is, and the fourteen rules that read
+	 * this token follow it. --aab-wash-deep below has NOT moved: it is a
+	 * warm stone still, and now sits beside a neutral grey rather than a
+	 * step down from a warm one. */
+	--aab-wash: #e4e4e4;        /* the page */
+	--aab-wash-deep: #E4DFD3;   /* a step down -- see the note above */
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
@@ -379,7 +379,7 @@ main.container:has(.aab-branch) .aab-branch {
 /* ------------------------------------------------------------------
  * Homepage: sections
  * ------------------------------------------------------------------ */
-.aab-section { padding: 25px 0; background: var(--aab-section-ground); }
+.aab-section { padding: 25px 0; background: var(--aab-wash); }
 /* A band that steps up to white, for a heading that wants separating from the
  * row it introduces. */
 .aab-section--white { background: var(--aab-surface); }
@@ -918,7 +918,7 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 .aab-item-spec h2 { font-size: 20px; margin: 0 0 10px; }
 .aab-item-spec p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--aab-muted); }
 
-.aab-item .aab-section { background: var(--aab-section-ground); }
+.aab-item .aab-section { background: var(--aab-wash); }
 .aab-item .aab-section--white { background: var(--aab-surface); }
 
 .aab-grade-tag {
@@ -990,7 +990,7 @@ main.container:has(.aab-cat-page) .aab-cat-page { width: 100%; margin-left: 0; m
 
 .aab-cat-foot .aab-inner { display: flex; flex-direction: column; gap: 16px; }
 .aab-cat-foot .aab-item-actions { margin-top: 0; }
-.aab-cat-page .aab-section { background: var(--aab-section-ground); }
+.aab-cat-page .aab-section { background: var(--aab-wash); }
 
 /* ------------------------------------------------------------------
  * Shop listing
@@ -1084,7 +1084,7 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 .aab-pager span { font-size: 14px; color: var(--aab-muted); }
 
 .aab-shop-foot { padding-top: 10px; }
-.aab-shop .aab-section { background: var(--aab-section-ground); }
+.aab-shop .aab-section { background: var(--aab-wash); }
 
 /* ------------------------------------------------------------------
  * Browsing card
