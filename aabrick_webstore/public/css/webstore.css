@@ -51,6 +51,12 @@
 	--aab-surface: #FFFFFF;
 	--aab-wash: #EDE9E0;        /* the page: a stone ground, not a grey one */
 	--aab-wash-deep: #E4DFD3;   /* a step down from the section wash */
+	/* The ground under a section band. It is its own token rather than the
+	 * wash because the bands are set together and the wash is not: the same
+	 * value is re-asserted on the item, category and shop pages, which
+	 * override .aab-section for reasons of their own, and all four have to
+	 * move together or those three pages keep the old ground. */
+	--aab-section-ground: #e4e4e4;
 	--aab-silver: #D8D8D3;
 	--aab-silver-light: #E9E9E5;
 	--aab-silver-deep: #C3C3BD;
@@ -231,15 +237,32 @@ main.container:has(.aab-branch) .aab-branch {
 
 /* On a dark ground. Brass rather than a translucent white, because on
  * charcoal a thin warm line reads as metal trim where a white one reads as a
- * control that has been switched off. */
-.aab-btn-outline,
+ * control that has been switched off. Still true of the calculators and the
+ * contact page, which is where this one is now spent. */
 .aab-btn-ghost-light {
 	border-color: rgba(200,164,101,.6); color: var(--aab-brass-lit);
 }
-.aab-btn-outline:hover,
 .aab-btn-ghost-light:hover {
 	border-color: var(--aab-brass-lit); background: rgba(200,164,101,.12);
 	color: var(--aab-ivory);
+}
+
+/* The hero's second button, and the only thing wearing this class. It was
+ * brass with the rest, and brass next to the solid red primary on a
+ * photograph is a third colour doing a second job.
+ *
+ * White, not a translucent white: the "switched off" reading the note above
+ * warns of comes from the transparency, not from the colour. At full
+ * strength, against a photograph, a white line and a white word read as
+ * deliberate. Red was the other option and is the wrong one here -- it
+ * would stand beside a solid red button, one filled and one outlined, which
+ * reads as a mistake rather than as a pair.
+ *
+ * The hover fills and hands the word back to the brand red, so the two
+ * buttons end up the same shape with the colours swapped. */
+.aab-btn-outline { border-color: #fff; color: #fff; }
+.aab-btn-outline:hover {
+	border-color: #fff; background: #fff; color: var(--aab-red);
 }
 
 /* Ivory, not white, and the word in oxblood. On a photograph a pure white
@@ -356,7 +379,7 @@ main.container:has(.aab-branch) .aab-branch {
 /* ------------------------------------------------------------------
  * Homepage: sections
  * ------------------------------------------------------------------ */
-.aab-section { padding: 25px 0; background: var(--aab-wash); }
+.aab-section { padding: 25px 0; background: var(--aab-section-ground); }
 /* A band that steps up to white, for a heading that wants separating from the
  * row it introduces. */
 .aab-section--white { background: var(--aab-surface); }
@@ -895,7 +918,7 @@ main.container:has(.aab-item) .aab-item { width: 100%; margin-left: 0; margin-ri
 .aab-item-spec h2 { font-size: 20px; margin: 0 0 10px; }
 .aab-item-spec p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--aab-muted); }
 
-.aab-item .aab-section { background: var(--aab-wash); }
+.aab-item .aab-section { background: var(--aab-section-ground); }
 .aab-item .aab-section--white { background: var(--aab-surface); }
 
 .aab-grade-tag {
@@ -967,7 +990,7 @@ main.container:has(.aab-cat-page) .aab-cat-page { width: 100%; margin-left: 0; m
 
 .aab-cat-foot .aab-inner { display: flex; flex-direction: column; gap: 16px; }
 .aab-cat-foot .aab-item-actions { margin-top: 0; }
-.aab-cat-page .aab-section { background: var(--aab-wash); }
+.aab-cat-page .aab-section { background: var(--aab-section-ground); }
 
 /* ------------------------------------------------------------------
  * Shop listing
@@ -1061,7 +1084,7 @@ main.container:has(.aab-shop) .aab-shop { width: 100%; margin-left: 0; margin-ri
 .aab-pager span { font-size: 14px; color: var(--aab-muted); }
 
 .aab-shop-foot { padding-top: 10px; }
-.aab-shop .aab-section { background: var(--aab-wash); }
+.aab-shop .aab-section { background: var(--aab-section-ground); }
 
 /* ------------------------------------------------------------------
  * Browsing card
