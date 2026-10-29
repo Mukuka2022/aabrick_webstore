@@ -60,12 +60,17 @@
 	var tile = null;         // the tile on the floor
 	var wallTile = null;     // the tile on the walls, null to leave them bare
 	var target = "floor";    // which surface the next swatch is picked for
-	// How the tile is laid. "h" is the tile as it comes, "v" is the same
-	// tile stood on its end, and "d" is the forty-five degree lay. Only
-	// "d" turns the coordinates; "v" swaps the tile's own two
-	// measurements, which is what laying it the other way round means and
-	// is why a square tile has nothing to show for it.
-	var lay = "h";
+	// How the tile is laid, per surface, because each surface already
+	// keeps its own tile and the lay belongs with it: a floor laid the
+	// long way and a wall laid the tall way is an ordinary bathroom, and
+	// one control for both made choosing either one change the other.
+	//
+	// "h" is the tile as it comes, "v" is the same tile stood on its end,
+	// and "d" is the forty-five degree lay. Only "d" turns the
+	// coordinates, and only the floor offers it. "v" swaps the tile's own
+	// two measurements, which is what laying it the other way round means
+	// and is why a square tile has nothing to show for it.
+	var lay = { floor: "h", wall: "h" };
 	var grout = true;
 
 	var canvas, ctx, out;
@@ -594,8 +599,9 @@
 		var w = canvas.width, h = canvas.height;
 		var src = base.data, dst = out.data;
 		var gm = GROUT_MM / 1000;   // grout, in metres
-		var diag = lay === "d";
-		var swap = lay === "v";
+		var diag = lay.floor === "d";
+		// One entry per surface, floor first, like TEX below.
+		var SWAP = [lay.floor === "v", lay.wall === "v"];
 		var ca = diag ? Math.SQRT1_2 : 1;
 		var sa = diag ? Math.SQRT1_2 : 0;
 		// One entry per surface, floor first, so the loop only has to pick.
@@ -606,10 +612,10 @@
 		// runs along the wall and v up it, and swapping the pair lays a
 		// 300x600 the long way along instead of the long way up. The
 		// diagonal is still the floor's alone -- see the note in the loop.
-		var TW = [tile ? (swap ? tile.h : tile.w) / 1000 : 0,
-			wallTile ? (swap ? wallTile.h : wallTile.w) / 1000 : 0];
-		var TH = [tile ? (swap ? tile.w : tile.h) / 1000 : 0,
-			wallTile ? (swap ? wallTile.w : wallTile.h) / 1000 : 0];
+		var TW = [tile ? (SWAP[0] ? tile.h : tile.w) / 1000 : 0,
+			wallTile ? (SWAP[1] ? wallTile.h : wallTile.w) / 1000 : 0];
+		var TH = [tile ? (SWAP[0] ? tile.w : tile.h) / 1000 : 0,
+			wallTile ? (SWAP[1] ? wallTile.w : wallTile.h) / 1000 : 0];
 		var i, n = w * h;
 
 		dst.set(src);
@@ -822,13 +828,8 @@
 	}
 
 	function layTo(name) {
-		lay = name;
-		Array.prototype.forEach.call(
-			document.querySelectorAll(".aab-vis-lay-opt"),
-			function (b) {
-				b.classList.toggle("is-on",
-					b.getAttribute("data-lay") === name);
-			});
+		lay[target] = name;
+		layOptions();
 		draw();
 	}
 
@@ -838,22 +839,41 @@
 	// Vertical is worth offering when anything on screen would move for
 	// it, which means either tile, not just the floor's: a square floor
 	// under an oblong wall tile still has something to turn.
+	// The control shows the surface being picked for, so switching
+	// between Floor and Walls brings that surface's own lay up with it.
 	function layOptions() {
-		var laid = [], square = true, k;
-		if (tile) { laid.push(tile); }
-		if (wallTile) { laid.push(wallTile); }
-		for (k = 0; k < laid.length; k++) {
-			if (laid[k].w !== laid[k].h) { square = false; }
-		}
-		var none = laid.length === 0;
+		var onWall = target === "wall";
+		var t = onWall ? wallTile : tile;
+		var square = !t || t.w === t.h;
+
 		var vb = $('.aab-vis-lay-opt[data-lay="v"]');
 		if (vb) {
-			vb.disabled = none || square;
-			vb.title = (none || square)
-				? "Every tile laid here is square, so there is nothing to turn"
-				: "Lay the tile the other way round";
+			vb.disabled = square;
+			vb.title = !t
+				? "Nothing is laid on this surface yet"
+				: (square
+					? "This tile is square, so there is nothing to turn"
+					: "Lay the tile the other way round");
 		}
-		if ((none || square) && lay === "v") { layTo("h"); }
+		// The diagonal is the floor's. A wall tile turned forty five
+		// degrees is a different decision and not one that was asked for,
+		// so the button says so rather than doing nothing when pressed.
+		var db = $('.aab-vis-lay-opt[data-lay="d"]');
+		if (db) {
+			db.disabled = onWall;
+			db.title = onWall
+				? "The diagonal is for a floor"
+				: "Lay the tile on the diagonal";
+		}
+		if (square && lay[target] === "v") { lay[target] = "h"; }
+		if (onWall && lay.wall === "d") { lay.wall = "h"; }
+
+		Array.prototype.forEach.call(
+			document.querySelectorAll(".aab-vis-lay-opt"),
+			function (b) {
+				b.classList.toggle("is-on",
+					b.getAttribute("data-lay") === lay[target]);
+			});
 	}
 
 	function showPick() {
