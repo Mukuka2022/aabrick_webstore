@@ -601,12 +601,15 @@
 		// One entry per surface, floor first, so the loop only has to pick.
 		// A surface with no texture is one the customer left bare.
 		var TEX = [ftex, wtex];
-		// The lay is a floor decision, like the diagonal, so only the
-		// floor's pair is swapped. A wall keeps the tile as it comes.
+		// Horizontal and vertical are a decision about the tile rather
+		// than about the floor, so both surfaces take them: on a wall, u
+		// runs along the wall and v up it, and swapping the pair lays a
+		// 300x600 the long way along instead of the long way up. The
+		// diagonal is still the floor's alone -- see the note in the loop.
 		var TW = [tile ? (swap ? tile.h : tile.w) / 1000 : 0,
-			wallTile ? wallTile.w / 1000 : 0];
+			wallTile ? (swap ? wallTile.h : wallTile.w) / 1000 : 0];
 		var TH = [tile ? (swap ? tile.w : tile.h) / 1000 : 0,
-			wallTile ? wallTile.h / 1000 : 0];
+			wallTile ? (swap ? wallTile.w : wallTile.h) / 1000 : 0];
 		var i, n = w * h;
 
 		dst.set(src);
@@ -832,16 +835,25 @@
 	// A square tile laid the other way round is the same tile, so the
 	// option is switched off rather than left to do nothing when somebody
 	// presses it. Same handling as the walls of a room nobody has traced.
+	// Vertical is worth offering when anything on screen would move for
+	// it, which means either tile, not just the floor's: a square floor
+	// under an oblong wall tile still has something to turn.
 	function layOptions() {
-		var square = !tile || tile.w === tile.h;
+		var laid = [], square = true, k;
+		if (tile) { laid.push(tile); }
+		if (wallTile) { laid.push(wallTile); }
+		for (k = 0; k < laid.length; k++) {
+			if (laid[k].w !== laid[k].h) { square = false; }
+		}
+		var none = laid.length === 0;
 		var vb = $('.aab-vis-lay-opt[data-lay="v"]');
 		if (vb) {
-			vb.disabled = square;
-			vb.title = square
-				? "This tile is square, so there is nothing to turn"
+			vb.disabled = none || square;
+			vb.title = (none || square)
+				? "Every tile laid here is square, so there is nothing to turn"
 				: "Lay the tile the other way round";
 		}
-		if (square && lay === "v") { layTo("h"); }
+		if ((none || square) && lay === "v") { layTo("h"); }
 	}
 
 	function showPick() {
