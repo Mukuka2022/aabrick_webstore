@@ -71,11 +71,6 @@
 	// two measurements, which is what laying it the other way round means
 	// and is why a square tile has nothing to show for it.
 	var lay = { floor: "h", wall: "h" };
-	// How far this room's camera was turned from the room's own axis, in
-	// radians. See the note on "yaw" in index.py: without it the grid is
-	// square to the camera, which in four of the eight rooms is not
-	// square to the walls.
-	var yaw = 0;
 	var grout = true;
 
 	var canvas, ctx, out;
@@ -161,7 +156,6 @@
 		var cx = num("cx", s.cx === undefined ? img.naturalWidth / 2 : s.cx) * k;
 		var focal = num("focal", s.focal || img.naturalWidth) * k;
 		var camH = num("height", s.height || 1.45);
-		yaw = num("yaw", s.yaw || 0) * Math.PI / 180;
 
 		var lum = new Float32Array(n);
 		var sum = 0, count = 0;
@@ -608,12 +602,8 @@
 		var diag = lay.floor === "d";
 		// One entry per surface, floor first, like TEX below.
 		var SWAP = [lay.floor === "v", lay.wall === "v"];
-		// The floor's grid is turned twice over: once to bring it square
-		// to the room rather than to the camera, and again if the diagonal
-		// was asked for. One rotation carries both.
-		var spin = yaw + (diag ? Math.PI / 4 : 0);
-		var ca = Math.cos(spin), sa = Math.sin(spin);
-		var turning = Math.abs(spin) > 1e-6;
+		var ca = diag ? Math.SQRT1_2 : 1;
+		var sa = diag ? Math.SQRT1_2 : 0;
 		// One entry per surface, floor first, so the loop only has to pick.
 		// A surface with no texture is one the customer left bare.
 		var TEX = [ftex, wtex];
@@ -639,13 +629,9 @@
 			var S = TW[pl], Sv = TH[pl];
 
 			var u = U[i], v = V[i];
-			// Floor only, for both halves of the turn. The diagonal is a
-			// floor lay -- a wall tile at forty five degrees is a
-			// different decision and not one that was asked for -- and the
-			// room's own angle a wall does not need: its coordinates are
-			// walked along the skirting rather than measured out from the
-			// camera, and a walked length does not care how the camera sat.
-			if (turning && !pl) {
+			// The diagonal is a floor lay. A wall tile turned forty five
+			// degrees is a different decision, and not one that was asked for.
+			if (diag && !pl) {
 				var ur = u * ca - v * sa;
 				v = u * sa + v * ca;
 				u = ur;
@@ -712,16 +698,10 @@
 				// all the way, and the far end of a room is where it
 				// disappears.
 				var pu = ACROSS[i], pv = PX[i];
-				if (turning && !pl) {
-					// Turned, a joint is seen partly across the picture
-					// and partly up it, so neither figure is its own. A
-					// step along the grid's own u covers ca of a metre
-					// across and sa of one up, and those meet at a right
-					// angle; at a spin of nought this gives ACROSS and PX
-					// back unchanged.
-					var ax = ACROSS[i], up = PX[i];
-					pu = Math.sqrt(ca * ca * ax * ax + sa * sa * up * up);
-					pv = Math.sqrt(sa * sa * ax * ax + ca * ca * up * up);
+				if (diag && !pl) {
+					// A diagonal joint is seen partly across the picture
+					// and partly up it, so neither figure is its own.
+					pu = pv = Math.sqrt(pu * pv);
 				}
 				var gu = gm * pu, gv = gm * pv;
 				var bu = gu > 1 ? gu : 1, bv = gv > 1 ? gv : 1;

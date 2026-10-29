@@ -24,36 +24,6 @@ from aabrick_webstore import visualiser
 no_cache = 1
 sitemap = 1
 
-# "yaw" is how far the camera was turned from the room's own axis, in
-# degrees, positive to the right.
-#
-# The projection below is a one-point perspective: every joint running away
-# from the camera is a line through (cx, horizon), and every joint running
-# across the room is level in the picture. That is right only when the
-# camera looked straight down the room. Fitting a line to each side of a
-# floor outline and crossing them gives where the room's long walls really
-# converge, and only the hallway came back at the lens centre:
-#
-#     hallway           726 against 724   -- straight
-#     kitchen           869 against 724   -- 8.9 degrees
-#     ensuite           427 against 724   -- 17.7 degrees the other way
-#     bathroom         1052 against 723   -- 19.5 degrees
-#     bathroom-family  1126 against 723   -- 23.4 degrees
-#
-# A floor drawn square to the camera in a room that is not square to the
-# camera reads as a floor laid at an angle, which is what it was.
-#
-#     yaw = atan((where it converges - cx) / focal)
-#
-# The engine turns the floor's coordinates by this before laying anything
-# on them. It needs no second camera: U and V are already metres to the
-# camera's right and metres forward, which are honest ground coordinates,
-# so the room's own axes are those two turned. ?yaw=12 overrides it from
-# the address bar the way ?horizon and ?focal already do.
-#
-# kitchen-dining, living and patio have only one side of their floor in
-# frame, so there is nothing to cross and nothing claimed: they are left at
-# nought, which is what they were doing before.
 SCENES = [
     # below; tools/README.md is how to turn a photograph into an entry here.
     #
@@ -79,7 +49,7 @@ SCENES = [
     # degree field of view across the frame.
         {"id": "ensuite", "label": "Ensuite",
          "image": "/assets/aabrick_webstore/images/scene-ensuite.jpg",
-         "horizon": 253, "cx": 724, "focal": 931, "height": 1.45, "yaw": -17.7,
+         "horizon": 253, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [-2, 1087], [1449, 1087], [1449, 1053], [1446, 1053],
             [1434, 1042], [1370, 987], [1284, 914], [1134, 788],
@@ -96,7 +66,7 @@ SCENES = [
         ]},
         {"id": "bathroom", "label": "Bathroom",
          "image": "/assets/aabrick_webstore/images/scene-bathroom.jpg",
-         "horizon": 247, "cx": 723, "focal": 930, "height": 1.45, "yaw": 19.5,
+         "horizon": 247, "cx": 723, "focal": 930, "height": 1.45,
          "floor": [
             [-2, 1088], [1448, 1088], [1448, 832], [1446, 832],
             [1434, 827], [1420, 814], [1412, 800], [1410, 794],
@@ -118,7 +88,7 @@ SCENES = [
         ]},
         {"id": "bathroom-family", "label": "Family bathroom",
          "image": "/assets/aabrick_webstore/images/scene-bathroom-family.jpg",
-         "horizon": 347, "cx": 723, "focal": 930, "height": 1.45, "yaw": 23.4,
+         "horizon": 347, "cx": 723, "focal": 930, "height": 1.45,
          "floor": [
             [-2, 1088], [1448, 1088], [1448, 901], [1446, 901],
             [1440, 902], [1438, 900], [1414, 894], [1402, 888],
@@ -145,7 +115,7 @@ SCENES = [
         ]},
         {"id": "kitchen", "label": "Kitchen",
          "image": "/assets/aabrick_webstore/images/scene-kitchen.jpg",
-         "horizon": 280, "cx": 724, "focal": 931, "height": 1.45, "yaw": 8.9,
+         "horizon": 280, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [-2, 1087], [1449, 1087], [1449, 914], [1446, 914],
             [1382, 856], [1332, 812], [1328, 810], [1314, 810],
@@ -171,7 +141,7 @@ SCENES = [
         ]},
         {"id": "hallway", "label": "Hallway",
          "image": "/assets/aabrick_webstore/images/scene-hallway.jpg",
-         "horizon": 330, "cx": 724, "focal": 931, "height": 1.45, "yaw": 0.1,
+         "horizon": 330, "cx": 724, "focal": 931, "height": 1.45,
          "floor": [
             [-2, 1087], [1449, 1087], [1449, 1037], [1446, 1037],
             [1390, 984], [1286, 888], [1246, 853], [1244, 801],
