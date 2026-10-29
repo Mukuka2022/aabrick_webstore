@@ -99,6 +99,25 @@ BURR_ALONE = 0.4      # alone = the row behind it is this much of it, or less
 MARK_RUNAWAY = 0.55
 MARK_BAND = 0.26
 
+# The middle of the picture is evidence _mark_box never read. It looks at the
+# top and bottom fifths, because that is where a label is printed, and then
+# believes what it finds there. On 96207 what it found there was the tile: a
+# lattice of terracotta diamonds, which is the same orange as the lettering
+# and covers a quarter of the face. The bounding box came out the size of the
+# whole picture, the runaway guard caught that and fell back to assuming the
+# print is a band across the top, and the cut was the bottom three quarters
+# of the tile, off centre. On a marble that is survivable. On a pattern it is
+# not: the texture is repeated edge to edge, so a window that is not a whole
+# tile puts half a diamond against half a diamond at every boundary.
+#
+# Lettering leaves the middle alone and a tile's own colour does not, and
+# those two cases separate cleanly: across every source on the bench, real
+# print measures 0.00 to 0.04 of the edge density in the middle, and a tile
+# the detector cannot tell from print measures 0.4 to 20. Nothing lands
+# between 0.04 and 0.26.
+MARK_MID_FLOOR = 2.0    # below this the middle is too sparse to read
+MARK_MID_SHARE = 0.35   # middle this much of the edge density = not print
+
 
 def _is_mark(r, g, b):
     """Marcopolo's print: the orange lettering, and the dark red logo.
@@ -197,6 +216,19 @@ def _mark_box(im, probe=320):
 
     # A handful of stray pixels is noise in the photograph, not lettering.
     if len(xs) < max(30, int(sw * sh * 0.0012)):
+        return None
+
+    # Before believing any of it, read the middle. See MARK_MID_SHARE.
+    mid_n = 0
+    for y in range(band, max(band + 1, sh - band)):
+        for x in range(sw):
+            r, g, b = px[x, y]
+            if _is_mark(r, g, b):
+                mid_n += 1
+    mid_tot = max(1, (max(0, sh - 2 * band)) * sw)
+    edge_d = 100.0 * len(xs) / max(1, 2 * band * sw)
+    mid_d = 100.0 * mid_n / mid_tot
+    if mid_d >= MARK_MID_FLOOR and mid_d >= edge_d * MARK_MID_SHARE:
         return None
 
     box = (min(xs) / float(sw), min(ys) / float(sh),
