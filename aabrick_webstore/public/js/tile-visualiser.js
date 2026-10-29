@@ -60,7 +60,12 @@
 	var tile = null;         // the tile on the floor
 	var wallTile = null;     // the tile on the walls, null to leave them bare
 	var target = "floor";    // which surface the next swatch is picked for
-	var turned = false;      // laid on the diagonal
+	// How the tile is laid. "h" is the tile as it comes, "v" is the same
+	// tile stood on its end, and "d" is the forty-five degree lay. Only
+	// "d" turns the coordinates; "v" swaps the tile's own two
+	// measurements, which is what laying it the other way round means and
+	// is why a square tile has nothing to show for it.
+	var lay = "h";
 	var grout = true;
 
 	var canvas, ctx, out;
@@ -589,13 +594,19 @@
 		var w = canvas.width, h = canvas.height;
 		var src = base.data, dst = out.data;
 		var gm = GROUT_MM / 1000;   // grout, in metres
-		var ca = turned ? Math.SQRT1_2 : 1;
-		var sa = turned ? Math.SQRT1_2 : 0;
+		var diag = lay === "d";
+		var swap = lay === "v";
+		var ca = diag ? Math.SQRT1_2 : 1;
+		var sa = diag ? Math.SQRT1_2 : 0;
 		// One entry per surface, floor first, so the loop only has to pick.
 		// A surface with no texture is one the customer left bare.
 		var TEX = [ftex, wtex];
-		var TW = [tile ? tile.w / 1000 : 0, wallTile ? wallTile.w / 1000 : 0];
-		var TH = [tile ? tile.h / 1000 : 0, wallTile ? wallTile.h / 1000 : 0];
+		// The lay is a floor decision, like the diagonal, so only the
+		// floor's pair is swapped. A wall keeps the tile as it comes.
+		var TW = [tile ? (swap ? tile.h : tile.w) / 1000 : 0,
+			wallTile ? wallTile.w / 1000 : 0];
+		var TH = [tile ? (swap ? tile.w : tile.h) / 1000 : 0,
+			wallTile ? wallTile.h / 1000 : 0];
 		var i, n = w * h;
 
 		dst.set(src);
@@ -611,7 +622,7 @@
 			var u = U[i], v = V[i];
 			// The diagonal is a floor lay. A wall tile turned forty five
 			// degrees is a different decision, and not one that was asked for.
-			if (turned && !pl) {
+			if (diag && !pl) {
 				var ur = u * ca - v * sa;
 				v = u * sa + v * ca;
 				u = ur;
@@ -678,7 +689,7 @@
 				// all the way, and the far end of a room is where it
 				// disappears.
 				var pu = ACROSS[i], pv = PX[i];
-				if (turned && !pl) {
+				if (diag && !pl) {
 					// A diagonal joint is seen partly across the picture
 					// and partly up it, so neither figure is its own.
 					pu = pv = Math.sqrt(pu * pv);
@@ -807,6 +818,32 @@
 		showPick();
 	}
 
+	function layTo(name) {
+		lay = name;
+		Array.prototype.forEach.call(
+			document.querySelectorAll(".aab-vis-lay-opt"),
+			function (b) {
+				b.classList.toggle("is-on",
+					b.getAttribute("data-lay") === name);
+			});
+		draw();
+	}
+
+	// A square tile laid the other way round is the same tile, so the
+	// option is switched off rather than left to do nothing when somebody
+	// presses it. Same handling as the walls of a room nobody has traced.
+	function layOptions() {
+		var square = !tile || tile.w === tile.h;
+		var vb = $('.aab-vis-lay-opt[data-lay="v"]');
+		if (vb) {
+			vb.disabled = square;
+			vb.title = square
+				? "This tile is square, so there is nothing to turn"
+				: "Lay the tile the other way round";
+		}
+		if (square && lay === "v") { layTo("h"); }
+	}
+
 	function showPick() {
 		var onWall = target === "wall";
 		var t = onWall ? wallTile : tile;
@@ -828,6 +865,7 @@
 					+ "  " + t.w + "x" + t.h + "mm"
 					+ (t.price ? "  ZK " + Number(t.price).toFixed(2) : "");
 		}
+		layOptions();
 		var code = t ? t.code : "";
 		Array.prototype.forEach.call(
 			document.querySelectorAll(".aab-vis-swatch"),
@@ -1085,14 +1123,13 @@
 			});
 		}
 
-		var turn = $(".aab-vis-turn");
-		if (turn) {
-			turn.addEventListener("click", function () {
-				turned = !turned;
-				turn.classList.toggle("is-on", turned);
-				draw();
+		Array.prototype.forEach.call(
+			document.querySelectorAll(".aab-vis-lay-opt"),
+			function (b) {
+				b.addEventListener("click", function () {
+					layTo(b.getAttribute("data-lay"));
+				});
 			});
-		}
 		var gr = $(".aab-vis-grout");
 		if (gr) {
 			gr.classList.toggle("is-on", grout);

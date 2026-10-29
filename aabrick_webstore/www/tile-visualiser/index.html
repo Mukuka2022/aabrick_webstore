@@ -15,12 +15,6 @@
 {% block page_content %}
 <div class="aab-vis" id="aab-visualiser">
 
-  <div class="aab-inner">
-    <nav class="aab-crumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a> <span>/</span>
-      <span aria-current="page">Tile Visualiser</span>
-    </nav>
-  </div>
 
   {#
     No title block. The page is a tool rather than an article: the rooms
@@ -60,7 +54,11 @@
           <div class="aab-vis-bar">
             <p class="aab-vis-caption"></p>
             <div class="aab-vis-tools">
-              <button type="button" class="aab-vis-turn">Lay on the diagonal</button>
+              <span class="aab-vis-lay" role="group" aria-label="How the tile is laid">
+                <button type="button" class="aab-vis-lay-opt is-on" data-lay="h">Horizontal</button>
+                <button type="button" class="aab-vis-lay-opt" data-lay="v">Vertical</button>
+                <button type="button" class="aab-vis-lay-opt" data-lay="d">Diagonal</button>
+              </span>
               <button type="button" class="aab-vis-grout">Show grout</button>
               <a class="aab-btn aab-btn-primary aab-vis-product" href="#">View tile</a>
             </div>

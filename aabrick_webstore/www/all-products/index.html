@@ -17,12 +17,6 @@
 {% block page_content %}
 <div class="aab-shop">
 
-  <div class="aab-inner">
-    <nav class="aab-crumbs" aria-label="Breadcrumb">
-      <a href="/">Home</a> <span>/</span>
-      <span aria-current="page">{{ aab_heading }}</span>
-    </nav>
-  </div>
 
   {% set shot = site_images().heads.all_products %}
   <header class="aab-page-head aab-shop-head{% if shot %} has-shot{% endif %}">

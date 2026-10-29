@@ -771,10 +771,6 @@ main.container:has(.aab-branch) .aab-branch {
 /* ------------------------------------------------------------------
  * Branch pages
  * ------------------------------------------------------------------ */
-.aab-crumbs { font-size: 13px; color: var(--aab-muted); padding: 20px 0 0; }
-.aab-crumbs a { color: var(--aab-muted); text-decoration: none; }
-.aab-crumbs a:hover { color: var(--aab-red); text-decoration: underline; }
-.aab-crumbs span { margin: 0 6px; }
 
 .aab-branch-head { padding: 22px 0 26px; border-bottom: 3px solid var(--aab-red); }
 .aab-branch-head h1 { font-size: clamp(34px, 5.5vw, 56px); margin: 0; }
@@ -2731,13 +2727,23 @@ main.container:has(.aab-vis) .aab-vis {
 	font-variant-numeric: tabular-nums;
 }
 .aab-vis-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.aab-vis-turn, .aab-vis-grout {
+.aab-vis-lay { display: inline-flex; gap: 0; }
+.aab-vis-lay .aab-vis-lay-opt { border-radius: 0; margin-left: -1px; }
+.aab-vis-lay .aab-vis-lay-opt:first-child {
+	border-radius: 3px 0 0 3px; margin-left: 0;
+}
+.aab-vis-lay .aab-vis-lay-opt:last-child { border-radius: 0 3px 3px 0; }
+.aab-vis-lay-opt:disabled {
+	opacity: .45; cursor: not-allowed; background: #F4F4F4;
+}
+.aab-vis-lay-opt, .aab-vis-grout {
 	appearance: none; border: 1px solid #D8D8D8; background: #fff;
 	color: #4A4A4A; font: inherit; font-size: .85rem;
 	padding: 8px 14px; border-radius: 3px; cursor: pointer;
 }
-.aab-vis-turn:hover, .aab-vis-grout:hover { border-color: #B5B5B5; }
-.aab-vis-turn.is-on, .aab-vis-grout.is-on {
+.aab-vis-lay-opt:hover:not(:disabled),
+.aab-vis-grout:hover { border-color: #B5B5B5; }
+.aab-vis-lay-opt.is-on, .aab-vis-grout.is-on {
 	background: var(--aab-red-wash); border-color: var(--aab-red);
 	color: var(--aab-red);
 }
