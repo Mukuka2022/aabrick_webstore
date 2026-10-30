@@ -69,6 +69,9 @@
 	var REFL_FALL = 0.012;  // how fast a reflection dies down the floor
 	var REFL_BLUR = 0.03;   // ...and how fast it softens with it
 	var REFL_MOST = 0.6;    // never more of the room than this
+	var BOUNCE = 0.25;      // most of the floor's light that reaches a wall
+	var BOUNCE_REACH = 0.12; // how far up the wall it gets, as a share of it
+	var BOUNCE_BAND = 0.12;  // how much of the floor is read, as a share of it
 	var HIGHLIGHT = 0.75;   // how hard a reflection is put back onto the tile
 
 	var scenes = [];
@@ -803,19 +806,27 @@
 			dst[p + 3] = 255;
 		}
 
-		// The reflection goes on last, over the finished picture, so what
-		// a floor shows back is the tiled wall rather than the photograph's
-		// own.
-		if (tile) { reflect(dst, w, h, glossOf(tile)); }
+		// Both of these go on last, over the finished picture, so what a
+		// floor throws and shows back is the tiled wall rather than the
+		// photograph's own. The bounce comes first and the reflection
+		// second, which is the order it happens in: the floor lights the
+		// wall, and then the floor shows the wall it has lit.
+		if (tile) {
+			bounce(dst, w, h);
+			reflect(dst, w, h, glossOf(tile));
+		}
 
 		ctx.putImageData(out, 0, 0);
 	}
 
+	function amountOf(name, fallback) {
+		var q = parseFloat(new URLSearchParams(location.search).get(name));
+		return isNaN(q) ? fallback : q;
+	}
+
 	function glossOf(t) {
-		var q = parseFloat(new URLSearchParams(location.search).get("gloss"));
-		if (!isNaN(q)) { return q; }
 		var g = t && t.gloss;
-		return typeof g === "number" ? g : 0.15;
+		return amountOf("gloss", typeof g === "number" ? g : 0.15);
 	}
 
 	// A polished floor shows the room standing on it, and the engine
@@ -828,10 +839,12 @@
 	//
 	// Nothing is read that has been written. Every row it samples sits
 	// above the contact line and every row it writes sits below one.
-	function reflect(dst, w, h, gloss) {
-		if (!(gloss > 0)) { return; }
+	// Column by column, the first row of floor. Whatever stands on the
+	// floor meets it there, so it is both the mirror line a reflection
+	// works off and the source a bounce throws from.
+	function contactRow(w, h) {
 		var contact = new Int32Array(w);
-		var x, y, i;
+		var x, i;
 		for (x = 0; x < w; x++) { contact[x] = -1; }
 		for (i = 0; i < w * h; i++) {
 			if (mask[i] && !plane[i]) {
@@ -839,6 +852,106 @@
 				if (contact[x] < 0) { contact[x] = (i / w) | 0; }
 			}
 		}
+		return contact;
+	}
+
+	// A pale floor does not only show the wall back, it lights it. The
+	// light leaves the floor in every direction rather than in one, so
+	// unlike a reflection it does not care whether the tile is polished --
+	// a matt white floor throws the most of all -- and it carries the
+	// floor's colour with it, which is why a warm floor warms the foot of
+	// a wall.
+	//
+	// It reads floor and writes wall, so it runs before the reflection,
+	// which reads wall and writes floor. Neither reads what the other has
+	// written to.
+	function bounce(dst, w, h) {
+		var most = amountOf("bounce", BOUNCE);
+		if (!(most > 0)) { return; }
+		var contact = contactRow(w, h);
+		var fr = new Float32Array(w);
+		var fg = new Float32Array(w);
+		var fb = new Float32Array(w);
+		var fl = new Float32Array(w);
+		// How tall the wall is in this column, in pixels. A pixel up the
+		// far wall is several times the metres of a pixel up the near one,
+		// so a reach counted in pixels lights the middle of the back wall
+		// and the skirting of nothing. Counted against the wall's own
+		// height it lands in the same place on every wall in the picture.
+		var run = new Float32Array(w);
+		var x, y, i, p, n, k, c;
+		for (x = 0; x < w; x++) {
+			fl[x] = -1;
+			run[x] = 0;
+			c = contact[x];
+			if (c < 0) { continue; }
+			var top = c;
+			for (y = c - 1; y >= 0; y--) {
+				i = y * w + x;
+				if (mask[i] && plane[i]) { top = y; }
+			}
+			run[x] = c - top;
+			if (run[x] < 4) { continue; }
+			// The floor is read over a share of its own depth too, so the
+			// colour comes from a real strip of floor whether that column
+			// of it is twenty pixels deep or four hundred.
+			var deep = 0;
+			for (y = c; y < h; y++) {
+				i = y * w + x;
+				if (mask[i] && !plane[i]) { deep = y - c; }
+			}
+			var band = (deep * BOUNCE_BAND) | 0;
+			if (band < 4) { band = 4; }
+			if (band > 60) { band = 60; }
+			var rr = 0, gg = 0, bb = 0;
+			n = 0;
+			for (k = 0; k <= band; k++) {
+				y = c + k;
+				if (y >= h) { break; }
+				i = y * w + x;
+				if (!mask[i] || plane[i]) { continue; }
+				p = i * 4;
+				rr += dst[p]; gg += dst[p + 1]; bb += dst[p + 2];
+				n++;
+			}
+			if (!n) { continue; }
+			fr[x] = rr / n; fg[x] = gg / n; fb[x] = bb / n;
+			fl[x] = fr[x] * 0.299 + fg[x] * 0.587 + fb[x] * 0.114;
+		}
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				i = y * w + x;
+				if (!mask[i] || !plane[i]) { continue; }
+				c = contact[x];
+				if (c < 0 || fl[x] < 0 || run[x] < 4) { continue; }
+				var d = c - y;
+				if (d <= 0) { continue; }
+				p = i * 4;
+				var wl = dst[p] * 0.299 + dst[p + 1] * 0.587
+					+ dst[p + 2] * 0.114;
+				// Light only ever moves from the brighter surface to the
+				// darker one. A dark floor under a pale wall throws
+				// nothing, which is the common case and must cost nothing.
+				var gap = (fl[x] - wl) / 255;
+				if (gap <= 0) { continue; }
+				var a = most * gap / (1 + (d / run[x]) / BOUNCE_REACH);
+				if (a < 0.004) { continue; }
+				// Light adds. The wall keeps its own colour and takes the
+				// floor's on top of it, rather than being mixed toward it.
+				var r2 = dst[p] + fr[x] * a;
+				var g2 = dst[p + 1] + fg[x] * a;
+				var b2 = dst[p + 2] + fb[x] * a;
+				dst[p] = r2 > 255 ? 255 : r2;
+				dst[p + 1] = g2 > 255 ? 255 : g2;
+				dst[p + 2] = b2 > 255 ? 255 : b2;
+			}
+		}
+	}
+
+	function reflect(dst, w, h, gloss) {
+		if (!(gloss > 0)) { return; }
+		var contact = contactRow(w, h);
+		var x, y, i;
 		var cap = gloss > REFL_MOST ? REFL_MOST : gloss;
 		for (y = 0; y < h; y++) {
 			for (x = 0; x < w; x++) {
