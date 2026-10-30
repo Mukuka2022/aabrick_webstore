@@ -66,6 +66,9 @@
 	var GROUT_MIX = 0.9;    // how much of the joint's own colour shows
 	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
 	var SOFT_PX = 8;         // below this, a tile is too small to draw honestly
+	var REFL_FALL = 0.012;  // how fast a reflection dies down the floor
+	var REFL_BLUR = 0.03;   // ...and how fast it softens with it
+	var REFL_MOST = 0.6;    // never more of the room than this
 	var HIGHLIGHT = 0.75;   // how hard a reflection is put back onto the tile
 
 	var scenes = [];
@@ -800,7 +803,73 @@
 			dst[p + 3] = 255;
 		}
 
+		// The reflection goes on last, over the finished picture, so what
+		// a floor shows back is the tiled wall rather than the photograph's
+		// own.
+		if (tile) { reflect(dst, w, h, glossOf(tile)); }
+
 		ctx.putImageData(out, 0, 0);
+	}
+
+	function glossOf(t) {
+		var q = parseFloat(new URLSearchParams(location.search).get("gloss"));
+		if (!isNaN(q)) { return q; }
+		var g = t && t.gloss;
+		return typeof g === "number" ? g : 0.15;
+	}
+
+	// A polished floor shows the room standing on it, and the engine
+	// already knows enough to draw that. It knows which pixels are floor,
+	// and column by column it knows where the floor stops -- which is
+	// exactly where whatever stands there meets it, because the outline is
+	// traced around the furniture rather than under it. That contact row is
+	// the mirror line: a floor pixel n rows below it shows the room n rows
+	// above it.
+	//
+	// Nothing is read that has been written. Every row it samples sits
+	// above the contact line and every row it writes sits below one.
+	function reflect(dst, w, h, gloss) {
+		if (!(gloss > 0)) { return; }
+		var contact = new Int32Array(w);
+		var x, y, i;
+		for (x = 0; x < w; x++) { contact[x] = -1; }
+		for (i = 0; i < w * h; i++) {
+			if (mask[i] && !plane[i]) {
+				x = i - ((i / w) | 0) * w;
+				if (contact[x] < 0) { contact[x] = (i / w) | 0; }
+			}
+		}
+		var cap = gloss > REFL_MOST ? REFL_MOST : gloss;
+		for (y = 0; y < h; y++) {
+			for (x = 0; x < w; x++) {
+				i = y * w + x;
+				if (!mask[i] || plane[i]) { continue; }
+				var c = contact[x];
+				if (c < 0) { continue; }
+				var d = y - c;
+				if (d <= 0) { continue; }
+				var sy = c - d;
+				if (sy < 0) { continue; }
+				// Further down the floor is further from whatever it
+				// shows, so the image weakens and softens with the walk.
+				var a = cap / (1 + d * REFL_FALL);
+				if (a < 0.008) { continue; }
+				var blur = (d * REFL_BLUR) | 0;
+				var rr = 0, gg = 0, bb = 0, n = 0, k, yy, q;
+				for (k = -blur; k <= blur; k++) {
+					yy = sy + k;
+					if (yy < 0 || yy >= h) { continue; }
+					q = (yy * w + x) * 4;
+					rr += dst[q]; gg += dst[q + 1]; bb += dst[q + 2];
+					n++;
+				}
+				if (!n) { continue; }
+				var p = i * 4;
+				dst[p] += (rr / n - dst[p]) * a;
+				dst[p + 1] += (gg / n - dst[p + 1]) * a;
+				dst[p + 2] += (bb / n - dst[p + 2]) * a;
+			}
+		}
 	}
 
 	// ---- the page -------------------------------------------------------

@@ -81,6 +81,26 @@ WALL = ("wall",)
 FLOOR_ANYWAY = {(300, 600), (300, 300)}
 
 
+# A polished porcelain floor is close to a mirror, a glaze shows a softer
+# version of the room, and a matt or a textured one shows nothing at all.
+# Keyed off the range's own name, so a new range named the same way is
+# right without anybody being asked.
+GLOSS = (
+    ("polished", 0.38),
+    ("textured", 0.00),
+    ("matt", 0.05),
+    ("glazed", 0.22),
+    ("gloss", 0.22),
+)
+
+
+def gloss_of(label):
+    low = (label or "").lower()
+    for word, value in GLOSS:
+        if word in low:
+            return value
+    return 0.15
+
 def tiles():
     """The tiles there is a clean texture for, ready for the page to draw."""
     rows = frappe.db.sql(
@@ -120,6 +140,11 @@ def tiles():
             "name": r.web_item_name or r.item_code,
             "route": "/" + (r.route or ""),
             "group": label + (" (B Grade)" if grade else ""),
+            # How much of the room a floor of this shows back. It belongs
+            # with the catalogue rather than with the drawing code, because
+            # Marcopolo has already decided it: a range is called Polished
+            # or Glazed or Matt, and that is the answer.
+            "gloss": gloss_of(label),
             # What the picker files it under, and the markers on the swatch.
             # A range the catalogue calls Wall but AABrick sells for floors is
             # headed as both: a heading reading Wall over tiles carrying no
