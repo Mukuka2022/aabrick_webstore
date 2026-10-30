@@ -48,7 +48,22 @@
 	var OVER = 1.3;          // the spare the enlarged view draws on
 	var SHARPEN = 0.8;       // how hard the photograph is sharpened back up
 	var GROUT_MM = 1;        // the line between tiles
-	var GROUT_DARK = 0.82;  // how dark a joint is, at full strength
+	// Grout is a material laid in its own shade, not a shadow cast by the
+	// tiles. It used to be drawn by multiplying the tile down, which can
+	// only ever make a joint darker than the tile it separates -- and
+	// 0.82 of a near-black tile is still near-black. On 86000, measured,
+	// the strongest joint came out six levels off a body of twenty-four,
+	// so every dark tile in the range drew as one continuous sheet with
+	// nothing to say it was tiled at all.
+	//
+	// So the joint takes a colour of its own, stepped away from the tile's
+	// own average: pale against a dark tile, darker against a pale one,
+	// which is both what a fitter picks and what the reference photographs
+	// show. Thirty-eight levels is what those photographs measure, and it
+	// reads the same at both ends because the eye judges a light line on a
+	// dark ground more easily than the reverse.
+	var GROUT_STEP = 38;    // how far the joint sits from the tile, in levels
+	var GROUT_MIX = 0.9;    // how much of the joint's own colour shows
 	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
 	var SOFT_PX = 8;         // below this, a tile is too small to draw honestly
 	var HIGHLIGHT = 0.75;   // how hard a reflection is put back onto the tile
@@ -595,6 +610,19 @@
 		});
 	}
 
+	// The joint's colour for one surface, neutral because grout is, and
+	// stepped away from the tile so it is always the one or the other of
+	// lighter and darker rather than always darker.
+	function jointColour(tex) {
+		if (!tex) { return [128, 128, 128]; }
+		var a = tex.avg;
+		var l = 0.299 * a[0] + 0.587 * a[1] + 0.114 * a[2];
+		l = l < 128 ? l + GROUT_STEP : l - GROUT_STEP;
+		if (l < 18) { l = 18; }
+		if (l > 240) { l = 240; }
+		return [l, l, l];
+	}
+
 	function paint(ftex, wtex) {
 		var w = canvas.width, h = canvas.height;
 		var src = base.data, dst = out.data;
@@ -607,6 +635,7 @@
 		// One entry per surface, floor first, so the loop only has to pick.
 		// A surface with no texture is one the customer left bare.
 		var TEX = [ftex, wtex];
+		var GRT = [jointColour(ftex), jointColour(wtex)];
 		// Horizontal and vertical are a decision about the tile rather
 		// than about the floor, so both surfaces take them: on a wall, u
 		// runs along the wall and v up it, and swapping the pair lays a
@@ -714,8 +743,11 @@
 					var k = hu ? ku : kv;
 					if (hu && hv && kv > k) { k = kv; }
 					if (k < GROUT_FAINT) { k = GROUT_FAINT; }
-					var d2 = 1 - (1 - GROUT_DARK) * k;
-					r *= d2; g *= d2; b *= d2;
+					var mix = GROUT_MIX * k;
+					var jt = GRT[pl];
+					r = r + (jt[0] - r) * mix;
+					g = g + (jt[1] - g) * mix;
+					b = b + (jt[2] - b) * mix;
 				}
 			}
 
