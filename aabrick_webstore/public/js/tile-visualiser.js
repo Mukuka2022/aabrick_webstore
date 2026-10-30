@@ -99,6 +99,7 @@
 	var mask = null;
 	var cov = null;         // 1 where there is a surface to tile
 	var plane = null;        // 0 floor, 1 wall
+	var nrim = null;         // 1 on the lip of a niche
 	var rim = null;          // 1 at the blend where a span meets something
 	var shade = null;        // the floor brightness, as a multiplier
 	// On the floor, metres across and into the room. On a wall, metres along
@@ -118,6 +119,7 @@
 	var texCache = {};
 	var SHOW_MASK = /[?&]mask=1/.test(location.search);
 	var SHOW_RIM = /[?&]rim=1/.test(location.search);
+	var SHOW_LIP = /[?&]lip=1/.test(location.search);
 	var groups = [];
 
 	function $(sel, root) { return (root || document).querySelector(sel); }
@@ -156,6 +158,7 @@
 		var n = w * h;
 		mask = new Uint8Array(n);
 		plane = new Uint8Array(n);
+		nrim = new Uint8Array(n);
 		rim = new Uint8Array(n);
 		shade = new Float32Array(n);
 		U = new Float32Array(n);
@@ -359,6 +362,116 @@
 							wsum += WL;
 							wcount++;
 						}
+					}
+				}
+			});
+
+			// ---- the niches ---------------------------------------------
+			//
+			// A niche is a box sunk into the wall, and no tiler runs a
+			// course straight through one. The recess is set out on its
+			// own, so its courses come out even about its middle and a
+			// joint lands on its lip. That set-out is the whole of what
+			// makes a niche read as tiled rather than as a dark rectangle
+			// with a wall drawn over it, and it was the one thing missing:
+			// the grid ran through the ensuite niche as if the wall were
+			// flat there.
+			//
+			// The recess own perspective is the smaller half of it, and at
+			// these distances it barely shows. The ensuite niche is five
+			// and a half metres from the camera, so ninety millimetres of
+			// recess makes the tiles inside 1.7% smaller, the left reveal
+			// five pixels wide, and the soffit and the shelf less than one
+			// pixel each. The scale is applied because it is right, not
+			// because anybody will pick it out, and the reveals are left
+			// to the photograph own shading, which already draws them
+			// better than a five pixel strip of tile would.
+			//
+			// An opening is given as its four corners rather than as a
+			// box, because only the ensuite wall is square to the camera.
+			// The other two run away to the left and their openings are
+			// parallelograms: the bathroom one is 83 pixels tall at the
+			// far end and 113 at the near one.
+			(s.niches || []).forEach(function (quad) {
+				var qx = [], qy = [], c2;
+				for (c2 = 0; c2 < 4; c2++) {
+					qx.push(quad[c2][0] * k);
+					qy.push(quad[c2][1] * k);
+				}
+				// ?niche=0 lays the wall straight through, which is what
+				// it did before and the only way to see what changed.
+				var t = num("niche", s.nicheDepth || 0.09);
+				if (!(t > 0)) { return; }
+				var xa = Math.floor(Math.min.apply(null, qx));
+				var xb = Math.ceil(Math.max.apply(null, qx));
+				var ya = Math.floor(Math.min.apply(null, qy));
+				var yb = Math.ceil(Math.max.apply(null, qy));
+				if (xa < 0) { xa = 0; }
+				if (ya < 0) { ya = 0; }
+				if (xb > w - 1) { xb = w - 1; }
+				if (yb > h - 1) { yb = h - 1; }
+				// How far inside the opening a point is, in pixels, as the
+				// nearest of its four edges sees it. The corners are given
+				// round the opening, so one sign holds for all four.
+				// Which way round the corners were given. Folded into
+				// the test rather than into its answer, because negating
+				// the nearest edge of four turns every point outside the
+				// quad into a point inside it.
+				var area = 0;
+				for (c2 = 0; c2 < 4; c2++) {
+					var g2 = (c2 + 1) & 3;
+					area += qx[c2] * qy[g2] - qx[g2] * qy[c2];
+				}
+				var flip = area < 0 ? -1 : 1;
+				var inside = function (px, py) {
+					var e, worst = 1e9;
+					for (e = 0; e < 4; e++) {
+						var f = (e + 1) & 3;
+						var ex = qx[f] - qx[e], ey = qy[f] - qy[e];
+						var cr = (ex * (py - qy[e])
+							- ey * (px - qx[e])) * flip;
+						var len = Math.sqrt(ex * ex + ey * ey) || 1;
+						var dd = cr / len;
+						if (dd < worst) { worst = dd; }
+					}
+					return worst;
+				};
+				var mx = (qx[0] + qx[1] + qx[2] + qx[3]) / 4;
+				var my = (qy[0] + qy[1] + qy[2] + qy[3]) / 4;
+				// The middle of the ensuite niche is a potted plant, which
+				// is traced out of the wall and so has no coordinates of
+				// its own. Reading the origin off that one pixel left the
+				// whole pass doing nothing. It does not need a pixel: U is
+				// the walk along the skirting, which depends only on the
+				// column, and V is the height above it, so both follow
+				// from the same formulas the wall was built with and are
+				// exact wherever the middle happens to land.
+				var cxi = Math.round(mx);
+				if (cxi < 0) { cxi = 0; }
+				if (cxi > w - 1) { cxi = w - 1; }
+				var ytc = yTop[cxi];
+				if (ytc < 0 || ytc - yh <= 2) { return; }
+				var uc = along[cxi];
+				var vc = (ytc - my) * camH / (ytc - yh);
+				var xx, yy, j;
+				for (yy = ya; yy <= yb; yy++) {
+					for (xx = xa; xx <= xb; xx++) {
+						var inset = inside(xx, yy);
+						if (inset < 0) { continue; }
+						j = yy * w + xx;
+						if (!mask[j] || !plane[j]) { continue; }
+						var yt2 = yTop[xx];
+						if (yt2 < 0 || yt2 - yh <= 2) { continue; }
+						var depth2 = focal * camH / (yt2 - yh);
+						var sc = (depth2 + t) / depth2;
+						// Measured from the niche own middle, so the
+						// courses come out even on both sides of it and
+						// the grid breaks at its lip.
+						U[j] = (U[j] - uc) * sc;
+						V[j] = (V[j] - vc) * sc;
+						PX[j] /= sc;
+						ACROSS[j] /= sc;
+						if (inset < 1.2) { nrim[j] = 1; }
 					}
 				}
 			});
@@ -742,12 +855,17 @@
 				var bu = gu > 1 ? gu : 1, bv = gv > 1 ? gv : 1;
 				var hu = fu < (bu / pu) / S;
 				var hv = fv < (bv / pv) / Sv;
-				if (hu || hv) {
+				if (hu || hv || nrim[i]) {
 					var ku = gu / bu, kv = gv / bv;
 					// At a corner both joints are under the pixel, and the
 					// stronger of the two is the one to draw.
 					var k = hu ? ku : kv;
 					if (hu && hv && kv > k) { k = kv; }
+					// The lip of a recess is a tile edge like any other
+					// and is grouted like one, so it is drawn at full
+					// strength rather than at whatever the courses
+					// happened to leave sitting there.
+					if (nrim[i]) { k = 1; }
 					if (k < GROUT_FAINT) { k = GROUT_FAINT; }
 					var mix = GROUT_MIX * k;
 					var jt = GRT[pl];
@@ -771,6 +889,13 @@
 				dst[qr + 1] = rim[i] ? 230 : 200;
 				dst[qr + 2] = rim[i] ? 40 : 200;
 				dst[qr + 3] = 255;
+				continue;
+			}
+			if (SHOW_LIP && nrim[i]) {
+				// ?lip=1 paints the lip of every niche green.
+				var ql = i * 4;
+				dst[ql] = 40; dst[ql + 1] = 230; dst[ql + 2] = 40;
+				dst[ql + 3] = 255;
 				continue;
 			}
 			if (SHOW_MASK) {

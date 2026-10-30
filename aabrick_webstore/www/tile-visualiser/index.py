@@ -50,6 +50,11 @@ SCENES = [
         {"id": "ensuite", "label": "Ensuite",
          "image": "/assets/aabrick_webstore/images/scene-ensuite.jpg",
          "horizon": 253, "cx": 724, "focal": 931, "height": 1.45,
+         # The shower niche, traced corner by corner by fitting a straight
+         # line to each of its four edges and crossing them. This wall is
+         # square to the camera, so the opening comes out a true rectangle:
+         # both horizontal edges fitted dead level over sixty-odd readings.
+         "niches": [[[428, 218], [576, 218], [576, 284], [428, 284]]],
          "floor": [
             [-2, 1087], [1449, 1087], [1449, 1053], [1446, 1053],
             [1434, 1042], [1370, 987], [1284, 914], [1134, 788],
@@ -67,6 +72,10 @@ SCENES = [
         {"id": "bathroom", "label": "Bathroom",
          "image": "/assets/aabrick_webstore/images/scene-bathroom.jpg",
          "horizon": 247, "cx": 723, "focal": 930, "height": 1.45,
+         # This one is on a wall running away to the left, so its opening is
+         # a parallelogram and not a box: 83 pixels tall at the far end
+         # against 113 at the near one.
+         "niches": [[[1144, 238], [1221, 222], [1221, 335], [1144, 321]]],
          "floor": [
             [-2, 1088], [1448, 1088], [1448, 832], [1446, 832],
             [1434, 827], [1420, 814], [1412, 800], [1410, 794],
@@ -89,6 +98,8 @@ SCENES = [
         {"id": "bathroom-family", "label": "Family bathroom",
          "image": "/assets/aabrick_webstore/images/scene-bathroom-family.jpg",
          "horizon": 347, "cx": 723, "focal": 930, "height": 1.45,
+         # Likewise, on the shower back wall running away to the left.
+         "niches": [[[1064, 248], [1171, 223], [1173, 361], [1064, 366]]],
          "floor": [
             [-2, 1088], [1448, 1088], [1448, 901], [1446, 901],
             [1440, 902], [1438, 900], [1414, 894], [1402, 888],
