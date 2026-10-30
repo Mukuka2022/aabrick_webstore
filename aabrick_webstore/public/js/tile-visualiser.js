@@ -855,7 +855,21 @@
 			fu = fu - Math.floor(fu);
 			fv = fv - Math.floor(fv);
 
-			var ui = (fu * side) | 0, vi = (fv * side) | 0;
+			// Vertical means the tile itself is turned ninety degrees, so
+			// its face turns with it. Swapping only the width and the
+			// height stretched the grain instead of turning it: a 300x600
+			// laid the long way along had its pattern pulled to twice the
+			// width and squashed to half the height, which is the one
+			// thing the texture is cut to the tile's proportions to avoid.
+			// Turning it properly is also what makes the option worth
+			// having on a square tile, where the shape does not change but
+			// the veining does.
+			var au = fu, av = fv;
+			if (SWAP[pl]) { au = fv; av = 1 - fu; }
+
+			var ui = (au * side) | 0, vi = (av * side) | 0;
+			if (ui >= side) { ui = side - 1; }
+			if (vi >= side) { vi = side - 1; }
 			var tp = (vi * side + ui) * 4;
 			var r = td[tp], g = td[tp + 1], b = td[tp + 2];
 
@@ -869,9 +883,17 @@
 				if (k2 > 8) { k2 = 8; }
 				var rr = 0, gg = 0, bb = 0;
 				for (var t2 = 0; t2 < k2; t2++) {
-					var uu = ui + t2;
-					if (uu >= side) { uu -= side; }
-					var p3 = (vi * side + uu) * 4;
+					// Along the picture, which on a turned tile is the
+					// texture's other axis.
+					var uu = ui, vv = vi;
+					if (SWAP[pl]) {
+						vv = vi + t2;
+						if (vv >= side) { vv -= side; }
+					} else {
+						uu = ui + t2;
+						if (uu >= side) { uu -= side; }
+					}
+					var p3 = (vv * side + uu) * 4;
 					rr += td[p3];
 					gg += td[p3 + 1];
 					bb += td[p3 + 2];
@@ -1233,33 +1255,35 @@
 		showPick();
 	}
 
+	// Pressing the lay that is already on puts the surface back to
+	// horizontal. A customer trying the diagonal has no other way back
+	// without knowing which of the three was the one they started on, and
+	// the one they started on is always this one.
 	function layTo(name) {
-		lay[target] = name;
+		lay[target] = lay[target] === name ? "h" : name;
 		layOptions();
 		draw();
 	}
 
-	// A square tile laid the other way round is the same tile, so the
-	// option is switched off rather than left to do nothing when somebody
-	// presses it. Same handling as the walls of a room nobody has traced.
-	// Vertical is worth offering when anything on screen would move for
-	// it, which means either tile, not just the floor's: a square floor
-	// under an oblong wall tile still has something to turn.
+	// Vertical used to be switched off on a square tile, on the grounds
+	// that a square turned round is the same square. That is true of its
+	// shape and false of its face: turning a tile turns its veining, and
+	// on a marble or a stone that is a different floor, which is exactly
+	// why a tiler turns one. So it is offered on everything, and turning
+	// the tile now turns the picture on it rather than only its width and
+	// height.
 	// The control shows the surface being picked for, so switching
 	// between Floor and Walls brings that surface's own lay up with it.
 	function layOptions() {
 		var onWall = target === "wall";
 		var t = onWall ? wallTile : tile;
-		var square = !t || t.w === t.h;
 
 		var vb = $('.aab-vis-lay-opt[data-lay="v"]');
 		if (vb) {
-			vb.disabled = square;
+			vb.disabled = !t;
 			vb.title = !t
 				? "Nothing is laid on this surface yet"
-				: (square
-					? "This tile is square, so there is nothing to turn"
-					: "Lay the tile the other way round");
+				: "Turn the tile ninety degrees";
 		}
 		// The diagonal is the floor's. A wall tile turned forty five
 		// degrees is a different decision and not one that was asked for,
@@ -1271,7 +1295,6 @@
 				? "The diagonal is for a floor"
 				: "Lay the tile on the diagonal";
 		}
-		if (square && lay[target] === "v") { lay[target] = "h"; }
 		if (onWall && lay.wall === "d") { lay.wall = "h"; }
 
 		Array.prototype.forEach.call(
@@ -1364,6 +1387,16 @@
 			im.loading = "lazy";
 			im.src = t.thumb || t.image;
 			im.alt = t.name;
+			// At its own shape. Every swatch drawn as a square said that
+			// every tile was square, and a third of the range is not: a
+			// 600x1200 and a 600x600 are a very different thing to lay and
+			// looked identical in the picker. The thumbnail was already
+			// cut to the tile's proportions, so this only stops the panel
+			// squashing it. Each range is one size, so a grid still comes
+			// out even.
+			if (t.w && t.h) {
+				im.style.aspectRatio = t.w + " / " + t.h;
+			}
 			b.appendChild(im);
 			var cap = el("span", null, t.code);
 			if (t.grade) {

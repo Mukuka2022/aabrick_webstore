@@ -2830,10 +2830,15 @@ main.container:has(.aab-vis) .aab-vis {
 	padding: 0; cursor: pointer; font: inherit; display: block;
 	border-radius: 3px; overflow: hidden; line-height: 0;
 }
+/* The shape is set per swatch, from the tile's own width and height. This
+ * is only the fallback for a tile that does not say what size it is. */
 .aab-vis-swatch img {
 	display: block; width: 100%; aspect-ratio: 1; object-fit: cover;
 	background: #E8E8E8;
 }
+/* A grid of 600x1200s is twice as tall as a grid of 600x600s, so the swatches
+ * line up along the top of the row rather than being stretched to match. */
+.aab-vis-swatches { align-items: start; }
 .aab-vis-swatch span {
 	display: block; line-height: 1.2; padding: 4px 2px 0;
 	font-size: .68rem; color: #6A6A6A; letter-spacing: .02em;
