@@ -66,6 +66,8 @@
 	var GROUT_MIX = 0.9;    // how much of the joint's own colour shows
 	var GROUT_FAINT = 0.5;  // ...and at its faintest, when sub pixel
 	var SOFT_PX = 8;         // below this, a tile is too small to draw honestly
+	var GAP_MAX = 44;        // the widest hand-trace shortfall to close, in
+	                         // the photograph's own pixels
 	var REFL_FALL = 0.012;  // how fast a reflection dies down the floor
 	var REFL_BLUR = 0.03;   // ...and how fast it softens with it
 	var REFL_MOST = 0.6;    // never more of the room than this
@@ -365,6 +367,71 @@
 					}
 				}
 			});
+
+			// ---- down to the floor --------------------------------------
+			//
+			// A wall is traced as spans by hand, and a hand stops a few
+			// pixels short of the floor more often than it does not. Where
+			// it does, a strip of the original photograph is left showing
+			// between the tiled wall and the tiled floor: a coral hairline
+			// along the foot of a grey wall, which is the first thing the
+			// eye finds and the last thing anybody would choose to draw.
+			// Across the five walled rooms 253 columns of the 900 leaked
+			// that way, which is why the foot of a wall looked tiled in
+			// one place and not in the next.
+			//
+			// There is nothing to guess about where it should stop. The
+			// floor trace already gives the skirting line, and a wall
+			// stops at the skirting by definition, so any bare pixel
+			// between the lowest wall drawn and that line belongs to the
+			// wall.
+			//
+			// The one thing to be careful of is a bath or a vanity
+			// standing in front of the wall, where the spans stop high up
+			// for a good reason and the bare pixels below are the thing
+			// itself. Those are not close calls: measured over the five
+			// rooms the deepest shortfall was 18 pixels and the shallowest
+			// object 42, so the cut sits between them with half as much
+			// again of margin either way. It is counted in the
+			// photograph's own pixels rather than the drawn ones, because
+			// the same room is drawn anywhere from 900 to 2200 wide.
+			var gapMax = GAP_MAX * k;
+			var gx, gy, gj;
+			for (gx = 0; gx < w; gx++) {
+				var ytg = yTop[gx];
+				if (ytg < 0 || ytg - yh <= 2) { continue; }
+				// the lowest wall already drawn in this column
+				var bot = -1;
+				for (gy = ytg - 1; gy >= 0; gy--) {
+					gj = gy * w + gx;
+					if (mask[gj] && plane[gj]) { bot = gy; break; }
+				}
+				if (bot < 0) { continue; }
+				var short = ytg - 1 - bot;
+				if (short < 1 || short > gapMax) { continue; }
+				var depthg = focal * camH / (ytg - yh);
+				var ppmg = focal / depthg;
+				var walkg = gx > 0 ? along[gx] - along[gx - 1] : 0;
+				if (walkg < 0) { walkg = -walkg; }
+				var apmg = walkg > 1e-6 ? 1 / walkg : ppmg;
+				if (apmg > ppmg) { apmg = ppmg; }
+				for (gy = bot + 1; gy < ytg; gy++) {
+					gj = gy * w + gx;
+					if (mask[gj]) { continue; }
+					mask[gj] = 1;
+					plane[gj] = 1;
+					U[gj] = along[gx];
+					V[gj] = (ytg - gy) / ppmg;
+					PX[gj] = ppmg;
+					ACROSS[gj] = apmg;
+					var qg = gj * 4;
+					var WLg = (0.299 * d[qg] + 0.587 * d[qg + 1]
+						+ 0.114 * d[qg + 2]) / 255;
+					lum[gj] = WLg;
+					wsum += WLg;
+					wcount++;
+				}
+			}
 
 			// ---- the niches ---------------------------------------------
 			//
