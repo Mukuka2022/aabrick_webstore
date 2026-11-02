@@ -6,14 +6,14 @@
 {{ super() }}
 <meta name="description" content="{{ aab_description }}">
 <link rel="canonical" href="{{ aab_canonical }}">
-<meta property="og:title" content="Tile Visualiser | AABrick Zambia">
+<meta property="og:title" content="Tile Visualizer | AABrick Zambia">
 <meta property="og:description" content="{{ aab_description }}">
 {% endblock %}
 
 {% block breadcrumbs %}{% endblock %}
 
 {% block page_content %}
-<div class="aab-vis" id="aab-visualiser">
+<div class="aab-vis" id="aab-visualizer">
 
 
   {#
@@ -23,7 +23,7 @@
     stays for the sake of anything reading the page rather than looking
     at it.
   #}
-  <h1 class="aab-vis-title">Tile Visualiser</h1>
+  <h1 class="aab-vis-title">Tile Visualizer</h1>
 
   <section class="aab-section aab-vis-band">
     <div class="aab-vis-wide">
@@ -167,5 +167,5 @@
 <script type="application/json" id="aab-vis-scenes">{{ aab_scenes_json }}</script>
 <script type="application/json" id="aab-vis-tiles">{{ aab_tiles_json }}</script>
 <script type="application/json" id="aab-vis-groups">{{ aab_groups_json }}</script>
-<script src="/assets/aabrick_webstore/js/tile-visualiser.js?v={{ aab_version }}"></script>
+<script src="/assets/aabrick_webstore/js/tile-visualizer.js?v={{ aab_version }}"></script>
 {% endblock %}

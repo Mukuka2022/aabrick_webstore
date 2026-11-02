@@ -28,8 +28,8 @@ COPY = [
      "Tiles, tile fix, PVC ceiling boards and fertilizer. Trusted by "
      "contractors, homeowners and farmers since 2005.", None),
     ("hero_button_1", "Red button", "Shop online", None),
-    ("hero_button_2", "Outline button", "Tile visualiser",
-     "Goes to the tile visualiser. The branches are still one tap away "
+    ("hero_button_2", "Outline button", "Tile visualizer",
+     "Goes to the tile visualizer. The branches are still one tap away "
      "from the menu and from further down this page."),
 
     ("sec_cat", "Shop by category", None, None),
@@ -50,14 +50,14 @@ COPY = [
      "Our tile and PVC ceiling calculators tell you how many boxes or "
      "boards to buy, before you spend anything.", None),
 
-    ("sec_vis", "The tile visualiser", None, None),
+    ("sec_vis", "The tile visualizer", None, None),
     ("vis_eyebrow", "Small line", "See it before you buy it", None),
     ("vis_heading", "Heading", "Try the tile in the room first", None),
     ("vis_text", "Paragraph",
      "Pick any tile in the range and we lay it on the floor and up the "
      "walls of a real room, keeping the light and the shadows of the "
      "photograph. Eight rooms, no sign-up, nothing to install.", None),
-    ("vis_button", "Button", "Open the tile visualiser", None),
+    ("vis_button", "Button", "Open the tile visualizer", None),
     ("vis_caption", "Caption under the picture",
      "The same living room, two tiles from the shelf.", None),
 

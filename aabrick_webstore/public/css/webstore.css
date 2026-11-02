@@ -2085,7 +2085,7 @@ body:has(.aab-login) .aab-foot-main { display: none; }
 /* The bar runs out of room before the words do. Below 1180 the labels go
  * and the icons carry it, which is what they are for, and the words sit a
  * little closer together. Branches and Contact share one item now, which is
- * what bought the room for the visualiser. */
+ * what bought the room for the visualizer. */
 @media (min-width: 992px) and (max-width: 1179.98px) {
 	.aab-nav-account span,
 	.aab-nav-cart span { display: none; }
@@ -2520,7 +2520,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 }
 
 /* ------------------------------------------------------------------
- * The tile visualiser
+ * The tile visualizer
  *
  * The room is the page and everything round it is deliberately quiet, so
  * the one thing with colour in it is the floor being looked at. The
@@ -2531,7 +2531,7 @@ main.container:has(.cart-empty) .page-header-wrapper { display: block; }
 .aab-vis { background: var(--aab-wash); }
 
 /* Frappe wraps every page in main.container, which is where the 1280px
- * comes from. The visualiser is no use inside it, so the container is
+ * comes from. The visualizer is no use inside it, so the container is
  * unwrapped for this page the same way the home page and the product page
  * unwrap it, and the bands inside decide their own width. */
 main.container:has(.aab-vis) {
@@ -2936,7 +2936,7 @@ main.container:has(.aab-vis) .aab-vis {
 	.aab-vis-swatches { grid-template-columns: repeat(auto-fill, minmax(68px, 1fr)); }
 }
 
-/* ---- the visualiser, advertised on the homepage ----------------------
+/* ---- the visualizer, advertised on the homepage ----------------------
  * The picture carries this section, so it takes the larger half of the
  * width and the copy sits beside it. Stacked on a phone, picture first:
  * the thing being advertised is what the tool makes, not the sentence
@@ -3047,7 +3047,7 @@ main.container:has(.aab-vis) .aab-vis {
 .aab-vis-zoom-close:hover { background: rgba(255, 255, 255, .22); }
 .aab-vis-locked { overflow: hidden; }
 
-/* ---- the visualiser's surface switch ---------------------------------
+/* ---- the visualizer's surface switch ---------------------------------
  * Floor or walls, for the one tile grid underneath. A segmented pair
  * rather than two loose buttons, because the two are one choice.
  */

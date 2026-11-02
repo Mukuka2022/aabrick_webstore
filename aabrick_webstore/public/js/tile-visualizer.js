@@ -1743,7 +1743,7 @@
 	}
 
 	function start() {
-		var host = $("#aab-visualiser");
+		var host = $("#aab-visualizer");
 		if (!host) { return; }
 		try {
 			scenes = JSON.parse($("#aab-vis-scenes").textContent);

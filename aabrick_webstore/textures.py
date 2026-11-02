@@ -546,13 +546,13 @@ def on_website_item(doc, method=None):
 
         if status in ("cropped", "copied"):
             frappe.msgprint(
-                "Tile texture updated. It is in the visualiser now.",
+                "Tile texture updated. It is in the visualizer now.",
                 indicator="green", alert=True)
         else:
             # Leave nothing behind that the new picture has outdated.
             forget(doc.get("item_code"))
             frappe.msgprint(
-                "This picture cannot be used in the tile visualiser: %s. "
+                "This picture cannot be used in the tile visualizer: %s. "
                 "The tile is still on the shop pages." % note,
                 indicator="orange")
     except Exception:

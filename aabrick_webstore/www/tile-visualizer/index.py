@@ -351,13 +351,13 @@ SCENES = [
 
 
 def get_context(context):
-    context.title = "Tile Visualiser | AABrick Zambia"
+    context.title = "Tile Visualizer | AABrick Zambia"
     context.aab_description = (
         "See an AABrick tile on a real floor before you buy it. Pick a room, "
         "pick a tile, and it is laid at its true size with the light of the "
         "room on it."
     )
-    context.aab_canonical = frappe.utils.get_url("/tile-visualiser")
+    context.aab_canonical = frappe.utils.get_url("/tile-visualizer")
 
     tiles = visualiser.tiles()
     context.aab_tiles = tiles

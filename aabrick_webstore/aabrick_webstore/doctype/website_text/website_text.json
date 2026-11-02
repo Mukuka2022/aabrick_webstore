@@ -241,7 +241,7 @@
   {
    "fieldname": "sec_vis",
    "fieldtype": "Section Break",
-   "label": "The tile visualiser"
+   "label": "The tile visualizer"
   },
   {
    "fieldname": "vis_eyebrow",

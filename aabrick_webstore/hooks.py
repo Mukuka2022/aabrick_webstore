@@ -268,7 +268,7 @@ override_doctype_class = {
 	"Item Group": "aabrick_webstore.overrides.item_group.AABrickItemGroup",
 }
 
-ASSET_VERSION = "237"
+ASSET_VERSION = "239"
 web_include_js = [
 	"/assets/aabrick_webstore/js/webstore.js?v=" + ASSET_VERSION,
 	"/assets/aabrick_webstore/js/nav.js?v=" + ASSET_VERSION,
@@ -335,6 +335,9 @@ web_include_css = "/assets/aabrick_webstore/css/webstore.css?v=" + ASSET_VERSION
 # /tile-fix and /fertilizer are deliberately absent: those routes belong to
 # Item Groups with real category pages, and a redirect here would shadow them.
 website_redirects = [
+	# The page was spelled the British way until AABrick settled on
+	# the American one. Anything already shared or indexed still lands.
+	{"source": "/tile-visualiser", "target": "/tile-visualizer"},
 	{"source": "/home", "target": "/"},
 	{"source": "/home2", "target": "/"},
 	{"source": "/pages/myhome", "target": "/"},
@@ -348,7 +351,6 @@ website_redirects = [
 	{"source": "/Shiny-tiles", "target": "/all-products"},
 	{"source": "/building-materials", "target": "/all-products"},
 	{"source": "/live-stock-availability-list", "target": "/all-products"},
-	{"source": "/tile-visualizer", "target": "/tile-calculator"},
 	{"source": "/gifts", "target": "/"},
 	{"source": "/agritech-voucher", "target": "/"},
 	{"source": "/agritech-voucher1", "target": "/"},
