@@ -28,7 +28,9 @@ COPY = [
      "Tiles, tile fix, PVC ceiling boards and fertilizer. Trusted by "
      "contractors, homeowners and farmers since 2005.", None),
     ("hero_button_1", "Red button", "Shop online", None),
-    ("hero_button_2", "Outline button", "Find a branch", None),
+    ("hero_button_2", "Outline button", "Tile visualiser",
+     "Goes to the tile visualiser. The branches are still one tap away "
+     "from the menu and from further down this page."),
 
     ("sec_cat", "Shop by category", None, None),
     ("category_eyebrow", "Small line", "Shop by category", None),
