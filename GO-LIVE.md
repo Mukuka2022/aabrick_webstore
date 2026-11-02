@@ -279,6 +279,62 @@ quantity in every warehouse to anyone who asks.
 
 ---
 
+## 2d. Wording already in the desk does not change with a pull
+
+The sentences on the pages live in two places: as the defaults in
+`site_copy.py`, and as what AABrick has today in the **Website Text**
+single. The page prefers the stored value, and `setup_text._seed` fills
+only fields that are empty. That is on purpose, and it is the right
+behaviour: it means a deploy can never overwrite a headline somebody at
+AABrick has edited.
+
+The cost of it is the other direction. When we change a default here, a
+site that already has a value stored keeps the old one, and `setup_text`
+will not touch it. Nothing warns you. The page simply goes on saying what
+it said before, which is worse than it sounds when the wording and the
+link disagree: a button reading *Find a branch* that goes to the tile
+visualizer is a worse page than either of the two it is caught between.
+
+So any pull that changes wording in `site_copy.py` needs the same change
+made by hand at **`/app/website-text`**, or the field cleared, which falls
+back to the new default.
+
+Outstanding as of this round, both on the home page:
+
+| Field, in the desk | Change it to |
+|---|---|
+| The first screen → Outline button | `Tile visualizer` |
+| The tile visualizer → Button | `Open the tile visualizer` |
+
+To see whether a site is carrying any others, compare the stored values
+with the defaults:
+
+```bash
+bench --site SITE console
+```
+```python
+from aabrick_webstore.site_copy import DEFAULTS
+doc = frappe.get_single("Website Text")
+for k, default in DEFAULTS.items():
+    stored = (doc.get(k) or "").strip()
+    if stored and stored != default:
+        print("%-18s stored: %s\n%-18s code  : %s\n" % (k, stored, "", default))
+```
+
+Anything it prints is either an edit AABrick made and wants, or a default
+we have moved since. The two are told apart by reading them, not by a
+rule, which is why this is a list and not a script that fixes it.
+
+### While you are there: the visualizer moved
+
+The page is at `/tile-visualizer` now, spelled the American way. The old
+`/tile-visualiser` 301s to it from `website_redirects`, so anything shared
+or indexed still lands, and the sitemap picks the route up on its own.
+Nothing to do on the server beyond the pull and the cache clear that
+`DEPLOY.md` already runs.
+
+---
+
 ## 3. Run after a deploy
 
 In order. All are safe to run twice.

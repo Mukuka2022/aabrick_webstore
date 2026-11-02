@@ -388,10 +388,10 @@ main.container:has(.aab-branch) .aab-branch {
 /* The reasons: more air than the other bands, and a centred heading. The
  * eyebrow drops its red bar here, which looked stranded once the rules over
  * the points had gone. */
+/* Left aligned and keeping its red bar, like every other band on the page.
+ * Centred, it was the only one that was, and a centred heading over six
+ * centred pieces of body text gave the band nothing to line up on. */
 .aab-section--reasons { padding: 50px 0 100px; }
-.aab-section--reasons .aab-inner { text-align: center; }
-.aab-section--reasons .aab-eyebrow { justify-content: center; }
-.aab-section--reasons .aab-eyebrow::before { display: none; }
 .aab-section-head {
 	display: flex; align-items: flex-end; justify-content: space-between;
 	gap: 16px; flex-wrap: wrap; margin-bottom: 22px;
@@ -635,24 +635,51 @@ main.container:has(.aab-branch) .aab-branch {
 .aab-panel-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* Why AABrick */
-/* Explicit column counts rather than auto-fit: there are six reasons, and
+/* Six reasons on the page ground, centred, with nothing but type in them:
+ * the one band on the homepage with no shape, no colour and nothing to hold
+ * the eye, sitting between a row of product cards and the charcoal branch
+ * band. It is one white panel now, divided into cells by hairlines.
+ *
+ * The hairlines are the grid's own gap showing through, which is why no cell
+ * carries a border: borders on a grid double up along every shared edge and
+ * then have to be unpicked at the ends of each row, and the row ends move
+ * with the breakpoint.
+ *
+ * Explicit column counts rather than auto-fit: there are six reasons, and
  * auto-fit lands on four or five at container width, which leaves one or two
  * stranded on a second row. */
 .aab-why {
 	display: grid;
 	grid-template-columns: 1fr;
-	gap: 26px 30px;
-	padding: 30px 0 0;
+	gap: 1px;
+	background: var(--aab-line);
+	border-top: 3px solid var(--aab-red);
+	margin: 30px 0 0;
 }
 @media (min-width: 700px) { .aab-why { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 1100px) { .aab-why { grid-template-columns: repeat(3, 1fr); } }
-/* No rule over each point: a name and a line of text, nothing else. */
-.aab-why div { display: flex; flex-direction: column; gap: 6px; }
+/* The mark takes the first column and both rows, so the name and the line
+ * under it hang off one left edge. */
+.aab-why > div {
+	background: var(--aab-surface);
+	display: grid;
+	grid-template-columns: auto 1fr;
+	column-gap: 15px;
+	row-gap: 5px;
+	align-items: start;
+	padding: 24px 24px 26px;
+}
+.aab-why-ico {
+	grid-row: span 2;
+	width: 26px; height: 26px; margin-top: 2px; flex: none;
+	fill: none; stroke: var(--aab-red); stroke-width: 1.6;
+	stroke-linecap: round; stroke-linejoin: round;
+}
 .aab-why strong {
 	font-family: var(--aab-display); font-weight: 400; text-transform: uppercase;
-	font-size: 19px; letter-spacing: .01em; line-height: 1.08;
+	font-size: 18px; letter-spacing: .01em; line-height: 1.1;
 }
-.aab-why span { font-size: 14px; color: var(--aab-muted); line-height: 1.55; }
+.aab-why span { font-size: 13.5px; color: var(--aab-muted); line-height: 1.5; }
 
 /* Featured products */
 /* Five across, at the largest size that fits: 1425 less 20px of padding and

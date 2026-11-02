@@ -206,13 +206,64 @@
       <p class="aab-eyebrow">{{ txt.why_eyebrow }}</p>
       <h2>{{ txt.why_heading }}</h2>
 
+      {#
+        One panel divided by hairlines rather than six pieces of text on the
+        page ground. Each reason carries a mark, because the band had no
+        colour in it but the eyebrow and nothing to hold the eye at all.
+      #}
       <div class="aab-why">
-        <div><strong>Trusted since 2005</strong><span>Contractors, homeowners, institutions and farmers.</span></div>
-        <div><strong>{{ branch_count }} branches</strong><span>Across all ten provinces.</span></div>
-        <div><strong>Quality brands</strong><span>Marcopolo Tiles and Unites Capital Fertilizer.</span></div>
-        <div><strong>Own delivery fleet</strong><span>Maintained trucks, nationwide reach.</span></div>
-        <div><strong>Public service financing</strong><span>Through our PSMFC partnership.</span></div>
-        <div><strong>Technical support</strong><span>Advice on selection and installation.</span></div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3 20 6v6c0 4.4-3.3 8.2-8 9-4.7-.8-8-4.6-8-9V6Z"/>
+            <path d="m8.6 12.2 2.3 2.3 4.5-4.5"/>
+          </svg>
+          <strong>Trusted since 2005</strong>
+          <span>Contractors, homeowners, institutions and farmers.</span>
+        </div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 21s7-5.7 7-11a7 7 0 1 0-14 0c0 5.3 7 11 7 11Z"/>
+            <circle cx="12" cy="10" r="2.6"/>
+          </svg>
+          <strong>{{ branch_count }} branches</strong>
+          <span>Across all ten provinces.</span>
+        </div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="9" r="5.4"/>
+            <path d="m8.6 13.6-1.5 6.6 4.9-2.6 4.9 2.6-1.5-6.6"/>
+          </svg>
+          <strong>Quality brands</strong>
+          <span>Marcopolo Tiles and Unites Capital Fertilizer.</span>
+        </div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M2.6 6.4h10.8v9.2H2.6z"/>
+            <path d="M13.4 9.6h3.9l3.1 3.3v2.7h-7z"/>
+            <circle cx="7" cy="17.8" r="1.9"/>
+            <circle cx="16.6" cy="17.8" r="1.9"/>
+          </svg>
+          <strong>Own delivery fleet</strong>
+          <span>Maintained trucks, nationwide reach.</span>
+        </div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="2.6" y="6.6" width="18.8" height="10.8" rx="1.4"/>
+            <circle cx="12" cy="12" r="2.6"/>
+            <path d="M6.1 12h.4M17.5 12h.4"/>
+          </svg>
+          <strong>Public service financing</strong>
+          <span>Through our PSMFC partnership.</span>
+        </div>
+        <div>
+          <svg class="aab-why-ico" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4.3 15.8a7.7 7.7 0 0 1 15.4 0"/>
+            <path d="M9.6 8.9V5.6a1 1 0 0 1 1-1h2.8a1 1 0 0 1 1 1v3.3"/>
+            <path d="M2.9 15.8h18.2"/>
+          </svg>
+          <strong>Technical support</strong>
+          <span>Advice on selection and installation.</span>
+        </div>
       </div>
     </div>
   </section>
