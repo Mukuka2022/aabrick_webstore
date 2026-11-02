@@ -53,8 +53,23 @@ QUALITY = 82
 # per millimetre, and asking the same 600 of a 600mm tile is twice as strict as
 # it needs to be. The flat floor was quietly dropping 600mm tiles whose crops
 # came out at 568px, which is nearly a pixel per millimetre and perfectly good.
+#
+# The flat floor is the last of that first mistake, and it was still making it.
+# Measured across the catalogue, 17 tiles were being turned away by the floor
+# alone while passing the px/mm rule this module settled on: 13 of the 36xxx
+# 300x600s at 0.63 px/mm, 86006 and 86078 at 0.56, and 33002 at 1.30, which is
+# more than twice the standard and was being refused by a number meant for
+# tiles four times its size. So the floor drops to where it stops overruling
+# the rule it sits beside, and goes back to being what it says it is: a guard
+# against a picture too small to hold up at all, whatever the arithmetic says.
+#
+# 330 is not a round number picked for looking like one. The 17 run from 333px
+# to 389px and the next crops below them are at 276, 274 and 258, which fail
+# the px/mm rule on their own account and should keep failing. Anywhere from
+# 277 to 333 separates the two groups; 330 sits at the top of that range, so
+# the floor gives up as little ground as the measurement allows.
 PX_PER_MM = 0.5
-FLOOR_PX = 400        # however small the tile, below this it will not hold up
+FLOOR_PX = 330        # however small the tile, below this it will not hold up
 MIN_LONG_PX = 600     # the fallback, when the tile's real size is not known
 # And below this fraction of the original, the grain is drawn far enough from
 # life that the tile stops being an honest picture of itself.
