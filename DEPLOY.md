@@ -69,8 +69,13 @@ bench --site SITE install-app aabrick_webstore
 
 ```bash
 cd ~/frappe-bench/apps/aabrick_webstore
-git pull origin main
+git remote -v                 # whatever bench get-app called it
+git pull <that remote> main
 ```
+
+The remote is not always `origin`: `bench get-app` has named it `upstream`
+for years, and the dev bench calls it that. `git remote -v` settles it in
+one line rather than failing on the pull.
 
 ---
 
@@ -133,6 +138,11 @@ curl -s https://SITE/ | grep -c 'aab-nav-main'      # expect 1
 curl -s https://SITE/ | grep -c 'navbar-expand-lg'  # expect 0
 curl -s -o /dev/null -w '%{http_code}\n' https://SITE/all-products
 curl -s -o /dev/null -w '%{http_code}\n' https://SITE/tile-calculator
+curl -s -o /dev/null -w '%{http_code}\n' https://SITE/tile-visualizer
+
+# and that the old spelling still lands, rather than 404ing a
+# link somebody already shared
+curl -s -o /dev/null -w '%{redirect_url}\n' https://SITE/tile-visualiser
 ```
 
 All the codes should be 200. If the homepage serves a login page instead of

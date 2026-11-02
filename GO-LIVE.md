@@ -418,7 +418,7 @@ bench --site SITE execute aabrick_webstore.publish_grades.run
 ```bash
 # every page answers
 for p in / /all-products /branches /contact /guides /tile-calculator \
-         /pvc-ceiling-calculater /cart /login; do
+         /tile-visualizer /pvc-ceiling-calculater /cart /login; do
   printf "%-28s %s\n" "$p" "$(curl -s -o /dev/null -w '%{http_code}' https://SITE$p)"
 done
 
