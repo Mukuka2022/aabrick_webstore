@@ -1423,7 +1423,18 @@
 				head.appendChild(el("span", null, g.size));
 				sec.appendChild(head);
 				var grid = el("div", "aab-vis-swatches");
-				g.entries.forEach(function (t) { grid.appendChild(swatch(t)); });
+				var marks = [];
+				g.entries.forEach(function (t) {
+					var node = swatch(t);
+					grid.appendChild(node);
+					// The code, kept beside its swatch for the search. It is
+					// printed on the swatch, so it is the obvious thing for a
+					// customer to type, and the box knew only range titles.
+					marks.push({
+						node: node,
+						text: String(t.code || "").toLowerCase()
+					});
+				});
 				sec.appendChild(grid);
 				holder.appendChild(sec);
 				// The title as one searchable string, lower cased once here
@@ -1432,14 +1443,20 @@
 					node: sec,
 					title: (g.label + " " + g.size).toLowerCase()
 						.replace("\u00d7", "x"),
-					count: g.entries.length
+					count: g.entries.length,
+					marks: marks
 				});
 			});
 		}
 
-		/* The search, over the range titles. Every word typed has to appear
-		 * somewhere in the title, so "matt 600" finds the matt porcelains and
-		 * the order of the words does not matter. */
+		/* The search, over the range titles and the tile codes. Every word
+		 * typed has to appear somewhere in the title, so "matt 600" finds the
+		 * matt porcelains and the order of the words does not matter.
+		 *
+		 * A word that matches no title is tried against the codes instead, one
+		 * swatch at a time. Searching the titles alone meant typing a code --
+		 * the one thing printed on every swatch -- emptied the picker, which
+		 * reads exactly like the tile not being stocked. */
 		var box = $(".aab-vis-search");
 		var clear = $(".aab-vis-clear");
 		var none = $(".aab-vis-none");
@@ -1450,11 +1467,22 @@
 				.split(/\s+/).filter(Boolean);
 			var shown = 0;
 			blocks.forEach(function (b) {
-				var hit = words.every(function (w) {
+				var byTitle = words.every(function (w) {
 					return b.title.indexOf(w) !== -1;
 				});
-				b.node.hidden = !hit;
-				if (hit) { shown += b.count; }
+				// A range whose title matches shows whole, as before. Otherwise
+				// each swatch stands on its own code, so a search for one tile
+				// returns that tile rather than its whole range.
+				var hits = 0;
+				b.marks.forEach(function (m) {
+					var hit = byTitle || words.every(function (w) {
+						return m.text.indexOf(w) !== -1;
+					});
+					m.node.hidden = !hit;
+					if (hit) { hits++; }
+				});
+				b.node.hidden = hits === 0;
+				shown += hits;
 			});
 			if (none) { none.hidden = shown > 0; }
 			if (counter) { counter.textContent = shown; }
